@@ -1,7 +1,7 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.acarchidi/agentforge",
-  "description": "DeFi safety layer for AI agents. Wallet safety checks, contract docs, transaction decoding, approval scanning, and interaction simulation. Pay-per-request via x402 (USDC on Base). Free via MCP.",
+  "description": "DeFi safety layer for AI agents: wallet checks, contract docs, approvals, tx decode.",
   "repository": {
     "url": "https://github.com/acarchidi/agentforge",
     "source": "github"
