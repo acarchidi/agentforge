@@ -1,0 +1,2691 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-03-08T21:54:40.081Z",
+  "entries": [
+    {
+      "address": "0xfc5a1a6eb076a2c7ad06ed22c90d7e710e35ad0a",
+      "name": "GMX V2 Perps",
+      "chain": "arbitrum",
+      "protocol": "GMX V2 Perps",
+      "category": "derivatives",
+      "riskLevel": "low",
+      "tags": [
+        "derivatives",
+        "defi"
+      ],
+      "description": "GMX V2 Perps — TVL $257.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xaf88d065e77c8cc2239327c5edb3a432268e5831",
+      "name": "USDC (Arbitrum)",
+      "chain": "arbitrum",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20",
+        "native"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x912ce59144191c1204e64559fe8253a0e49e6548",
+      "name": "Arbitrum Bridge",
+      "chain": "arbitrum",
+      "protocol": "Arbitrum Bridge",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Arbitrum Bridge — TVL $3166.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x116998824ff90532906bab91becea4a8e4ce06db",
+      "name": "Exod",
+      "chain": "arbitrum",
+      "protocol": "Exod",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Exod — TVL $332.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3e76bb02286bfeaa89dd35f11253f2cbce634f91",
+      "name": "Pleasing Gold",
+      "chain": "arbitrum",
+      "protocol": "Pleasing Gold",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Pleasing Gold — TVL $100.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7",
+      "name": "Tether",
+      "chain": "avalanche",
+      "protocol": "Tether",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "erc20",
+        "usdt"
+      ],
+      "source": "coingecko",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e",
+      "name": "USDC",
+      "chain": "avalanche",
+      "protocol": "USDC",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "erc20",
+        "usdc"
+      ],
+      "source": "coingecko",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x8729438eb15e2c8b576fcc6aecda6a148776c0f5",
+      "name": "Benqi Lending",
+      "chain": "avax",
+      "protocol": "Benqi Lending",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Benqi Lending — TVL $136.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x696f9436b67233384889472cd7cd58a6fb5df4f1",
+      "name": "Avantis",
+      "chain": "base",
+      "protocol": "Avantis",
+      "category": "derivatives",
+      "riskLevel": "low",
+      "tags": [
+        "derivatives",
+        "defi"
+      ],
+      "description": "Avantis — TVL $84.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xb0505e5a99abd03d94a1169c0e2053b37099e98a",
+      "name": "Aerodrome Router",
+      "chain": "base",
+      "protocol": "Aerodrome",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x420dd381b31aef6683db6b902084cb0ffece40da",
+      "name": "Aerodrome Voter",
+      "chain": "base",
+      "protocol": "Aerodrome",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "voting"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xa238dd80c259a72e81d7e4664a9801593f98d1c5",
+      "name": "Aave V3 Pool (Base)",
+      "chain": "base",
+      "protocol": "Aave",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lend",
+        "borrow",
+        "flash-loan"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xa88594d404727625a9437c3f886c7643872296ae",
+      "name": "Moonwell Lending",
+      "chain": "base",
+      "protocol": "Moonwell Lending",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Moonwell Lending — TVL $50.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x1c7a460413dd4e964f96d8dfc56e7223ce88cd85",
+      "name": "Seamless V2",
+      "chain": "base",
+      "protocol": "Seamless V2",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Seamless V2 — TVL $45.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
+      "name": "cbETH (Base)",
+      "chain": "base",
+      "protocol": "Coinbase",
+      "category": "liquid-staking",
+      "riskLevel": "safe",
+      "tags": [
+        "staking",
+        "liquid-staking",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+      "name": "DAI (Base)",
+      "chain": "base",
+      "protocol": "MakerDAO",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      "name": "USDC (Base)",
+      "chain": "base",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000006",
+      "name": "WETH (Base)",
+      "chain": "base",
+      "protocol": "WETH",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "wrapped",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x940181a94a35a4569e4529a3cdfb74e38fd98631",
+      "name": "Aerodrome V1",
+      "chain": "base",
+      "protocol": "Aerodrome V1",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Aerodrome V1 — TVL $114.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xeec468333ccc16d4bf1cef497a56cf8c0aae4ca3",
+      "name": "Anzen V2",
+      "chain": "base",
+      "protocol": "Anzen V2",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Anzen V2 — TVL $89.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x194f360d130f2393a5e9f3117a6a1b78abea1624",
+      "name": "Lazy Summer Protocol",
+      "chain": "base",
+      "protocol": "Lazy Summer Protocol",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Lazy Summer Protocol — TVL $45.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0f81001ef0a83ecce5ccebf63eb302c70a39a654",
+      "name": "Dolomite",
+      "chain": "berachain",
+      "protocol": "Dolomite",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Dolomite — TVL $280.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x000ae314e2a2172a039b26378814c252734f556a",
+      "name": "APX Bridge",
+      "chain": "bsc",
+      "protocol": "APX Bridge",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "APX Bridge — TVL $73.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x602ba546a7b06e0fc7f58fd27eb6996ecc824689",
+      "name": "PinkSale",
+      "chain": "bsc",
+      "protocol": "PinkSale",
+      "category": "infrastructure",
+      "riskLevel": "low",
+      "tags": [
+        "infrastructure",
+        "defi"
+      ],
+      "description": "PinkSale — TVL $165.7M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xcf6bb5389c92bdda8a3747ddb454cb7a64626c63",
+      "name": "Venus Flux",
+      "chain": "bsc",
+      "protocol": "Venus Flux",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Venus Flux — TVL $194.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xfceb31a79f71ac9cbdcf853519c1b12d379edc46",
+      "name": "Lista CDP",
+      "chain": "bsc",
+      "protocol": "Lista CDP",
+      "category": "stablecoin",
+      "riskLevel": "low",
+      "tags": [
+        "stablecoin",
+        "defi"
+      ],
+      "description": "Lista CDP — TVL $388.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xff7d6a96ae471bbcd7713af9cb1feeb16cf56b41",
+      "name": "Bedrock uniBTC",
+      "chain": "bsc",
+      "protocol": "Bedrock uniBTC",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Bedrock uniBTC — TVL $322.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82",
+      "name": "PancakeSwap Infinity",
+      "chain": "bsc",
+      "protocol": "PancakeSwap Infinity",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "PancakeSwap Infinity — TVL $62.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x9227d218f65bdf43cb0bc231431fb516791f193c",
+      "name": "UniRouter",
+      "chain": "bsquared",
+      "protocol": "UniRouter",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "UniRouter — TVL $255.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xeadf7c01da7e93fdb5f16b0aa9ee85f978e89e95",
+      "name": "Tectonic",
+      "chain": "cronos",
+      "protocol": "Tectonic",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Tectonic — TVL $121.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xdb7d0a1ec37de1de924f8e8adac6ed338d4404e9",
+      "name": "Veno Finance",
+      "chain": "cronos",
+      "protocol": "Veno Finance",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "Veno Finance — TVL $45.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x2d03bece6747adc00e1a131bba1469c15fd11e03",
+      "name": "VVS Standard",
+      "chain": "cronos",
+      "protocol": "VVS Standard",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "VVS Standard — TVL $134.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x57fd71a86522dc06d6255537521886057c1772a3",
+      "name": "Blockchain Capital",
+      "chain": "era",
+      "protocol": "Blockchain Capital",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Blockchain Capital — TVL $207.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x8315177ab297ba92a06054ce80a67ed4dbd7ed3a",
+      "name": "Arbitrum Bridge",
+      "chain": "ethereum",
+      "protocol": "Arbitrum",
+      "category": "bridge",
+      "riskLevel": "safe",
+      "tags": [
+        "bridge",
+        "l2",
+        "arbitrum"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f",
+      "name": "Arbitrum Delayed Inbox",
+      "chain": "ethereum",
+      "protocol": "Arbitrum",
+      "category": "bridge",
+      "riskLevel": "safe",
+      "tags": [
+        "bridge",
+        "l2",
+        "arbitrum"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x467719ad09025fcc6cf6f8311755809d45a5e5f3",
+      "name": "Axelar",
+      "chain": "ethereum",
+      "protocol": "Axelar",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "Axelar — TVL $141.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xfe67a4450907459c3e1fff623aa927dd4e28c67a",
+      "name": "Connext",
+      "chain": "ethereum",
+      "protocol": "Connext",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "Connext — TVL $193.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+      "name": "Hyperliquid Bridge",
+      "chain": "ethereum",
+      "protocol": "Hyperliquid Bridge",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "Hyperliquid Bridge — TVL $4248.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3014ca10b91cb3d0ad85fef7a3cb95bcac9c0f79",
+      "name": "LayerZero Endpoint",
+      "chain": "ethereum",
+      "protocol": "LayerZero",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "cross-chain",
+        "messaging"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xf0db65d17e30a966c2ae6a21f6bba71cea6e9754",
+      "name": "Lombard BTC.b",
+      "chain": "ethereum",
+      "protocol": "Lombard BTC.b",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "Lombard BTC.b — TVL $247.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x9fb9a33956351cf4fa040f65a13b835a3c8764e3",
+      "name": "Multichain",
+      "chain": "ethereum",
+      "protocol": "Multichain",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "Multichain — TVL $44.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1",
+      "name": "Optimism L1 Bridge",
+      "chain": "ethereum",
+      "protocol": "Optimism",
+      "category": "bridge",
+      "riskLevel": "safe",
+      "tags": [
+        "bridge",
+        "l2",
+        "optimism"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xa0c68c638235ee32657e8f720a23cec1bfc6c9a8",
+      "name": "Polygon Bridge",
+      "chain": "ethereum",
+      "protocol": "Polygon",
+      "category": "bridge",
+      "riskLevel": "safe",
+      "tags": [
+        "bridge",
+        "l2",
+        "polygon"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x624e2e7fdc8903165f64891672267ab0fcb98831",
+      "name": "SoDEX Bridge",
+      "chain": "ethereum",
+      "protocol": "SoDEX Bridge",
+      "category": "bridge",
+      "riskLevel": "low",
+      "tags": [
+        "bridge",
+        "defi"
+      ],
+      "description": "SoDEX Bridge — TVL $57.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3ee18b2214aff97000d974cf647e7c347e8fa585",
+      "name": "Wormhole Bridge",
+      "chain": "ethereum",
+      "protocol": "Wormhole",
+      "category": "bridge",
+      "riskLevel": "medium",
+      "tags": [
+        "bridge",
+        "cross-chain"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xb1d1eae60eea9525032a6dcb4c1ce336a1de71be",
+      "name": "Derive V2",
+      "chain": "ethereum",
+      "protocol": "Derive V2",
+      "category": "derivatives",
+      "riskLevel": "low",
+      "tags": [
+        "derivatives",
+        "defi"
+      ],
+      "description": "Derive V2 — TVL $76.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x92d6c1e31e14520e676a687f0a93788b716beff5",
+      "name": "dYdX V3",
+      "chain": "ethereum",
+      "protocol": "dYdX V3",
+      "category": "derivatives",
+      "riskLevel": "low",
+      "tags": [
+        "derivatives",
+        "defi"
+      ],
+      "description": "dYdX V3 — TVL $39.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xc011a73ee8576fb46f5e1c5751ca3b9fe0af2a6f",
+      "name": "Synthetix V3",
+      "chain": "ethereum",
+      "protocol": "Synthetix V3",
+      "category": "derivatives",
+      "riskLevel": "low",
+      "tags": [
+        "derivatives",
+        "defi"
+      ],
+      "description": "Synthetix V3 — TVL $42.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
+      "name": "0x Exchange Proxy",
+      "chain": "ethereum",
+      "protocol": "0x",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "swap"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x1111111254fb6c44bac0bed2854e76f90643097d",
+      "name": "1inch Router V4",
+      "chain": "ethereum",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "swap"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x1111111254eeb25477b68fb85ed929f73a960582",
+      "name": "1inch Router V5",
+      "chain": "ethereum",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "swap"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+      "name": "Balancer Vault",
+      "chain": "ethereum",
+      "protocol": "Balancer",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm",
+        "vault"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7",
+      "name": "Curve 3pool",
+      "chain": "ethereum",
+      "protocol": "Curve",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm",
+        "stableswap"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xd51a44d3fae010294c616388b506acda1bfaae46",
+      "name": "Curve Tricrypto Pool",
+      "chain": "ethereum",
+      "protocol": "Curve",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm",
+        "stableswap"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x881d40237659c251811cec9c364ef91dc08d300c",
+      "name": "Metamask Swap Router",
+      "chain": "ethereum",
+      "protocol": "MetaMask",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "swap"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f",
+      "name": "SushiSwap Router",
+      "chain": "ethereum",
+      "protocol": "SushiSwap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45",
+      "name": "Uniswap Universal Router",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad",
+      "name": "Uniswap Universal Router V2",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+      "name": "Uniswap V2 Router",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
+      "name": "Uniswap V3 Positions NFT",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "liquidity"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xe592427a0aece92de3edee1f18e0157c05861564",
+      "name": "Uniswap V3 Router",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "swap",
+        "amm"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x7fc66500c84a76ad7e9c93437bfc5ac33e2ddae9",
+      "name": "AAVE Token",
+      "chain": "ethereum",
+      "protocol": "Aave",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xba100000625a3754423978a60c9317c58a424e3d",
+      "name": "BAL Token",
+      "chain": "ethereum",
+      "protocol": "Balancer",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xc00e94cb662c3520282e6f5717214004a7f26888",
+      "name": "COMP Token",
+      "chain": "ethereum",
+      "protocol": "Compound",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xd533a949740bb3306d119cc777fa900ba034cd52",
+      "name": "CRV",
+      "chain": "ethereum",
+      "protocol": "Curve",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x4e3fbd56cd56c3e72c1403e103b45db9da5b9d2b",
+      "name": "CVX Token",
+      "chain": "ethereum",
+      "protocol": "Convex",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x6810e776880c02933d47db1b9fc05908e5386b96",
+      "name": "GNO Token",
+      "chain": "ethereum",
+      "protocol": "Gnosis",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x5a98fcbea516cf06857215779fd812ca3bef1b32",
+      "name": "LDO Token",
+      "chain": "ethereum",
+      "protocol": "Lido",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x9f8f72aa9304c8b593d555f12ef6589cc3a579a2",
+      "name": "MKR Token",
+      "chain": "ethereum",
+      "protocol": "MakerDAO",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x1f9840a85d5af5bf1d1762f925bdaddc4201f984",
+      "name": "UNI Token",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "governance",
+      "riskLevel": "safe",
+      "tags": [
+        "governance",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xd7c49cee7e9188cca6ad8ff264c1da2e69d4cf3b",
+      "name": "Nexus Mutual",
+      "chain": "ethereum",
+      "protocol": "Nexus Mutual",
+      "category": "infrastructure",
+      "riskLevel": "low",
+      "tags": [
+        "infrastructure",
+        "defi"
+      ],
+      "description": "Nexus Mutual — TVL $96.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f",
+      "name": "Uniswap V2 Factory",
+      "chain": "ethereum",
+      "protocol": "Uniswap",
+      "category": "infrastructure",
+      "riskLevel": "safe",
+      "tags": [
+        "factory"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9",
+      "name": "Aave V2 Lending Pool",
+      "chain": "ethereum",
+      "protocol": "Aave",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lend",
+        "borrow",
+        "flash-loan"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2",
+      "name": "Aave V3 Pool",
+      "chain": "ethereum",
+      "protocol": "Aave",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lend",
+        "borrow",
+        "flash-loan"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
+      "name": "Compound Comptroller",
+      "chain": "ethereum",
+      "protocol": "Compound",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lend",
+        "borrow"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x1a0ad011913a150f69f6a19df447a0cfd9551054",
+      "name": "Compound V3 USDC Comet",
+      "chain": "ethereum",
+      "protocol": "Compound",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lend",
+        "borrow"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5",
+      "name": "Cooler Loans",
+      "chain": "ethereum",
+      "protocol": "Cooler Loans",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Cooler Loans — TVL $194.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xba3335588d9403515223f109edc4eb7269a9ab5d",
+      "name": "Gearbox",
+      "chain": "ethereum",
+      "protocol": "Gearbox",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Gearbox — TVL $48.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x643c4e15d7d62ad0abec4a9bd4b001aa3ef52d66",
+      "name": "Maple",
+      "chain": "ethereum",
+      "protocol": "Maple",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Maple — TVL $2058.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
+      "name": "Morpho V1",
+      "chain": "ethereum",
+      "protocol": "Morpho V1",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Morpho V1 — TVL $6967.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xf0b2dd79324a66d2108c961d680f7616e1486bb0",
+      "name": "Silo V2",
+      "chain": "ethereum",
+      "protocol": "Silo V2",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Silo V2 — TVL $45.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+      "name": "cbETH",
+      "chain": "ethereum",
+      "protocol": "Coinbase",
+      "category": "liquid-staking",
+      "riskLevel": "safe",
+      "tags": [
+        "staking",
+        "liquid-staking",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x9f0c013016e8656bc256f948cd4b79ab25c7b94d",
+      "name": "mETH Protocol",
+      "chain": "ethereum",
+      "protocol": "mETH Protocol",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "mETH Protocol — TVL $580.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0b010000b7624eb9b3dfbc279673c76e9d29d5f7",
+      "name": "Obol",
+      "chain": "ethereum",
+      "protocol": "Obol",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "Obol — TVL $1215.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xae78736cd615f374d3085123a210448e74fc6393",
+      "name": "rETH",
+      "chain": "ethereum",
+      "protocol": "Rocket Pool",
+      "category": "liquid-staking",
+      "riskLevel": "safe",
+      "tags": [
+        "staking",
+        "liquid-staking",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
+      "name": "Rocket Pool",
+      "chain": "ethereum",
+      "protocol": "Rocket Pool",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "Rocket Pool — TVL $1125.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x9d65ff81a3c488d585bbfb0bfe3c7707c7917f54",
+      "name": "SSV Network",
+      "chain": "ethereum",
+      "protocol": "SSV Network",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "SSV Network — TVL $12882.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x30d20208d987713f46dfd34ef128bb16c404d10f",
+      "name": "Stader",
+      "chain": "ethereum",
+      "protocol": "Stader",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "Stader — TVL $322.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xa95c5ebb86e0de73b4fb8c47a45b792cfea28c23",
+      "name": "stake.link liquid",
+      "chain": "ethereum",
+      "protocol": "stake.link liquid",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "stake.link liquid — TVL $58.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x48c3399719b582dd63eb5aadf12a40b4c3f52fa2",
+      "name": "StakeWise V2",
+      "chain": "ethereum",
+      "protocol": "StakeWise V2",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "StakeWise V2 — TVL $804.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+      "name": "stETH",
+      "chain": "ethereum",
+      "protocol": "Lido",
+      "category": "liquid-staking",
+      "riskLevel": "safe",
+      "tags": [
+        "staking",
+        "liquid-staking",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+      "name": "wstETH",
+      "chain": "ethereum",
+      "protocol": "Lido",
+      "category": "liquid-staking",
+      "riskLevel": "safe",
+      "tags": [
+        "staking",
+        "liquid-staking",
+        "wrapped",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xd5d6f8d9e784d0e26222ad3834500801a68d027d",
+      "name": "Gnosis Safe Proxy Factory",
+      "chain": "ethereum",
+      "protocol": "Gnosis Safe",
+      "category": "multisig",
+      "riskLevel": "safe",
+      "tags": [
+        "multisig",
+        "factory"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xa2327a938febf5fec13bacfb16ae10ecbc4cbdcf",
+      "name": "Gnosis Safe Singleton",
+      "chain": "ethereum",
+      "protocol": "Gnosis Safe",
+      "category": "multisig",
+      "riskLevel": "safe",
+      "tags": [
+        "multisig",
+        "singleton"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x00000000006c3852cbef3e08e8df289169ede581",
+      "name": "OpenSea Seaport",
+      "chain": "ethereum",
+      "protocol": "OpenSea",
+      "category": "nft-marketplace",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "marketplace"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x47fb2585d2c56fe188d0e6ec628a38b74fceeedf",
+      "name": "Chainlink Price Feed Registry",
+      "chain": "ethereum",
+      "protocol": "Chainlink",
+      "category": "oracle",
+      "riskLevel": "safe",
+      "tags": [
+        "oracle",
+        "price-feed"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x514910771af9ca656af840dff83e8264ecf986ca",
+      "name": "LINK Token",
+      "chain": "ethereum",
+      "protocol": "Chainlink",
+      "category": "oracle",
+      "riskLevel": "safe",
+      "tags": [
+        "oracle",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "name": "DAI",
+      "chain": "ethereum",
+      "protocol": "MakerDAO",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20",
+        "decentralized"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xb58e61c3098d85632df34eecfb899a1ed80921cb",
+      "name": "Frankencoin",
+      "chain": "ethereum",
+      "protocol": "Frankencoin",
+      "category": "stablecoin",
+      "riskLevel": "low",
+      "tags": [
+        "stablecoin",
+        "defi"
+      ],
+      "description": "Frankencoin — TVL $67.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+      "name": "Frax",
+      "chain": "ethereum",
+      "protocol": "Frax",
+      "category": "stablecoin",
+      "riskLevel": "low",
+      "tags": [
+        "stablecoin",
+        "defi"
+      ],
+      "description": "Frax — TVL $52.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d",
+      "name": "Liquity V2",
+      "chain": "ethereum",
+      "protocol": "Liquity V2",
+      "category": "stablecoin",
+      "riskLevel": "low",
+      "tags": [
+        "stablecoin",
+        "defi"
+      ],
+      "description": "Liquity V2 — TVL $85.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "name": "USDC",
+      "chain": "ethereum",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "name": "USDT",
+      "chain": "ethereum",
+      "protocol": "Tether",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xb8c77482e45f1f44de1745f52c74426c631bdd52",
+      "name": "BNB Token (ERC-20)",
+      "chain": "ethereum",
+      "protocol": "Binance",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x7d1afa7b718fb893db30a3abc0cfc608aacfebb0",
+      "name": "MATIC Token",
+      "chain": "ethereum",
+      "protocol": "Polygon",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "erc20",
+        "l2"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x95ad61b0a150d79219dcf64e1e6cc01f0b64c4ce",
+      "name": "SHIB Token",
+      "chain": "ethereum",
+      "protocol": "Shiba Inu",
+      "category": "token",
+      "riskLevel": "low",
+      "tags": [
+        "erc20",
+        "meme"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x2260fac5e5542a773aa44fbcfedf7c193bc2c599",
+      "name": "WBTC",
+      "chain": "ethereum",
+      "protocol": "BitGo",
+      "category": "token",
+      "riskLevel": "low",
+      "tags": [
+        "wrapped",
+        "erc20",
+        "bitcoin"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2",
+      "name": "WETH",
+      "chain": "ethereum",
+      "protocol": "WETH",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "wrapped",
+        "erc20"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0xb113c6cf239f60d380359b762e95c13817275277",
+      "name": "Bitmex",
+      "chain": "ethereum",
+      "protocol": "Bitmex",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Bitmex — TVL $1136.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x7712c34205737192402172409a8f7ccef8aa2aec",
+      "name": "BlackRock BUIDL",
+      "chain": "ethereum",
+      "protocol": "BlackRock BUIDL",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "BlackRock BUIDL — TVL $2528.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0a638f07acc6969abf392bb009f216d22adea36d",
+      "name": "Brickken",
+      "chain": "ethereum",
+      "protocol": "Brickken",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Brickken — TVL $41.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x045414e728067ab3da4bceafc0d992d59183463a",
+      "name": "Bwatch",
+      "chain": "ethereum",
+      "protocol": "Bwatch",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Bwatch — TVL $58.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xcccccccccc33d538dbc2ee4feab0a7a1ff4e8a94",
+      "name": "Centrifuge Protocol",
+      "chain": "ethereum",
+      "protocol": "Centrifuge Protocol",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Centrifuge Protocol — TVL $1374.7M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x66761fa41377003622aee3c7675fc7b5c1c2fac5",
+      "name": "Clearpool TPOOL",
+      "chain": "ethereum",
+      "protocol": "Clearpool TPOOL",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Clearpool TPOOL — TVL $40.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x081f67afa0ccf8c7b17540767bbe95df2ba8d97f",
+      "name": "CoinEx",
+      "chain": "ethereum",
+      "protocol": "CoinEx",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "CoinEx — TVL $165.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xec53bf9167f50cdeb3ae105f56099aaab9061f83",
+      "name": "EigenCloud",
+      "chain": "ethereum",
+      "protocol": "EigenCloud",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "EigenCloud — TVL $8771.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xec67005c4e498ec7f55e092bd1d35cbc47c91892",
+      "name": "Enzyme Finance",
+      "chain": "ethereum",
+      "protocol": "Enzyme Finance",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Enzyme Finance — TVL $81.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x57e114b691db790c35207b2e685d4a43181e6061",
+      "name": "Ethena USDtb",
+      "chain": "ethereum",
+      "protocol": "Ethena USDtb",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Ethena USDtb — TVL $834.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xfe0c30065b384f05761f15d0cc899d4f9f9cc0eb",
+      "name": "EtherFi Cash Liquid",
+      "chain": "ethereum",
+      "protocol": "EtherFi Cash Liquid",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "EtherFi Cash Liquid — TVL $138.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xd9fcd98c322942075a5c3860693e9f4f03aae07b",
+      "name": "Euler DAO",
+      "chain": "ethereum",
+      "protocol": "Euler DAO",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Euler DAO — TVL $56.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xfa1c09fc8b491b6a4d3ff53a10cad29381b3f949",
+      "name": "Falcon Finance",
+      "chain": "ethereum",
+      "protocol": "Falcon Finance",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Falcon Finance — TVL $1622.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x5dd1a7a369e8273371d2dbf9d83356057088082c",
+      "name": "Flying Tulip",
+      "chain": "ethereum",
+      "protocol": "Flying Tulip",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Flying Tulip — TVL $92.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xe66747a101bff2dba3697199dcce5b743b454759",
+      "name": "Gate US",
+      "chain": "ethereum",
+      "protocol": "Gate US",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Gate US — TVL $51.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xbf3f63d8ac133b16d7d50c015036b33219dd8d23",
+      "name": "kpk",
+      "chain": "ethereum",
+      "protocol": "kpk",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "kpk — TVL $58.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x6033f7f88332b8db6ad452b7c6d5bb643990ae3f",
+      "name": "Lisk Bridge",
+      "chain": "ethereum",
+      "protocol": "Lisk Bridge",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Lisk Bridge — TVL $42.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x5983b89fa184f14917013b9c3062afd9434c5b03",
+      "name": "M0",
+      "chain": "ethereum",
+      "protocol": "M0",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "M0 — TVL $188.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3c3a81e81dc49a522a592e7622a7e711c06bf354",
+      "name": "Mantle Bridge",
+      "chain": "ethereum",
+      "protocol": "Mantle Bridge",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Mantle Bridge — TVL $238.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xb62132e35a6c13ee1ee0f84dc5d40bad8d815206",
+      "name": "Nexo",
+      "chain": "ethereum",
+      "protocol": "Nexo",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Nexo — TVL $349.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xfaba6f8e4a5e8ab82f62fe7c39859fa577269be3",
+      "name": "Ondo Global Markets",
+      "chain": "ethereum",
+      "protocol": "Ondo Global Markets",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Ondo Global Markets — TVL $644.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x45804880de22913dafe09f4980848ece6ecbaf78",
+      "name": "Paxos Gold",
+      "chain": "ethereum",
+      "protocol": "Paxos Gold",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Paxos Gold — TVL $2571.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xbbb32f99e6f2cb29337eebaa43c5069386de6e6c",
+      "name": "Phemex",
+      "chain": "ethereum",
+      "protocol": "Phemex",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Phemex — TVL $351.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x455e53cbb86018ac2b8092fdcd39d8444affc3f6",
+      "name": "Polygon Bridge & Staking",
+      "chain": "ethereum",
+      "protocol": "Polygon Bridge & Staking",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Polygon Bridge & Staking — TVL $2216.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xe76c6c83af64e4c60245d8c7de953df673a7a33d",
+      "name": "Railgun",
+      "chain": "ethereum",
+      "protocol": "Railgun",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Railgun — TVL $81.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3b50805453023a91a8bf641e279401a0b23fa6f9",
+      "name": "Renzo",
+      "chain": "ethereum",
+      "protocol": "Renzo",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Renzo — TVL $361.7M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x320623b8e4ff03373931769a31fc52a4e78b5d70",
+      "name": "Reserve Protocol",
+      "chain": "ethereum",
+      "protocol": "Reserve Protocol",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Reserve Protocol — TVL $105.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x259338656198ec7a76c729514d3cb45dfbf768a1",
+      "name": "Resolv",
+      "chain": "ethereum",
+      "protocol": "Resolv",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Resolv — TVL $148.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xda7ad9dea9397cffddae2f8a052b82f1484252b3",
+      "name": "River Omni-CDP",
+      "chain": "ethereum",
+      "protocol": "River Omni-CDP",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "River Omni-CDP — TVL $81.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x56072c95faa701256059aa122697b133aded9279",
+      "name": "Sky RWA",
+      "chain": "ethereum",
+      "protocol": "Sky RWA",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Sky RWA — TVL $88.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x256f2d67e52fe834726d2ddcd8413654f5eb8b53",
+      "name": "Solv Basis Trading",
+      "chain": "ethereum",
+      "protocol": "Solv Basis Trading",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Solv Basis Trading — TVL $193.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xaf5191b0de278c7286d6c7cc6ab6bb8a73ba2cd6",
+      "name": "Stargate V2",
+      "chain": "ethereum",
+      "protocol": "Stargate V2",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Stargate V2 — TVL $108.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xca14007eff0db1f8135f4c25b34de49ab0d42766",
+      "name": "Starknet Bridge",
+      "chain": "ethereum",
+      "protocol": "Starknet Bridge",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Starknet Bridge — TVL $417.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x6b3595068778dd592e39a122f4f5a5cf09c90fe2",
+      "name": "SushiSwap",
+      "chain": "ethereum",
+      "protocol": "SushiSwap",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "SushiSwap — TVL $42.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0a6e7ba5042b38349e437ec6db6214aec7b35676",
+      "name": "Swell L2 Farm",
+      "chain": "ethereum",
+      "protocol": "Swell L2 Farm",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Swell L2 Farm — TVL $63.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x64d0f55cd8c7133a9d7102b13987235f486f2224",
+      "name": "SwissBorg",
+      "chain": "ethereum",
+      "protocol": "SwissBorg",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "SwissBorg — TVL $863.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xcdf7028ceab81fa0c6971208e83fa7872994bee5",
+      "name": "tBTC",
+      "chain": "ethereum",
+      "protocol": "tBTC",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "tBTC — TVL $393.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xcc4304a31d09258b0029ea7fe63d032f52e44efe",
+      "name": "Team Finance",
+      "chain": "ethereum",
+      "protocol": "Team Finance",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Team Finance — TVL $49.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x68749665ff8d2d112fa859aa293f07a622782f38",
+      "name": "Tether Gold",
+      "chain": "ethereum",
+      "protocol": "Tether Gold",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Tether Gold — TVL $3696.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x77777feddddffc19ff86db637967013e6c6a116c",
+      "name": "Tornado Cash",
+      "chain": "ethereum",
+      "protocol": "Tornado Cash",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Tornado Cash — TVL $477.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x77146784315ba81904d654466968e3a7c196d1f3",
+      "name": "Treehouse Protocol",
+      "chain": "ethereum",
+      "protocol": "Treehouse Protocol",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Treehouse Protocol — TVL $154.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xadb2437e6f65682b85f814fbc12fec0508a7b1d0",
+      "name": "UNCX Network V2",
+      "chain": "ethereum",
+      "protocol": "UNCX Network V2",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "UNCX Network V2 — TVL $122.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xc4441c2be5d8fa8126822b9929ca0b81ea0de38e",
+      "name": "Usual USD0",
+      "chain": "ethereum",
+      "protocol": "Usual USD0",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Usual USD0 — TVL $107.8M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0ae055097c6d159879521c384f1d2123d1f195e6",
+      "name": "xDAI Stake Bridge",
+      "chain": "ethereum",
+      "protocol": "xDAI Stake Bridge",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "xDAI Stake Bridge — TVL $285.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0bc529c00c6401aef6d220be8c6ea1667f6ad93e",
+      "name": "Yearn Curating",
+      "chain": "ethereum",
+      "protocol": "Yearn Curating",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Yearn Curating — TVL $92.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xfab99fcf605fd8f4593edb70a43ba56542777777",
+      "name": "ZEROBASE CeDeFi",
+      "chain": "ethereum",
+      "protocol": "ZEROBASE CeDeFi",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "ZEROBASE CeDeFi — TVL $56.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xc0c293ce456ff0ed870add98a0828dd4d2903dbf",
+      "name": "Aura",
+      "chain": "ethereum",
+      "protocol": "Aura",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Aura — TVL $104.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x2e9d63788249371f1dfc918a52f8d799f4a38c94",
+      "name": "AUTOfinance",
+      "chain": "ethereum",
+      "protocol": "AUTOfinance",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "AUTOfinance — TVL $73.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xb1f1ee126e9c96231cc3d3fad7c08b4cf873b1f1",
+      "name": "Beefy",
+      "chain": "ethereum",
+      "protocol": "Beefy",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Beefy — TVL $144.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xb3ad645db386d7f6d753b2b9c3f4b853da6890b8",
+      "name": "Concentrator",
+      "chain": "ethereum",
+      "protocol": "Concentrator",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Concentrator — TVL $38.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xcf3d55c10db69f28fd1a75bd73f3d8a2d9c595ad",
+      "name": "Convex Booster",
+      "chain": "ethereum",
+      "protocol": "Convex",
+      "category": "yield",
+      "riskLevel": "safe",
+      "tags": [
+        "yield",
+        "staking"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x6f40d4a6237c257fff2db00fa0510deeecd303eb",
+      "name": "Fluid Lite",
+      "chain": "ethereum",
+      "protocol": "Fluid Lite",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Fluid Lite — TVL $144.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xa1faa113cbe53436df28ff0aee54275c13b40975",
+      "name": "Homora V2",
+      "chain": "ethereum",
+      "protocol": "Homora V2",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Homora V2 — TVL $110.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x875773784af8135ea0ef43b5a374aad105c5d39e",
+      "name": "Idle",
+      "chain": "ethereum",
+      "protocol": "Idle",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Idle — TVL $45.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x808507121b80c02388fad14726482e061b8da827",
+      "name": "Pendle",
+      "chain": "ethereum",
+      "protocol": "Pendle",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Pendle — TVL $2146.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xc20059e0317de91738d13af027dfc4a50781b066",
+      "name": "Spark Savings",
+      "chain": "ethereum",
+      "protocol": "Spark Savings",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Spark Savings — TVL $1439.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x73968b9a57c6e53d41345fd57a6e6ae27d6cdb2f",
+      "name": "Stake DAO",
+      "chain": "ethereum",
+      "protocol": "Stake DAO",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Stake DAO — TVL $163.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x01791f726b4103694969820be083196cc7c045ff",
+      "name": "Yield Basis",
+      "chain": "ethereum",
+      "protocol": "Yield Basis",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "Yield Basis — TVL $151.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x1925450f5e5fb974b0aae1f3408cf5286fbd1a72",
+      "name": "YO Protocol",
+      "chain": "ethereum",
+      "protocol": "YO Protocol",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "YO Protocol — TVL $67.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xe6505f92583103af7ed9974dec451a7af4e3a3be",
+      "name": "Kinetic",
+      "chain": "flare",
+      "protocol": "Kinetic",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "Kinetic — TVL $82.7M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xaf204776c7245bf4147c2612bf6e5972ee483701",
+      "name": "sDAI",
+      "chain": "gnosis",
+      "protocol": "sDAI",
+      "category": "yield",
+      "riskLevel": "low",
+      "tags": [
+        "yield",
+        "defi"
+      ],
+      "description": "sDAI — TVL $87.0M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0d01dc56dcaaca66ad901c959b4011ec",
+      "name": "Hyperliquid Spot Orderbook",
+      "chain": "hyperliquid",
+      "protocol": "Hyperliquid Spot Orderbook",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Hyperliquid Spot Orderbook — TVL $159.4M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xe06597d02a2c3aa7a9708de2cfa587b128bd3815",
+      "name": "NEOPIN Staking",
+      "chain": "klaytn",
+      "protocol": "NEOPIN Staking",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "NEOPIN Staking — TVL $51.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x671642ac281c760e34251d51bc9eef27026f3b7a",
+      "name": "Mantle Index Four Fund",
+      "chain": "mantle",
+      "protocol": "Mantle Index Four Fund",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Mantle Index Four Fund — TVL $131.7M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x4515a45337f461a11ff0fe8abf3c606ae5dc00c9",
+      "name": "Merchant Moe Liquidity Book",
+      "chain": "mantle",
+      "protocol": "Merchant Moe Liquidity Book",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Merchant Moe Liquidity Book — TVL $41.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0b2c639c533813f4aa9d7837caf62653d097ff85",
+      "name": "USDC (Optimism)",
+      "chain": "optimism",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20",
+        "native"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000042",
+      "name": "Optimism Bridge",
+      "chain": "optimism",
+      "protocol": "Optimism Bridge",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Optimism Bridge — TVL $499.2M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3c499c542cef5e3811e1192ce70d8cc03d5c3359",
+      "name": "USDC (Polygon)",
+      "chain": "polygon",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20",
+        "native"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x2791bca1f2de4661ed88a30c99a7a9449aa84174",
+      "name": "USDC.e (Polygon)",
+      "chain": "polygon",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "erc20",
+        "bridged"
+      ],
+      "source": "manual"
+    },
+    {
+      "address": "0x831753dd7087cac61ab5644b308642cc1c33dc13",
+      "name": "Quickswap Dex",
+      "chain": "polygon",
+      "protocol": "Quickswap Dex",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Quickswap Dex — TVL $453.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x49e6a20f1bbdfeec2a8222e052000bbb14ee6007",
+      "name": "Tangible RWA",
+      "chain": "polygon",
+      "protocol": "Tangible RWA",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Tangible RWA — TVL $41.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x9ac7fe28967b30e3a4e6e03286d715b42b453d10",
+      "name": "MoneyOnChain",
+      "chain": "rsk",
+      "protocol": "MoneyOnChain",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "MoneyOnChain — TVL $38.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x75afe6402ad5a5c20dd25e10ec3b3986acaa647b77e4ae24b0cbc9a54a27a87",
+      "name": "Ekubo",
+      "chain": "starknet",
+      "protocol": "Ekubo",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Ekubo — TVL $43.3M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xe1b45a0e641b9955a20aa0ad1c1f4ad86aad8afb07296d4085e349a50e90bdca",
+      "name": "AlphaLend",
+      "chain": "sui",
+      "protocol": "AlphaLend",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "AlphaLend — TVL $68.1M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0xa99b8952d4f7d947ea77fe0ecdcc9e5fc0bcab2841d6e2a5aa00c3044e5544b5",
+      "name": "NAVI Lending",
+      "chain": "sui",
+      "protocol": "NAVI Lending",
+      "category": "lending",
+      "riskLevel": "low",
+      "tags": [
+        "lending",
+        "defi"
+      ],
+      "description": "NAVI Lending — TVL $141.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x3a304c7feba2d819ea57c3542d68439ca2c386ba02159c740f7b406e592c62ea",
+      "name": "Haedal Protocol",
+      "chain": "sui",
+      "protocol": "Haedal Protocol",
+      "category": "liquid-staking",
+      "riskLevel": "low",
+      "tags": [
+        "liquid-staking",
+        "defi"
+      ],
+      "description": "Haedal Protocol — TVL $42.5M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0000000000000000000000000000000000000000",
+      "name": "Thorchain DEX",
+      "chain": "thorchain",
+      "protocol": "Thorchain DEX",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "Thorchain DEX — TVL $65.6M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    },
+    {
+      "address": "0x0aa1e96d2a46ec6beb2923de1e61addf5f5f1dce",
+      "name": "RealT Tokens",
+      "chain": "xdai",
+      "protocol": "RealT Tokens",
+      "category": "unknown",
+      "riskLevel": "low",
+      "tags": [
+        "unknown",
+        "defi"
+      ],
+      "description": "RealT Tokens — TVL $156.9M",
+      "source": "defillama",
+      "lastVerified": "2026-03-08"
+    }
+  ]
+}

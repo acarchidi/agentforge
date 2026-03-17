@@ -1,0 +1,28 @@
+services:
+  - type: web
+    name: agentforge
+    runtime: docker
+    plan: starter
+    region: oregon
+    healthCheckPath: /health
+    envVars:
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: WALLET_PRIVATE_KEY
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: FACILITATOR_URL
+        value: https://facilitator.x402.org
+      - key: RECEIVE_ADDRESS
+        sync: false
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: "3402"
+      - key: DATABASE_PATH
+        value: /app/data/agentforge.db
+    disk:
+      name: agentforge-data
+      mountPath: /app/data
+      sizeGB: 1

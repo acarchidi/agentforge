@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.env
+.wallet
+*.db
+.DS_Store
+.vercel
+.claude/
+.playwright-mcp/

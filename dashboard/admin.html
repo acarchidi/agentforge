@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AGENTFORGE | Operator Dashboard</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #12121a;
+      --border: #1e1e2e;
+      --text: #e0e0e8;
+      --text-secondary: #6b6b80;
+      --green: #00ff88;
+      --red: #ff3366;
+      --amber: #ffaa00;
+      --blue: #0088ff;
+      --font-display: 'JetBrains Mono', monospace;
+      --font-body: 'IBM Plex Mono', monospace;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
+    .logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 18px;
+      letter-spacing: 2px;
+      color: var(--green);
+    }
+    .logo span { color: var(--text-secondary); font-weight: 400; font-size: 11px; letter-spacing: 0; margin-left: 8px; }
+    .status-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
+    .status-dot.offline { background: var(--red); animation: none; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .header-right { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--text-secondary); }
+    .utc-clock { font-variant-numeric: tabular-nums; }
+    .logout-btn {
+      padding: 4px 10px; background: transparent; border: 1px solid var(--border);
+      color: var(--text-secondary); font-family: var(--font-body); font-size: 10px;
+      cursor: pointer; border-radius: 3px; letter-spacing: 0.5px; text-transform: uppercase;
+    }
+    .logout-btn:hover { border-color: var(--red); color: var(--red); }
+
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
+
+    .auth-section {
+      margin: 80px auto; padding: 24px; background: var(--surface);
+      border: 1px solid var(--border); border-radius: 4px; text-align: center; max-width: 480px;
+    }
+    .auth-section label { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); display: block; margin-bottom: 8px; }
+    .auth-row { display: flex; align-items: center; justify-content: center; gap: 8px; max-width: 400px; margin: 0 auto; }
+    .auth-input {
+      flex: 1; padding: 8px 12px; background: var(--bg); border: 1px solid var(--border);
+      color: var(--text); font-family: var(--font-body); font-size: 13px; border-radius: 3px; outline: none;
+    }
+    .auth-input:focus { border-color: var(--green); }
+    .auth-btn {
+      padding: 8px 16px; background: transparent; border: 1px solid var(--green);
+      color: var(--green); font-family: var(--font-display); font-weight: 600;
+      font-size: 11px; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      border-radius: 3px; transition: all 0.2s;
+    }
+    .auth-btn:hover { background: var(--green); color: var(--bg); }
+    .auth-error { color: var(--red); font-size: 12px; margin-top: 8px; display: none; }
+
+    .section-title {
+      font-family: var(--font-display); font-weight: 700; font-size: 12px;
+      letter-spacing: 2px; text-transform: uppercase; color: var(--text-secondary);
+      margin-bottom: 16px; padding-bottom: 8px; border-bottom: 1px solid var(--border);
+    }
+
+    .operator-panel { display: none; }
+    .operator-panel.visible { display: block; }
+
+    .metrics-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+    .metric-card { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 16px; }
+    .metric-card .metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); margin-bottom: 6px; }
+    .metric-card .metric-value { font-family: var(--font-display); font-weight: 700; font-size: 24px; }
+    .metric-card .metric-sub { font-size: 11px; color: var(--text-secondary); margin-top: 4px; }
+
+    .green { color: var(--green); }
+    .blue { color: var(--blue); }
+    .amber { color: var(--amber); }
+    .red { color: var(--red); }
+
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 16px; margin-bottom: 16px; }
+    .panel-title { font-family: var(--font-display); font-weight: 600; font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 12px; }
+    .chart-wrap { position: relative; height: 240px; }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 8px 10px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-secondary); border-bottom: 1px solid var(--border); font-weight: 500; }
+    td { padding: 8px 10px; font-size: 12px; border-bottom: 1px solid #15151f; font-variant-numeric: tabular-nums; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .feed-list { max-height: 360px; overflow-y: auto; }
+    .feed-item { display: flex; align-items: center; gap: 10px; padding: 8px 10px; border-bottom: 1px solid #15151f; font-size: 12px; }
+    .feed-item:hover { background: rgba(255,255,255,0.02); }
+    .feed-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+    .feed-endpoint { font-family: var(--font-display); font-weight: 500; color: var(--text); min-width: 140px; }
+    .feed-latency { color: var(--text-secondary); min-width: 70px; }
+    .feed-time { color: var(--text-secondary); margin-left: auto; font-size: 11px; }
+
+    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; color: var(--text-secondary); }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: #2e2e3e; }
+
+    @media (max-width: 900px) { .metrics-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .metrics-grid { grid-template-columns: 1fr; } .header { flex-wrap: wrap; gap: 8px; } }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <div class="logo">AGENTFORGE<span>OPERATOR</span></div>
+      <div class="status-badge">
+        <div class="status-dot" id="statusDot"></div>
+        <span id="statusText">OPERATIONAL</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <span class="utc-clock" id="utcClock"></span>
+      <button class="logout-btn" id="logoutBtn" style="display:none;" onclick="logout()">Logout</button>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Auth -->
+    <div class="auth-section" id="authSection">
+      <label>Operator Dashboard</label>
+      <div class="auth-row">
+        <input type="password" class="auth-input" id="tokenInput" placeholder="Enter admin token" onkeydown="if(event.key==='Enter')authenticate()">
+        <button class="auth-btn" onclick="authenticate()">Access</button>
+      </div>
+      <div class="auth-error" id="authError">Invalid token. Access denied.</div>
+    </div>
+
+    <!-- Operator Panel (hidden until auth) -->
+    <div class="operator-panel" id="operatorPanel">
+      <div class="section-title">Key Metrics</div>
+      <div class="metrics-grid" id="metricsGrid"></div>
+
+      <div class="panel">
+        <div class="panel-title">Revenue by Endpoint</div>
+        <div class="chart-wrap"><canvas id="revenueChart"></canvas></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Endpoint Performance</div>
+        <table>
+          <thead><tr><th>Endpoint</th><th>Calls</th><th>Success</th><th>Avg Latency</th><th>Revenue</th><th>Cost</th><th>Margin</th></tr></thead>
+          <tbody id="perfTable"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Recent Activity <span id="feedRefresh" style="font-size:10px;color:var(--text-secondary);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
+        <div class="feed-list" id="feedList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-title">Recent Feedback</div>
+        <div class="feed-list" id="feedbackList"></div>
+      </div>
+
+      <div class="footer" id="sysFooter"></div>
+    </div>
+  </div>
+
+  <script>
+    let adminToken = null;
+    let revenueChartInstance = null;
+    let refreshInterval = null;
+
+    function updateClock() {
+      const now = new Date();
+      document.getElementById('utcClock').textContent =
+        now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+    }
+    updateClock();
+    setInterval(updateClock, 1000);
+
+    async function checkHealth() {
+      try {
+        const res = await fetch('/health');
+        if (res.ok) {
+          document.getElementById('statusDot').className = 'status-dot';
+          document.getElementById('statusText').textContent = 'OPERATIONAL';
+        } else { throw new Error(); }
+      } catch {
+        document.getElementById('statusDot').className = 'status-dot offline';
+        document.getElementById('statusText').textContent = 'OFFLINE';
+      }
+    }
+    checkHealth();
+    setInterval(checkHealth, 30000);
+
+    async function authenticate() {
+      const token = document.getElementById('tokenInput').value.trim();
+      if (!token) return;
+
+      try {
+        const res = await fetch('/admin/stats', {
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+
+        if (res.status === 401 || res.status === 429) {
+          document.getElementById('authError').textContent =
+            res.status === 429 ? 'Too many failed attempts. Try again later.' : 'Invalid token. Access denied.';
+          document.getElementById('authError').style.display = 'block';
+          return;
+        }
+
+        adminToken = token;
+        document.getElementById('authError').style.display = 'none';
+        document.getElementById('authSection').style.display = 'none';
+        document.getElementById('operatorPanel').classList.add('visible');
+        document.getElementById('logoutBtn').style.display = 'inline-block';
+
+        const stats = await res.json();
+        await refreshDashboard(stats);
+
+        refreshInterval = setInterval(() => refreshDashboard(), 30000);
+      } catch (e) {
+        document.getElementById('authError').textContent = 'Connection error.';
+        document.getElementById('authError').style.display = 'block';
+      }
+    }
+
+    function logout() {
+      adminToken = null;
+      if (refreshInterval) clearInterval(refreshInterval);
+      document.getElementById('authSection').style.display = 'block';
+      document.getElementById('operatorPanel').classList.remove('visible');
+      document.getElementById('logoutBtn').style.display = 'none';
+      document.getElementById('tokenInput').value = '';
+    }
+
+    async function refreshDashboard(cachedStats) {
+      if (!adminToken) return;
+      try {
+        const [stats, dailyRes, feedRes, fbRes] = await Promise.all([
+          cachedStats ? Promise.resolve(cachedStats) :
+            fetch('/admin/stats', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
+          fetch('/admin/revenue/daily', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
+          fetch('/admin/recent-calls?limit=25', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
+          fetch('/admin/feedback?limit=20', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
+        ]);
+        renderMetrics(stats);
+        renderRevenueChart(stats, dailyRes);
+        renderPerfTable(stats);
+        renderFeed(feedRes);
+        renderFeedback(fbRes);
+        renderFooter(stats);
+      } catch (e) {
+        console.error('Dashboard refresh error:', e);
+      }
+    }
+
+    function renderMetrics(stats) {
+      const totalCalls = stats.overview.reduce((s, r) => s + r.total_calls, 0);
+      const totalRev = stats.revenue.reduce((s, r) => s + (r.total_revenue_usd || 0), 0);
+      const totalCost = stats.revenue.reduce((s, r) => s + (r.total_cost_usd || 0), 0);
+      const calls24h = stats.last24h.reduce((s, r) => s + r.calls_24h, 0);
+      const margin = totalRev > 0 ? ((totalRev - totalCost) / totalRev * 100) : 0;
+
+      document.getElementById('metricsGrid').innerHTML = `
+        <div class="metric-card"><div class="metric-label">Total Calls</div><div class="metric-value blue">${totalCalls.toLocaleString()}</div><div class="metric-sub">${calls24h} in last 24h</div></div>
+        <div class="metric-card"><div class="metric-label">Revenue</div><div class="metric-value green">$${totalRev.toFixed(4)}</div><div class="metric-sub">USDC on Base</div></div>
+        <div class="metric-card"><div class="metric-label">LLM Cost</div><div class="metric-value amber">$${totalCost.toFixed(4)}</div><div class="metric-sub">Anthropic API</div></div>
+        <div class="metric-card"><div class="metric-label">Gross Margin</div><div class="metric-value ${margin >= 50 ? 'green' : margin >= 20 ? 'amber' : 'red'}">${margin.toFixed(1)}%</div><div class="metric-sub">$${(totalRev - totalCost).toFixed(4)} profit</div></div>
+      `;
+    }
+
+    function renderRevenueChart(stats) {
+      const ctx = document.getElementById('revenueChart');
+      const chartColors = ['#00ff88', '#0088ff', '#ffaa00', '#ff3366', '#aa66ff', '#00cccc', '#ff88aa', '#88aaff'];
+      if (revenueChartInstance) revenueChartInstance.destroy();
+      const labels = stats.revenue.map(r => r.endpoint.replace('/v1/', ''));
+      const revData = stats.revenue.map(r => r.total_revenue_usd || 0);
+      const costData = stats.revenue.map(r => r.total_cost_usd || 0);
+      revenueChartInstance = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels,
+          datasets: [
+            { label: 'Revenue', data: revData, backgroundColor: chartColors.slice(0, labels.length), borderWidth: 0, borderRadius: 2 },
+            { label: 'Cost', data: costData, backgroundColor: 'rgba(255,255,255,0.08)', borderWidth: 0, borderRadius: 2 },
+          ],
+        },
+        options: {
+          responsive: true, maintainAspectRatio: false,
+          plugins: { legend: { labels: { color: '#6b6b80', font: { family: 'IBM Plex Mono', size: 10 } } } },
+          scales: {
+            y: { ticks: { color: '#6b6b80', font: { family: 'IBM Plex Mono', size: 10 }, callback: v => '$' + v.toFixed(3) }, grid: { color: '#1e1e2e' } },
+            x: { ticks: { color: '#6b6b80', font: { family: 'IBM Plex Mono', size: 10 } }, grid: { display: false } },
+          },
+        },
+      });
+    }
+
+    function renderPerfTable(stats) {
+      const revenueMap = {};
+      for (const r of stats.revenue) revenueMap[r.endpoint] = r;
+      const rows = stats.overview.map(r => {
+        const rev = revenueMap[r.endpoint] || {};
+        const successRate = r.total_calls > 0 ? (r.successful_calls / r.total_calls * 100) : 0;
+        const margin = (rev.total_revenue_usd || 0) > 0 ? (((rev.total_revenue_usd || 0) - (rev.total_cost_usd || 0)) / (rev.total_revenue_usd || 0) * 100) : 0;
+        const latency = r.avg_latency_ms || 0;
+        return `<tr>
+          <td style="font-family:var(--font-display);font-weight:500;">${esc(r.endpoint)}</td>
+          <td>${r.total_calls.toLocaleString()}</td>
+          <td class="${successRate >= 99 ? 'green' : successRate >= 95 ? 'amber' : 'red'}">${successRate.toFixed(1)}%</td>
+          <td class="${latency < 2000 ? 'green' : latency < 5000 ? 'amber' : 'red'}">${latency}ms</td>
+          <td class="green">$${(rev.total_revenue_usd || 0).toFixed(4)}</td>
+          <td class="amber">$${(rev.total_cost_usd || 0).toFixed(4)}</td>
+          <td class="${margin >= 50 ? 'green' : margin >= 20 ? 'amber' : 'red'}">${margin.toFixed(1)}%</td>
+        </tr>`;
+      });
+      document.getElementById('perfTable').innerHTML = rows.join('');
+    }
+
+    function renderFeed(feedRes) {
+      const calls = feedRes.calls || [];
+      if (calls.length === 0) {
+        document.getElementById('feedList').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);">No activity recorded yet</div>';
+        return;
+      }
+      document.getElementById('feedRefresh').textContent = '(auto-refresh 30s)';
+      document.getElementById('feedList').innerHTML = calls.map(c => {
+        const dotColor = c.success ? 'var(--green)' : 'var(--red)';
+        const latencyColor = c.latencyMs < 2000 ? 'var(--green)' : c.latencyMs < 5000 ? 'var(--amber)' : 'var(--red)';
+        return `<div class="feed-item">
+          <div class="feed-dot" style="background:${dotColor}"></div>
+          <span class="feed-endpoint">${esc(c.endpoint)}</span>
+          <span class="feed-latency" style="color:${latencyColor}">${c.latencyMs}ms</span>
+          ${c.errorType ? `<span class="red" style="font-size:11px;">${esc(c.errorType)}</span>` : ''}
+          <span class="feed-time">${timeAgo(c.timestamp)}</span>
+        </div>`;
+      }).join('');
+    }
+
+    function renderFeedback(fbRes) {
+      const items = fbRes.feedback || [];
+      if (items.length === 0) {
+        document.getElementById('feedbackList').innerHTML = '<div style="padding:24px;text-align:center;color:var(--text-secondary);">No feedback yet</div>';
+        return;
+      }
+      const typeColors = { feature_request: 'var(--blue)', bug_report: 'var(--red)', service_request: 'var(--amber)', general: 'var(--text-secondary)' };
+      document.getElementById('feedbackList').innerHTML = items.map(f => `<div class="feed-item">
+        <div class="feed-dot" style="background:${typeColors[f.type] || 'var(--text-secondary)'}"></div>
+        <span style="min-width:120px;font-size:10px;text-transform:uppercase;letter-spacing:0.5px;color:${typeColors[f.type] || 'var(--text-secondary)'}">${esc(f.type.replace('_', ' '))}</span>
+        <span style="flex:1;color:var(--text);">${esc(f.message.slice(0, 120))}${f.message.length > 120 ? '...' : ''}</span>
+        ${f.endpoint ? `<span style="font-size:11px;color:var(--text-secondary);">${esc(f.endpoint)}</span>` : ''}
+        <span class="feed-time">${timeAgo(f.timestamp)}</span>
+      </div>`).join('');
+    }
+
+    function renderFooter(stats) {
+      document.getElementById('sysFooter').innerHTML = `
+        <span>AgentForge v1.1.0 | Operator Dashboard</span>
+        <span>Last refresh: ${new Date(stats.generatedAt).toISOString().replace('T', ' ').slice(0, 19)} UTC</span>
+      `;
+    }
+
+    function esc(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+    function timeAgo(ts) {
+      if (!ts) return '';
+      const diff = Date.now() - new Date(ts).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 1) return 'just now';
+      if (mins < 60) return mins + 'm ago';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      return Math.floor(hrs / 24) + 'd ago';
+    }
+  </script>
+</body>
+</html>

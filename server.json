@@ -1,0 +1,17 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.acarchidi/agentforge",
+  "title": "AgentForge — DeFi Safety Layer",
+  "description": "Production-grade AI services for autonomous agents. 14 MCP tools for DeFi safety: token research, smart contract analysis, wallet safety scoring, approval scanning, gas oracle, transaction decoding, sentiment analysis, and more. Supports Ethereum, Base, Polygon, Arbitrum, Optimism, Avalanche, and Solana. Known Contract Label Registry with 186+ verified contracts. Pay-per-request via x402 protocol (USDC on Base) or use free via MCP.",
+  "version": "1.3.0",
+  "repository": {
+    "url": "https://github.com/acarchidi/agentforge",
+    "source": "github"
+  },
+  "remotes": [
+    {
+      "type": "streamable-http",
+      "url": "https://agentforge-taupe.vercel.app/mcp"
+    }
+  ]
+}

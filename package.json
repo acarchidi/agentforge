@@ -1,0 +1,54 @@
+{
+  "name": "agentforge",
+  "version": "1.0.0",
+  "description": "AI Agent-as-a-Service Factory — production-grade AI endpoints monetized via x402",
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "lint": "npx @biomejs/biome check ./src",
+    "generate:wallet": "tsx scripts/generateWallet.ts",
+    "check:balance": "tsx scripts/checkBalance.ts",
+    "verify:prompts": "tsx scripts/verifyPrompts.ts",
+    "verify:first-run": "tsx scripts/firstRun.ts",
+    "test:x402": "tsx scripts/testClient.ts",
+    "test:buyer-agent": "tsx scripts/buyerAgent.ts",
+    "seed:registry": "tsx scripts/seedRegistry.ts",
+    "precompute:docs": "tsx scripts/precomputeDocs.ts"
+  },
+  "keywords": [
+    "x402",
+    "ai",
+    "agent",
+    "api"
+  ],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@coinbase/x402": "^2.1.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "@x402/core": "^2.5.0",
+    "@x402/evm": "^2.5.0",
+    "@x402/express": "^2.5.0",
+    "better-sqlite3": "^12.6.2",
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0",
+    "express": "^5.2.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.4.5",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/express": "^5.0.6",
+    "@types/supertest": "^7.2.0",
+    "@x402/fetch": "^2.5.0",
+    "supertest": "^7.2.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "viem": "^2.21.0",
+    "vitest": "^4.0.18"
+  }
+}
