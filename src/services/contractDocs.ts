@@ -146,7 +146,13 @@ export async function contractDocsWithCost(
   // Check static precomputed cache first (loaded from JSON at cold start)
   const precomputed = getPrecomputedDocs().lookup(validated.address, validated.chain);
   if (precomputed) {
-    return { output: precomputed, estimatedCostUsd: 0 };
+    // Return a clean copy with estimatedCostUsd=0 — the stored value reflects the
+    // original precompute run cost, not the cost of this request (which is $0).
+    const output = {
+      ...precomputed,
+      metadata: { ...precomputed.metadata, estimatedCostUsd: 0, processingTimeMs: Date.now() - startTime },
+    };
+    return { output, estimatedCostUsd: 0 };
   }
 
   // Then check the in-memory runtime cache (populated by live requests)

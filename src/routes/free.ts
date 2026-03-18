@@ -21,6 +21,7 @@ import { config, networkId } from '../config.js';
 import { getDb } from '../analytics/db.js';
 import { getRegistry } from '../registry/lookup.js';
 import { getCacheStore } from '../cache/store.js';
+import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 import { generateAgentCard } from '../discovery/agentCard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -269,10 +270,20 @@ freeRouter.get('/registry/lookup', (req: Request, res: Response) => {
 freeRouter.get('/cache/stats', async (_req: Request, res: Response) => {
   const stats = await getCacheStore().stats();
   const docsKeys = await getCacheStore().keys('docs:');
+  const precomputed = getPrecomputedDocs();
+  const precomputedStats = precomputed.getStats();
   res.json({
     ...stats,
-    precomputedDocs: docsKeys.length,
+    runtimeCachedDocs: docsKeys.length,
     docsCacheKeys: docsKeys,
+    precomputedDocs: precomputedStats.totalCached,
+    precomputedStats: {
+      total: precomputedStats.totalCached,
+      proxyResolved: precomputedStats.proxyResolved,
+      direct: precomputedStats.direct,
+      generatedAt: precomputedStats.generatedAt,
+      version: precomputedStats.version,
+    },
   });
 });
 
