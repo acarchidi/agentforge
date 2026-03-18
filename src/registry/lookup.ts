@@ -111,6 +111,13 @@ export class ContractRegistryLookup {
   }
 
   /**
+   * Get all registry entries (for bulk operations like pre-compute).
+   */
+  getAllEntries(): ContractLabel[] {
+    return [...this.entries];
+  }
+
+  /**
    * Get registry statistics.
    */
   getStats(): RegistryStats {

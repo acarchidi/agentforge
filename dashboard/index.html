@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AGENTFORGE | AI Agent-as-a-Service</title>
+  <title>AGENTFORGE | DeFi Safety Layer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -11,13 +11,16 @@
     :root {
       --bg: #0a0a0f;
       --surface: #12121a;
+      --surface2: #0e0e18;
       --border: #1e1e2e;
+      --border-bright: #2e2e44;
       --text: #e0e0e8;
       --text-secondary: #6b6b80;
       --green: #00ff88;
       --red: #ff3366;
       --amber: #ffaa00;
       --blue: #0088ff;
+      --purple: #8855ff;
       --font-display: 'JetBrains Mono', monospace;
       --font-body: 'IBM Plex Mono', monospace;
     }
@@ -31,7 +34,7 @@
       line-height: 1.5;
     }
 
-    /* ─── A: Header Bar ─── */
+    /* ─── Header ─── */
     .header {
       display: flex;
       align-items: center;
@@ -43,11 +46,7 @@
       top: 0;
       z-index: 100;
     }
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
+    .header-left { display: flex; align-items: center; gap: 16px; }
     .logo {
       font-family: var(--font-display);
       font-weight: 800;
@@ -56,132 +55,204 @@
       color: var(--green);
     }
     .logo span { color: var(--text-secondary); font-weight: 400; font-size: 11px; letter-spacing: 0; margin-left: 8px; }
-    .status-badge {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: var(--green);
-      animation: pulse 2s infinite;
-    }
+    .status-badge { display: flex; align-items: center; gap: 6px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; }
     .status-dot.offline { background: var(--red); animation: none; }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.4; }
-    }
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      font-size: 11px;
-      color: var(--text-secondary);
-    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    .header-right { display: flex; align-items: center; gap: 16px; font-size: 11px; color: var(--text-secondary); }
     .network-badge {
       padding: 3px 8px;
-      border: 1px solid var(--border);
+      border: 1px solid var(--green);
       border-radius: 3px;
       font-size: 10px;
       letter-spacing: 0.5px;
       text-transform: uppercase;
+      color: var(--green);
     }
     .utc-clock { font-variant-numeric: tabular-nums; }
 
     /* ─── Layout ─── */
     .container { max-width: 1200px; margin: 0 auto; padding: 24px; }
 
-    /* ─── B: Public Landing ─── */
+    /* ─── Hero ─── */
     .hero {
-      text-align: center;
-      padding: 48px 0 32px;
+      padding: 40px 0 24px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow {
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 10px;
     }
     .hero h1 {
       font-family: var(--font-display);
       font-weight: 800;
-      font-size: 36px;
-      letter-spacing: 3px;
+      font-size: 32px;
+      letter-spacing: 2px;
       color: var(--text);
-      margin-bottom: 12px;
+      margin-bottom: 10px;
+      line-height: 1.2;
     }
+    .hero h1 em { color: var(--green); font-style: normal; }
     .hero p {
       color: var(--text-secondary);
-      font-size: 14px;
-      max-width: 560px;
-      margin: 0 auto;
+      font-size: 13px;
+      max-width: 640px;
+      line-height: 1.6;
     }
 
-    /* ─── C: Service Catalog ─── */
-    .section-title {
+    /* ─── Stats Bar ─── */
+    .stats-bar {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      margin-bottom: 32px;
+      overflow: hidden;
+    }
+    .stat-item {
+      background: var(--surface);
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .stat-value {
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 12px;
+      font-size: 22px;
+      color: var(--green);
+      display: block;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ─── Section headers ─── */
+    .section-header {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: 11px;
       letter-spacing: 2px;
       text-transform: uppercase;
       color: var(--text-secondary);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       padding-bottom: 8px;
       border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
+    .section-header .tag {
+      padding: 2px 6px;
+      border-radius: 2px;
+      font-size: 9px;
+      letter-spacing: 1px;
+    }
+    .tag-flagship { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
+    .tag-research { background: rgba(0,136,255,0.1); color: var(--blue); border: 1px solid rgba(0,136,255,0.25); }
+    .tag-utils { background: rgba(107,107,128,0.15); color: var(--text-secondary); border: 1px solid var(--border); }
+
+    /* ─── Catalog grid ─── */
+    .catalog-section { margin-bottom: 32px; }
     .catalog-grid {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-      margin-bottom: 40px;
+      gap: 10px;
     }
+    .catalog-grid.flagship {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
     .service-card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 4px;
       padding: 16px;
-      transition: border-color 0.2s;
+      transition: border-color 0.15s, background 0.15s;
     }
-    .service-card:hover { border-color: var(--green); }
+    .service-card:hover { border-color: var(--border-bright); background: var(--surface2); }
+    .service-card.featured {
+      border-color: rgba(0,255,136,0.25);
+      background: rgba(0,255,136,0.04);
+    }
+    .service-card.featured:hover { border-color: var(--green); }
+    .service-card .method {
+      font-size: 9px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-secondary);
+      margin-bottom: 3px;
+    }
     .service-card .endpoint {
       font-family: var(--font-display);
-      font-weight: 600;
-      font-size: 12px;
+      font-weight: 700;
+      font-size: 13px;
       color: var(--green);
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
+    .service-card.featured .endpoint { font-size: 15px; }
     .service-card .desc {
       font-size: 12px;
       color: var(--text-secondary);
-      margin-bottom: 10px;
+      margin-bottom: 12px;
       line-height: 1.4;
     }
     .service-card .price {
       font-family: var(--font-display);
       font-weight: 700;
-      font-size: 16px;
+      font-size: 18px;
       color: var(--amber);
     }
+    .service-card.featured .price { font-size: 22px; }
+    .price-unit { font-size: 11px; color: var(--text-secondary); font-weight: 400; margin-left: 2px; }
 
-    /* ─── D: Integration Guide ─── */
-    .integration-section { margin-bottom: 40px; }
-    .collapsible-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      cursor: pointer;
-      user-select: none;
+    /* ─── Why it matters ─── */
+    .why-section { margin-bottom: 32px; }
+    .why-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .why-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 16px;
     }
-    .collapsible-header .arrow {
+    .why-card .why-title {
+      font-family: var(--font-display);
+      font-weight: 600;
+      font-size: 12px;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+    .why-card .why-body { font-size: 12px; color: var(--text-secondary); line-height: 1.5; }
+    .why-card .why-body strong { color: var(--text); }
+
+    /* ─── Integration ─── */
+    .integration-section { margin-bottom: 32px; }
+    .integration-tabs { display: flex; gap: 4px; margin-bottom: 12px; }
+    .tab-btn {
+      padding: 6px 14px;
+      font-family: var(--font-body);
+      font-size: 11px;
+      letter-spacing: 0.5px;
+      border: 1px solid var(--border);
+      background: var(--surface);
       color: var(--text-secondary);
-      transition: transform 0.2s;
-      font-size: 14px;
+      cursor: pointer;
+      border-radius: 3px;
+      transition: all 0.15s;
     }
-    .collapsible-header.open .arrow { transform: rotate(90deg); }
-    .collapsible-body {
-      display: none;
-      margin-top: 16px;
-    }
-    .collapsible-body.open { display: block; }
+    .tab-btn.active { border-color: var(--green); color: var(--green); background: rgba(0,255,136,0.06); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
     .code-block {
       background: #0d0d14;
       border: 1px solid var(--border);
@@ -189,125 +260,383 @@
       padding: 16px;
       font-family: var(--font-body);
       font-size: 12px;
-      line-height: 1.6;
+      line-height: 1.65;
       color: var(--text);
       overflow-x: auto;
       white-space: pre;
     }
-    .code-block .comment { color: var(--text-secondary); }
-    .code-block .string { color: var(--green); }
-    .code-block .keyword { color: var(--blue); }
-    .code-block .number { color: var(--amber); }
+    .code-block .c { color: var(--text-secondary); }
+    .code-block .s { color: var(--green); }
+    .code-block .k { color: var(--blue); }
+    .code-block .n { color: var(--amber); }
+    .code-block .p { color: var(--purple); }
 
+    /* ─── Discovery ─── */
+    .discovery-section { margin-bottom: 32px; }
+    .discovery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .discovery-link {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 12px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+    .discovery-link:hover { border-color: var(--border-bright); }
+    .discovery-link .dl-path {
+      font-family: var(--font-display);
+      font-size: 12px;
+      color: var(--blue);
+    }
+    .discovery-link .dl-desc { font-size: 11px; color: var(--text-secondary); }
 
     /* ─── Footer ─── */
     .footer {
       margin-top: 32px;
-      padding-top: 16px;
+      padding: 16px 0;
       border-top: 1px solid var(--border);
       display: flex;
       justify-content: space-between;
+      align-items: center;
       font-size: 11px;
       color: var(--text-secondary);
+      flex-wrap: wrap;
+      gap: 8px;
     }
+    .footer-left { display: flex; gap: 20px; }
+    .footer-item { display: flex; gap: 4px; }
+    .footer-item .label { color: var(--text-secondary); }
+    .footer-item .value { color: var(--text); }
+    .footer-right { display: flex; gap: 12px; }
+    .footer-right a { color: var(--text-secondary); text-decoration: none; transition: color 0.15s; }
+    .footer-right a:hover { color: var(--text); }
 
     /* Scrollbar */
-    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-    ::-webkit-scrollbar-thumb:hover { background: #2e2e3e; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-bright); }
 
     /* Responsive */
-    @media (max-width: 900px) {
-      .catalog-grid { grid-template-columns: repeat(2, 1fr); }
-      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 960px) {
+      .stats-bar { grid-template-columns: repeat(3, 1fr); }
+      .catalog-grid, .catalog-grid.flagship { grid-template-columns: repeat(2, 1fr); }
+      .why-grid { grid-template-columns: 1fr; }
+      .discovery-grid { grid-template-columns: repeat(2, 1fr); }
     }
     @media (max-width: 600px) {
-      .catalog-grid { grid-template-columns: 1fr; }
-      .metrics-grid { grid-template-columns: 1fr; }
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .catalog-grid, .catalog-grid.flagship { grid-template-columns: 1fr; }
+      .discovery-grid { grid-template-columns: 1fr; }
       .header { flex-wrap: wrap; gap: 8px; }
+      .footer { flex-direction: column; align-items: flex-start; }
     }
   </style>
 </head>
 <body>
-  <!-- ═══ A: Header Bar ═══ -->
+
+  <!-- ═══ Header ═══ -->
   <header class="header">
     <div class="header-left">
-      <div class="logo">AGENTFORGE<span>v1.1.0</span></div>
+      <div class="logo">AGENTFORGE<span>v1.3.0</span></div>
       <div class="status-badge">
         <div class="status-dot" id="statusDot"></div>
-        <span id="statusText">OPERATIONAL</span>
+        <span id="statusText">CHECKING</span>
       </div>
     </div>
     <div class="header-right">
-      <span class="network-badge" id="networkBadge">Base Sepolia</span>
+      <span class="network-badge">Base Mainnet</span>
       <span class="utc-clock" id="utcClock"></span>
     </div>
   </header>
 
   <div class="container">
-    <!-- ═══ B: Hero ═══ -->
+
+    <!-- ═══ Hero ═══ -->
     <div class="hero">
-      <h1>AGENTFORGE</h1>
-      <p>Production-grade AI services for autonomous agents. Pay per request via x402 micropayments on Base.</p>
+      <div class="hero-eyebrow">&#x25cf; DeFi Safety Infrastructure</div>
+      <h1>The safety layer <em>AI agents</em> call<br>before executing on-chain.</h1>
+      <p>AgentForge intercepts risky DeFi actions before they execute — scanning wallets, simulating transactions, decoding contracts, and flagging dangerous approvals. Pay per request via x402 micropayments. No accounts, no subscriptions, no API keys.</p>
     </div>
 
-    <!-- ═══ C: Service Catalog ═══ -->
-    <div class="section-title">Service Catalog</div>
-    <div class="catalog-grid" id="catalogGrid"></div>
-
-    <!-- ═══ D: Integration Guide ═══ -->
-    <div class="integration-section">
-      <div class="section-title collapsible-header" onclick="toggleGuide(this)">
-        Quick Integration Guide
-        <span class="arrow">&#9654;</span>
+    <!-- ═══ Stats Bar ═══ -->
+    <div class="stats-bar">
+      <div class="stat-item">
+        <span class="stat-value">15</span>
+        <span class="stat-label">Paid Endpoints</span>
       </div>
-      <div class="collapsible-body" id="guideBody">
-        <div class="code-block"><span class="comment">// Install the x402 fetch wrapper</span>
-<span class="keyword">npm</span> install @x402/fetch
+      <div class="stat-item">
+        <span class="stat-value">14</span>
+        <span class="stat-label">MCP Tools</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">384</span>
+        <span class="stat-label">Labeled Contracts</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">319</span>
+        <span class="stat-label">Pre-cached Docs</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value">6</span>
+        <span class="stat-label">Chains</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-value" style="font-size:16px;padding-top:3px">USDC</span>
+        <span class="stat-label">Base Mainnet</span>
+      </div>
+    </div>
 
-<span class="comment">// Make a paid request — payment happens automatically</span>
-<span class="keyword">import</span> { wrapFetch } <span class="keyword">from</span> <span class="string">'@x402/fetch'</span>;
+    <!-- ═══ DeFi Safety (Flagship) ═══ -->
+    <div class="catalog-section">
+      <div class="section-header">
+        DeFi Safety
+        <span class="tag tag-flagship">FLAGSHIP</span>
+      </div>
+      <div class="catalog-grid flagship">
+        <div class="service-card featured">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/wallet-safety</div>
+          <div class="desc">Comprehensive wallet safety assessment before DeFi transactions — combines approval scanning, activity pattern detection, and target contract risk in one call.</div>
+          <div class="price">$0.035<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card featured">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/simulate-interaction</div>
+          <div class="desc">Predict contract call outcomes before execution — state changes, token flows, and failure conditions simulated against current chain state.</div>
+          <div class="price">$0.04<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/approval-scan</div>
+          <div class="desc">ERC-20 approval risk scanner with protocol labeling — identifies unlimited approvals, revoked contracts, and dangerous allowances.</div>
+          <div class="price">$0.015<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/contract-monitor</div>
+          <div class="desc">Contract activity monitoring with admin function detection — surfaces ownership transfers, upgrades, and privileged calls in recent history.</div>
+          <div class="price">$0.025<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/contract-docs</div>
+          <div class="desc">Smart contract documentation with automatic proxy resolution — 319 contracts pre-cached for instant response, rest generated live via Etherscan + LLM.</div>
+          <div class="price">$0.02<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/tx-decode</div>
+          <div class="desc">Transaction decoder for EVM chains — human-readable breakdown of calldata, function signatures, and parameter values for any transaction.</div>
+          <div class="price">$0.01<span class="price-unit">USDC</span></div>
+        </div>
+      </div>
+    </div>
 
-<span class="keyword">const</span> fetchX402 = wrapFetch(fetch, {
+    <!-- ═══ Research & Intelligence ═══ -->
+    <div class="catalog-section">
+      <div class="section-header">
+        Research &amp; Intelligence
+        <span class="tag tag-research">RESEARCH</span>
+      </div>
+      <div class="catalog-grid">
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/token-research</div>
+          <div class="desc">Multi-source token research — CoinGecko + DeFiLlama + Etherscan + Polymarket aggregated into one structured report.</div>
+          <div class="price">$0.04<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/token-compare</div>
+          <div class="desc">Comparative token analysis for up to 4 tokens — side-by-side metrics, risk differentials, and AI-generated recommendation.</div>
+          <div class="price">$0.08<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/token-intel</div>
+          <div class="desc">Quick token lookup with risk assessment — market data, holder concentration, contract flags, and risk score in under 10 seconds.</div>
+          <div class="price">$0.015<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/code-review</div>
+          <div class="desc">Smart contract security audit — vulnerability detection, gas optimization findings, and diff review mode for proposed changes.</div>
+          <div class="price">$0.05<span class="price-unit">USDC</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Utilities ═══ -->
+    <div class="catalog-section">
+      <div class="section-header">
+        Utilities
+        <span class="tag tag-utils">UTILS</span>
+      </div>
+      <div class="catalog-grid">
+        <div class="service-card">
+          <div class="method">GET</div>
+          <div class="endpoint">/v1/gas</div>
+          <div class="desc">Real-time gas prices across tiers (slow / standard / fast / instant) for all supported chains.</div>
+          <div class="price">$0.003<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">GET</div>
+          <div class="endpoint">/v1/ping</div>
+          <div class="desc">Payment flow verification — confirms your wallet, x402 client, and payment channel are all working correctly.</div>
+          <div class="price">$0.001<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/sentiment</div>
+          <div class="desc">Sentiment analysis for text content — useful for processing news, governance proposals, and social signals.</div>
+          <div class="price">$0.008<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/summarize</div>
+          <div class="desc">Text summarization — condense long documents, audit reports, or governance discussions into structured summaries.</div>
+          <div class="price">$0.01<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/translate</div>
+          <div class="desc">Translation for DeFi content — convert protocols docs, error messages, and on-chain text across languages.</div>
+          <div class="price">$0.015<span class="price-unit">USDC</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Why It Works ═══ -->
+    <div class="why-section">
+      <div class="section-header">What Makes It Useful</div>
+      <div class="why-grid">
+        <div class="why-card">
+          <div class="why-title">Contract Label Registry</div>
+          <div class="why-body"><strong>384 contracts across 151 protocols</strong> — every safety check is enriched with protocol names, risk levels, and category tags. Agents see "Uniswap V3: SwapRouter" instead of a raw address.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-title">Pre-computed Contract Docs</div>
+          <div class="why-body"><strong>319 contracts documented with automatic proxy resolution</strong> — agents get instant documentation (0ms, $0 LLM cost) for the top DeFi contracts. Cache covers Aave, Compound, Uniswap, Curve, Maker, and 150+ more.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-title">Composite Safety Checks</div>
+          <div class="why-body"><strong>wallet-safety combines approval scanning, activity pattern detection, and target contract assessment</strong> in one call — instead of requiring agents to chain 3 separate requests.</div>
+        </div>
+        <div class="why-card">
+          <div class="why-title">Zero Infrastructure</div>
+          <div class="why-body"><strong>No API keys, no accounts, no subscriptions</strong> — pay per request via x402 micropayments with USDC on Base Mainnet. Works with any wallet that holds USDC.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ Integration ═══ -->
+    <div class="integration-section">
+      <div class="section-header">Integration</div>
+      <div class="integration-tabs">
+        <button class="tab-btn active" onclick="switchTab(this, 'tab-x402')">x402 HTTP</button>
+        <button class="tab-btn" onclick="switchTab(this, 'tab-mcp')">MCP Config</button>
+      </div>
+
+      <div id="tab-x402" class="tab-panel active">
+        <div class="code-block"><span class="c">// npm install @x402/fetch</span>
+<span class="k">import</span> { wrapFetch } <span class="k">from</span> <span class="s">'@x402/fetch'</span>;
+
+<span class="k">const</span> fetch402 = wrapFetch(fetch, {
   privateKey: process.env.WALLET_PRIVATE_KEY,
-  network: <span class="string">'base-sepolia'</span>,
+  network: <span class="s">'base'</span>,   <span class="c">// Base Mainnet</span>
 });
 
-<span class="keyword">const</span> res = <span class="keyword">await</span> fetchX402(<span class="string">'https://your-agentforge-url/v1/token-intel'</span>, {
-  method: <span class="string">'POST'</span>,
-  headers: { <span class="string">'Content-Type'</span>: <span class="string">'application/json'</span> },
-  body: JSON.stringify({ address: <span class="string">'0xA0b86...'</span>, chain: <span class="string">'ethereum'</span> }),
+<span class="c">// Comprehensive wallet safety check before a DeFi transaction</span>
+<span class="k">const</span> res = <span class="k">await</span> fetch402(<span class="s">'https://agentforge-taupe.vercel.app/v1/wallet-safety'</span>, {
+  method: <span class="s">'POST'</span>,
+  headers: { <span class="s">'Content-Type'</span>: <span class="s">'application/json'</span> },
+  body: JSON.stringify({
+    walletAddress: <span class="s">'0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'</span>,
+    chain: <span class="s">'ethereum'</span>,
+    depth: <span class="s">'standard'</span>,
+    targetContract: <span class="s">'0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'</span>  <span class="c">// Uniswap V2 Router</span>
+  }),
 });
 
-<span class="keyword">const</span> result = <span class="keyword">await</span> res.json();
-<span class="comment">// { token: { name: "USD Coin", ... }, market: { ... }, risk: { score: 12 } }</span>
+<span class="k">const</span> safety = <span class="k">await</span> res.json();
+<span class="c">// { riskScore: 12, approvals: [...], contractLabel: 'Uniswap V2: Router', ... }</span></div>
+      </div>
 
-<span class="comment">// ─── Or use via MCP (Claude Desktop, Cursor, etc.) ───</span>
-<span class="comment">// Add to your MCP configuration:</span>
+      <div id="tab-mcp" class="tab-panel">
+        <div class="code-block"><span class="c">// Add to Claude Desktop, Cursor, or any MCP-compatible client:</span>
 {
-  <span class="string">"mcpServers"</span>: {
-    <span class="string">"agentforge"</span>: {
-      <span class="string">"url"</span>: <span class="string">"https://agentforge-taupe.vercel.app/mcp"</span>
+  <span class="s">"mcpServers"</span>: {
+    <span class="s">"agentforge"</span>: {
+      <span class="s">"url"</span>: <span class="s">"https://agentforge-taupe.vercel.app/mcp"</span>
     }
   }
-}</div>
+}
+
+<span class="c">// 14 tools available after connecting:</span>
+<span class="c">//   wallet_safety, simulate_interaction, approval_scan,</span>
+<span class="c">//   contract_monitor, contract_docs, tx_decode,</span>
+<span class="c">//   token_research, token_compare, token_intel,</span>
+<span class="c">//   code_review, gas_oracle, ping, sentiment, summarize</span></div>
       </div>
     </div>
 
-    <!-- Footer -->
-    <div class="footer">
-      <span>AgentForge v1.1.0 | x402 Protocol | USDC on Base</span>
-      <span>Powered by Claude Sonnet 4</span>
+    <!-- ═══ Discovery ═══ -->
+    <div class="discovery-section">
+      <div class="section-header">Discovery &amp; Docs</div>
+      <div class="discovery-grid">
+        <a class="discovery-link" href="/openapi.json">
+          <span class="dl-path">GET /openapi.json</span>
+          <span class="dl-desc">OpenAPI 3.1 specification</span>
+        </a>
+        <a class="discovery-link" href="/catalog">
+          <span class="dl-path">GET /catalog</span>
+          <span class="dl-desc">Machine-readable service catalog</span>
+        </a>
+        <a class="discovery-link" href="/about">
+          <span class="dl-path">GET /about</span>
+          <span class="dl-desc">Full documentation + registry stats</span>
+        </a>
+        <a class="discovery-link" href="/.well-known/x402">
+          <span class="dl-path">GET /.well-known/x402</span>
+          <span class="dl-desc">x402 payment discovery</span>
+        </a>
+        <a class="discovery-link" href="/.well-known/agent.json">
+          <span class="dl-path">GET /.well-known/agent.json</span>
+          <span class="dl-desc">A2A agent card</span>
+        </a>
+        <a class="discovery-link" href="/.well-known/ai-plugin.json">
+          <span class="dl-path">GET /.well-known/ai-plugin.json</span>
+          <span class="dl-desc">AI plugin manifest</span>
+        </a>
+      </div>
     </div>
-  </div>
+
+    <!-- ═══ Footer ═══ -->
+    <div class="footer">
+      <div class="footer-left">
+        <div class="footer-item"><span class="label">version</span>&nbsp;<span class="value">v1.3.0</span></div>
+        <div class="footer-item"><span class="label">network</span>&nbsp;<span class="value">Base Mainnet</span></div>
+        <div class="footer-item"><span class="label">protocol</span>&nbsp;<span class="value">x402</span></div>
+        <div class="footer-item"><span class="label">payment</span>&nbsp;<span class="value">USDC</span></div>
+        <div class="footer-item"><span class="label">llm</span>&nbsp;<span class="value">Claude Sonnet 4 + Haiku 4.5</span></div>
+      </div>
+      <div class="footer-right">
+        <a href="https://github.com/acarchidi/agentforge" target="_blank" rel="noopener">GitHub</a>
+        <a href="https://registry.mcphub.io/servers/io.github.acarchidi/agentforge" target="_blank" rel="noopener">MCP Registry</a>
+      </div>
+    </div>
+
+  </div><!-- /container -->
 
   <script>
     // ─── UTC Clock ───
     function updateClock() {
-      const now = new Date();
       document.getElementById('utcClock').textContent =
-        now.toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
+        new Date().toISOString().replace('T', ' ').slice(0, 19) + ' UTC';
     }
     updateClock();
     setInterval(updateClock, 1000);
@@ -328,39 +657,12 @@
     checkHealth();
     setInterval(checkHealth, 30000);
 
-    // ─── Load Catalog ───
-    async function loadCatalog() {
-      try {
-        const res = await fetch('/catalog');
-        const data = await res.json();
-
-        document.getElementById('networkBadge').textContent =
-          data.payment?.network?.replace('-', ' ').replace(/\b\w/g, c => c.toUpperCase()) || 'Base Sepolia';
-
-        const grid = document.getElementById('catalogGrid');
-        grid.innerHTML = data.services.map(s => `
-          <div class="service-card">
-            <div class="endpoint">${escapeHtml(s.endpoint)}</div>
-            <div class="desc">${escapeHtml(s.description)}</div>
-            <div class="price">${escapeHtml(s.price)}</div>
-          </div>
-        `).join('');
-      } catch (e) {
-        console.error('Failed to load catalog:', e);
-      }
-    }
-    loadCatalog();
-
-    // ─── Collapsible Guide ───
-    function toggleGuide(el) {
-      el.classList.toggle('open');
-      document.getElementById('guideBody').classList.toggle('open');
-    }
-
-    // ─── Helpers ───
-    function escapeHtml(str) {
-      if (!str) return '';
-      return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    // ─── Integration tabs ───
+    function switchTab(btn, panelId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      btn.classList.add('active');
+      document.getElementById(panelId).classList.add('active');
     }
   </script>
 </body>

@@ -19,6 +19,7 @@ import {
 } from './dataSources/etherscan.js';
 import { getRegistry } from '../registry/lookup.js';
 import { getCacheStore } from '../cache/store.js';
+import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 
 const SYSTEM_PROMPT = `You are a smart contract documentation expert. Given a contract ABI (and optionally source code), generate human-readable documentation for each function and event, plus interaction patterns and a security posture summary.
 
@@ -142,6 +143,13 @@ export async function contractDocsWithCost(
   const validated = contractDocsInput.parse(input);
   const startTime = Date.now();
 
+  // Check static precomputed cache first (loaded from JSON at cold start)
+  const precomputed = getPrecomputedDocs().lookup(validated.address, validated.chain);
+  if (precomputed) {
+    return { output: precomputed, estimatedCostUsd: 0 };
+  }
+
+  // Then check the in-memory runtime cache (populated by live requests)
   const cacheKey = `docs:${validated.chain}:${validated.address.toLowerCase()}`;
   const cache = getCacheStore();
   const cached = await cache.get<ContractDocsOutput>(cacheKey);

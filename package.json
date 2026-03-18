@@ -1,7 +1,7 @@
 {
   "name": "agentforge",
-  "version": "1.0.0",
-  "description": "AI Agent-as-a-Service Factory — production-grade AI endpoints monetized via x402",
+  "version": "1.3.0",
+  "description": "DeFi Safety Layer for AI agents — production-grade safety checks monetized via x402",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
