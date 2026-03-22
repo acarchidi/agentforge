@@ -13,6 +13,8 @@ import { analyzeSentimentWithCost } from '../services/sentiment.js';
 import { summarizeWithCost } from '../services/summarize.js';
 import { translateWithCost } from '../services/translate.js';
 import { walletSafetyWithCost } from '../services/walletSafety/index.js';
+import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
+import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
 import { logCall, logRevenue } from '../analytics/logger.js';
 
 export const paidRouter = Router();
@@ -32,6 +34,8 @@ const PRICES: Record<string, number> = {
   '/v1/summarize': 0.01,
   '/v1/translate': 0.015,
   '/v1/wallet-safety': 0.035,
+  '/v1/pool-snapshot': 0.005,
+  '/v1/token-risk-metrics': 0.008,
   '/v1/ping': 0.001,
 };
 
@@ -109,6 +113,7 @@ paidRouter.post('/v1/sentiment', createHandler('/v1/sentiment', analyzeSentiment
 paidRouter.post('/v1/summarize', createHandler('/v1/summarize', summarizeWithCost));
 paidRouter.post('/v1/translate', createHandler('/v1/translate', translateWithCost));
 paidRouter.post('/v1/wallet-safety', createHandler('/v1/wallet-safety', walletSafetyWithCost));
+paidRouter.post('/v1/token-risk-metrics', createHandler('/v1/token-risk-metrics', getTokenRiskMetricsWithCost));
 
 // Gas oracle — GET endpoint, chain from query param
 paidRouter.get('/v1/gas', async (req: Request, res: Response) => {
@@ -117,6 +122,33 @@ paidRouter.get('/v1/gas', async (req: Request, res: Response) => {
   try {
     const chain = (req.query.chain as string | undefined) ?? undefined;
     const result = await getGasPriceWithCost({ chain } as any);
+    const latencyMs = Date.now() - startTime;
+    logCall({ endpoint, success: true, latencyMs, outputSize: JSON.stringify(result.output).length });
+    logRevenue(endpoint, PRICES[endpoint] ?? 0, result.estimatedCostUsd);
+    res.json(result.output);
+  } catch (error) {
+    const latencyMs = Date.now() - startTime;
+    if (error instanceof z.ZodError) {
+      logCall({ endpoint, success: false, latencyMs, errorType: 'validation' });
+      res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Invalid input',
+        details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+      });
+      return;
+    }
+    logCall({ endpoint, success: false, latencyMs, errorType: 'internal' });
+    console.error(`${endpoint} error:`, error);
+    res.status(500).json({ error: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Unknown error' });
+  }
+});
+
+// Pool snapshot — GET endpoint, query params
+paidRouter.get('/v1/pool-snapshot', async (req: Request, res: Response) => {
+  const startTime = Date.now();
+  const endpoint = '/v1/pool-snapshot';
+  try {
+    const result = await getPoolSnapshotWithCost(req.query);
     const latencyMs = Date.now() - startTime;
     logCall({ endpoint, success: true, latencyMs, outputSize: JSON.stringify(result.output).length });
     logRevenue(endpoint, PRICES[endpoint] ?? 0, result.estimatedCostUsd);

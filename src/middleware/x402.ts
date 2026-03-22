@@ -501,6 +501,91 @@ export function createPaymentMiddleware() {
         }),
       },
     },
+    'POST /v1/token-risk-metrics': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_TOKEN_RISK_METRICS,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'Quantitative token risk metrics: holder concentration, liquidity depth, contract permissions (mint/burn/pause/blacklist), deployer history, and composite risk score (0-100). Pre-computed for top tokens, live computation for others.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          inputSchema: {
+            type: 'object',
+            required: ['address'],
+            properties: {
+              address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Token contract address' },
+              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'ethereum' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['address', 'chain', 'source', 'computedAt', 'holders', 'liquidity', 'permissions', 'deployer', 'overallRisk'],
+              properties: {
+                address: { type: 'string' },
+                chain: { type: 'string' },
+                source: { type: 'string', enum: ['cached', 'live'] },
+                computedAt: { type: 'string' },
+                holders: { type: 'object' },
+                liquidity: { type: 'object' },
+                permissions: { type: 'object' },
+                deployer: { type: 'object' },
+                overallRisk: { type: 'object', properties: { score: { type: 'number', minimum: 0, maximum: 100 }, level: { type: 'string' }, flags: { type: 'array', items: { type: 'string' } } } },
+                relatedServices: { type: 'array' },
+              },
+            },
+          },
+        }),
+      },
+    },
+    'GET /v1/pool-snapshot': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_POOL_SNAPSHOT,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'Cached snapshot of top 500 DeFi liquidity pools by TVL. Filter by protocol, chain, or token. Returns TVL, APY, volume, IL risk, and registry enrichment. Data refreshed every 15 minutes.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          output: {
+            schema: {
+              type: 'object',
+              required: ['timestamp', 'stalenessSec', 'totalPoolsIndexed', 'returned', 'pools'],
+              properties: {
+                timestamp: { type: 'string', format: 'date-time' },
+                stalenessSec: { type: 'number' },
+                totalPoolsIndexed: { type: 'number' },
+                returned: { type: 'number' },
+                warning: { type: 'string' },
+                pools: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      id: { type: 'string' },
+                      chain: { type: 'string' },
+                      protocol: { type: 'string' },
+                      symbol: { type: 'string' },
+                      tvlUsd: { type: 'number' },
+                      apy: { type: 'number' },
+                      ilRisk: { type: 'string', enum: ['none', 'low', 'medium', 'high'] },
+                      stablecoin: { type: 'boolean' },
+                    },
+                  },
+                },
+                relatedServices: { type: 'array' },
+              },
+            },
+          },
+        }),
+      },
+    },
     'GET /v1/gas': {
       accepts: [{
         scheme: 'exact' as const,

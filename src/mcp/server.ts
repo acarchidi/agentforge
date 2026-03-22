@@ -23,6 +23,8 @@ import { analyzeSentimentWithCost } from '../services/sentiment.js';
 import { summarizeWithCost } from '../services/summarize.js';
 import { translateWithCost } from '../services/translate.js';
 import { walletSafetyWithCost } from '../services/walletSafety/index.js';
+import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
+import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
 import { getRegistry } from '../registry/lookup.js';
 
 export const mcpServer = new McpServer({
@@ -255,6 +257,36 @@ mcpServer.tool(
       .describe('Analysis depth: quick (approvals only), standard (approvals + activity), deep (extended history + all patterns)'),
   },
   async (input) => callService(walletSafetyWithCost, input),
+);
+
+mcpServer.tool(
+  'pool_snapshot',
+  'Get a cached snapshot of top DeFi liquidity pools. Filter by protocol (e.g. "uniswap-v3"), chain (e.g. "ethereum"), or token symbol (e.g. "ETH"). Returns TVL, APY, 24h volume, IL risk, and registry enrichment. Data refreshed every 15 minutes.',
+  {
+    protocol: z.string().optional().describe('Filter by protocol name, e.g. "uniswap-v3", "curve", "aave"'),
+    chain: z.string().optional().describe('Filter by chain, e.g. "ethereum", "base", "arbitrum"'),
+    token: z.string().optional().describe('Filter pools containing this token symbol, e.g. "ETH", "USDC"'),
+    pool: z.string().optional().describe('Filter by specific pool address or DeFi Llama pool ID'),
+    sortBy: z.enum(['tvl', 'apy', 'volume']).optional().default('tvl').describe('Sort field'),
+    order: z.enum(['asc', 'desc']).optional().default('desc').describe('Sort order'),
+    limit: z.number().int().min(1).max(100).optional().default(20).describe('Max results (1-100)'),
+    offset: z.number().int().min(0).optional().default(0).describe('Pagination offset'),
+  },
+  async (input) => callService(getPoolSnapshotWithCost, input),
+);
+
+mcpServer.tool(
+  'token_risk_metrics',
+  'Quantitative risk metrics for any ERC-20 token: holder concentration (top 10 holder %), contract permissions (can mint/burn/pause/blacklist), liquidity depth vs market cap, deployer history, and weighted composite risk score (0-100). Pre-computed for top tokens, live-computed for others.',
+  {
+    address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Token contract address (0x-prefixed)'),
+    chain: z
+      .enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'])
+      .optional()
+      .default('ethereum')
+      .describe('Blockchain network'),
+  },
+  async (input) => callService(getTokenRiskMetricsWithCost, input),
 );
 
 mcpServer.tool(

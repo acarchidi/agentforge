@@ -206,6 +206,36 @@ const SKILLS: Skill[] = [
     method: 'GET',
   },
   {
+    id: 'pool-snapshot',
+    name: 'DeFi Pool Snapshot',
+    description: 'Cached snapshot of top 500 DeFi liquidity pools. Filter by protocol, chain, or token. Returns TVL, APY, volume, IL risk, and registry enrichment.',
+    tags: ['defi', 'liquidity', 'pools', 'tvl', 'apy', 'yield'],
+    examples: [
+      'Show top Uniswap V3 pools on Ethereum by TVL',
+      'Find pools containing ETH on Base',
+      'Get top stablecoin pools by APY on Arbitrum',
+      'What is the current TVL and APY for the USDC-ETH pool?',
+    ],
+    price: config.PRICE_POOL_SNAPSHOT,
+    endpoint: '/v1/pool-snapshot',
+    method: 'GET',
+  },
+  {
+    id: 'token-risk-metrics',
+    name: 'Token Risk Metrics',
+    description: 'Quantitative risk metrics for any ERC-20 token: holder concentration, contract permissions (mint/burn/pause/blacklist), liquidity depth, deployer history, and composite risk score (0-100).',
+    tags: ['crypto', 'token', 'risk', 'security', 'defi', 'holder-analysis', 'permissions'],
+    examples: [
+      'Get risk metrics for this token before buying',
+      'Can the owner of this token mint new tokens?',
+      'What percentage of supply do the top 10 holders control?',
+      'Is this token liquidity thin relative to its market cap?',
+    ],
+    price: config.PRICE_TOKEN_RISK_METRICS,
+    endpoint: '/v1/token-risk-metrics',
+    method: 'POST',
+  },
+  {
     id: 'ping',
     name: 'Payment Verification',
     description: 'Liveness check with x402 payment verification. Test that wallet and payment flow work correctly.',
@@ -230,7 +260,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     description:
       'Production-grade AI services for autonomous agents. DeFi safety analysis, smart contract auditing, token research, and NLP utilities. Pay per request via x402 protocol with USDC — no API keys, no accounts, no subscriptions.',
     url: baseUrl,
-    version: '1.3.0',
+    version: '1.4.0',
 
     provider: {
       organization: 'AgentForge',

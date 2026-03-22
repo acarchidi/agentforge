@@ -19,6 +19,8 @@ import { sentimentInput, sentimentOutput } from '../schemas/sentiment.js';
 import { summarizeInput, summarizeOutput } from '../schemas/summarize.js';
 import { translateInput, translateOutput } from '../schemas/translate.js';
 import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.js';
+import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
+import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
 import { feedbackInput } from '../schemas/feedback.js';
 import { config, networkId } from '../config.js';
 
@@ -50,7 +52,7 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.3.0',
+      version: '1.4.0',
       description:
         'Production-grade AI services for autonomous agents. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
@@ -415,6 +417,64 @@ export function generateOpenApiSpec(): object {
             '200': {
               description: 'Translation result',
               content: { 'application/json': { schema: schemaOf(translateOutput) } },
+            },
+            '400': {
+              description: 'Invalid input',
+              content: { 'application/json': { schema: errorSchema } },
+            },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/pool-snapshot': {
+        get: {
+          operationId: 'getPoolSnapshot',
+          summary: 'DeFi liquidity pool snapshot',
+          description:
+            `Cached snapshot of top 500 DeFi liquidity pools by TVL. Filter by protocol, chain, or token. Returns TVL, APY, volume, IL risk, and registry enrichment. Data refreshed every 15 minutes. Price: ${config.PRICE_POOL_SNAPSHOT} USDC via x402.`,
+          tags: ['DeFi'],
+          'x-x402-price': config.PRICE_POOL_SNAPSHOT,
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_POOL_SNAPSHOT, protocols: ['x402'] },
+          parameters: [
+            { name: 'pool', in: 'query', schema: { type: 'string' }, description: 'Pool address or DeFi Llama pool ID' },
+            { name: 'protocol', in: 'query', schema: { type: 'string' }, description: 'Protocol name, e.g. "uniswap-v3"' },
+            { name: 'chain', in: 'query', schema: { type: 'string' }, description: 'Chain, e.g. "ethereum"' },
+            { name: 'token', in: 'query', schema: { type: 'string' }, description: 'Token symbol, e.g. "ETH"' },
+            { name: 'sortBy', in: 'query', schema: { type: 'string', enum: ['tvl', 'apy', 'volume'], default: 'tvl' } },
+            { name: 'order', in: 'query', schema: { type: 'string', enum: ['asc', 'desc'], default: 'desc' } },
+            { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 20 } },
+            { name: 'offset', in: 'query', schema: { type: 'integer', minimum: 0, default: 0 } },
+          ],
+          responses: {
+            '200': {
+              description: 'Pool snapshot',
+              content: { 'application/json': { schema: schemaOf(poolSnapshotOutput) } },
+            },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/token-risk-metrics': {
+        post: {
+          operationId: 'getTokenRiskMetrics',
+          summary: 'Quantitative token risk metrics',
+          description:
+            `Compute or retrieve pre-computed risk metrics for any ERC-20 token: holder concentration (top 10 %), contract permissions (mint/burn/pause/blacklist), liquidity depth vs market cap, deployer history, and composite risk score (0-100). Price: ${config.PRICE_TOKEN_RISK_METRICS} USDC via x402.`,
+          tags: ['Security', 'Crypto Intelligence'],
+          'x-x402-price': config.PRICE_TOKEN_RISK_METRICS,
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_TOKEN_RISK_METRICS, protocols: ['x402'] },
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: schemaOf(tokenRiskMetricsInput) } },
+          },
+          responses: {
+            '200': {
+              description: 'Token risk metrics result',
+              content: { 'application/json': { schema: schemaOf(tokenRiskMetricsOutput) } },
             },
             '400': {
               description: 'Invalid input',

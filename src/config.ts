@@ -25,6 +25,8 @@ const envSchema = z.object({
   PRICE_SUMMARIZE: z.string().startsWith('$'),
   PRICE_TRANSLATE: z.string().startsWith('$'),
   PRICE_WALLET_SAFETY: z.string().startsWith('$'),
+  PRICE_POOL_SNAPSHOT: z.string().startsWith('$'),
+  PRICE_TOKEN_RISK_METRICS: z.string().startsWith('$'),
   ETHERSCAN_API_KEY: z.string().optional(),
   CDP_API_KEY_ID: z.string().optional(),
   CDP_API_KEY_SECRET: z.string().optional(),

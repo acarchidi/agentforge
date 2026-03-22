@@ -15,6 +15,8 @@ import { sentimentInput, sentimentOutput } from '../schemas/sentiment.js';
 import { summarizeInput, summarizeOutput } from '../schemas/summarize.js';
 import { translateInput, translateOutput } from '../schemas/translate.js';
 import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.js';
+import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
+import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
 import { feedbackInput } from '../schemas/feedback.js';
 import { generateOpenApiSpec } from '../utils/openapi.js';
 import { config, networkId } from '../config.js';
@@ -22,6 +24,8 @@ import { getDb } from '../analytics/db.js';
 import { getRegistry } from '../registry/lookup.js';
 import { getCacheStore } from '../cache/store.js';
 import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
+import { getPoolSnapshotsCache } from '../cache/poolSnapshotsCache.js';
+import { getTokenRiskMetricsCache } from '../cache/tokenRiskMetricsCache.js';
 import { generateAgentCard } from '../discovery/agentCard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -68,7 +72,7 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.3.0',
+    version: '1.4.0',
     description:
       'Production-grade AI services for autonomous agents. Pay per request via x402 protocol with USDC on Base. All service responses include relatedServices suggestions for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
@@ -199,6 +203,24 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         outputSchema: schemaOf(gasOracleOutput),
       },
       {
+        endpoint: 'GET /v1/pool-snapshot',
+        operationId: 'getPoolSnapshot',
+        description: 'Cached snapshot of top 500 DeFi liquidity pools. Filter by protocol, chain, or token. Returns TVL, APY, volume, IL risk, and registry enrichment.',
+        price: config.PRICE_POOL_SNAPSHOT,
+        tags: ['defi', 'liquidity', 'pools', 'tvl', 'apy', 'snapshot'],
+        inputSchema: schemaOf(poolSnapshotInput),
+        outputSchema: schemaOf(poolSnapshotOutput),
+      },
+      {
+        endpoint: 'POST /v1/token-risk-metrics',
+        operationId: 'getTokenRiskMetrics',
+        description: 'Quantitative token risk metrics: holder concentration, liquidity depth, contract permissions, deployer history, and composite risk score (0-100).',
+        price: config.PRICE_TOKEN_RISK_METRICS,
+        tags: ['crypto', 'token', 'risk', 'defi', 'security', 'holder-analysis'],
+        inputSchema: schemaOf(tokenRiskMetricsInput),
+        outputSchema: schemaOf(tokenRiskMetricsOutput),
+      },
+      {
         endpoint: 'GET /v1/ping',
         operationId: 'ping',
         description: 'Liveness check with x402 payment verification',
@@ -272,6 +294,8 @@ freeRouter.get('/cache/stats', async (_req: Request, res: Response) => {
   const docsKeys = await getCacheStore().keys('docs:');
   const precomputed = getPrecomputedDocs();
   const precomputedStats = precomputed.getStats();
+  const poolStats = getPoolSnapshotsCache().getStats();
+  const riskStats = getTokenRiskMetricsCache().getStats();
   res.json({
     ...stats,
     runtimeCachedDocs: docsKeys.length,
@@ -283,6 +307,15 @@ freeRouter.get('/cache/stats', async (_req: Request, res: Response) => {
       direct: precomputedStats.direct,
       generatedAt: precomputedStats.generatedAt,
       version: precomputedStats.version,
+    },
+    poolSnapshots: {
+      total: poolStats.totalPools,
+      generatedAt: poolStats.generatedAt,
+      stalenessSec: getPoolSnapshotsCache().getStalenessSeconds(),
+    },
+    tokenRiskMetrics: {
+      total: riskStats.totalCached,
+      generatedAt: riskStats.generatedAt,
     },
   });
 });
@@ -323,6 +356,8 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'POST /v1/summarize',
       'POST /v1/translate',
       'GET /v1/gas',
+      'GET /v1/pool-snapshot',
+      'POST /v1/token-risk-metrics',
       'GET /v1/ping',
     ],
   });
@@ -355,7 +390,7 @@ freeRouter.get('/.well-known/ai-plugin.json', (req: Request, res: Response) => {
     description_for_human:
       'AI-powered DeFi safety and analysis services: wallet safety checks, token intelligence, smart contract auditing, multi-source token research, contract documentation, contract monitoring, token comparison, sentiment analysis, text summarization, and translation. Pay per request with USDC.',
     description_for_model:
-      'AgentForge provides production-grade AI analysis services accessible via x402 micropayments in USDC on Base. Available tools: (1) token metadata enrichment with risk scoring, (2) smart contract security auditing with gas optimization, (3) multi-source token research, (4) smart contract documentation generation, (5) contract admin activity monitoring, (6) multi-token comparative analysis, (7) transaction decoding with plain-English explanations, (8) wallet approval risk scanning, (9) comprehensive wallet safety check with pattern detection and risk scoring, (10) gas price oracle with trend analysis, (11) sentiment analysis for crypto/finance/social media text, (12) text summarization with configurable length and format, (13) translation with tone control and auto-detection. All endpoints accept JSON requests and return structured JSON. Payment is handled automatically via x402 protocol — no API keys or accounts needed.',
+      'AgentForge provides production-grade AI analysis services accessible via x402 micropayments in USDC on Base. Available tools: (1) token metadata enrichment with risk scoring, (2) smart contract security auditing with gas optimization, (3) multi-source token research, (4) smart contract documentation generation, (5) contract admin activity monitoring, (6) multi-token comparative analysis, (7) transaction decoding with plain-English explanations, (8) wallet approval risk scanning, (9) comprehensive wallet safety check with pattern detection and risk scoring, (10) gas price oracle with trend analysis, (11) sentiment analysis for crypto/finance/social media text, (12) text summarization with configurable length and format, (13) translation with tone control and auto-detection, (14) DeFi liquidity pool snapshots with TVL/APY/IL-risk for top 500 pools, (15) quantitative token risk metrics with holder concentration, permissions, and composite score. All endpoints accept JSON requests and return structured JSON. Payment is handled automatically via x402 protocol — no API keys or accounts needed.',
     auth: { type: 'none' },
     api: { type: 'openapi', url: `${baseUrl}/openapi.json` },
     mcp: {
@@ -404,7 +439,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.3.0',
+    version: '1.4.0',
 
     what_is_this:
       'AgentForge is a collection of AI-powered API endpoints that agents can pay for and consume on a per-request basis using the x402 payment protocol with USDC stablecoin on the Base network. No API keys, no accounts, no subscriptions. Just HTTP requests with micropayments.',
@@ -527,6 +562,22 @@ freeRouter.get('/about', (req: Request, res: Response) => {
           'Translates text to any language with tone control (formal/casual/technical). Automatically detects source language. Preserves formatting, paragraph structure, and cultural nuances.',
         best_for: 'Multi-language support, documentation translation, cross-border communication, localization',
         input_example: { text: 'Hello, how are you?', targetLanguage: 'Spanish', tone: 'formal' },
+      },
+      pool_snapshot: {
+        endpoint: 'GET /v1/pool-snapshot',
+        price: config.PRICE_POOL_SNAPSHOT,
+        description:
+          'Returns a cached snapshot of the top 500 DeFi liquidity pools by TVL. Filter by protocol (e.g. "uniswap-v3"), chain (e.g. "ethereum", "base", "arbitrum"), or token symbol (e.g. "ETH", "USDC"). Returns pool TVL, APY (base + reward), 24h volume, impermanent loss risk estimate, stablecoin flag, and registry enrichment. Data refreshed every 15 minutes. No external API calls at request time.',
+        best_for: 'Pre-swap pool evaluation, yield farming research, liquidity pool screening, TVL monitoring',
+        input_example: { protocol: 'uniswap-v3', chain: 'ethereum', token: 'ETH', sortBy: 'tvl', limit: 10 },
+      },
+      token_risk_metrics: {
+        endpoint: 'POST /v1/token-risk-metrics',
+        price: config.PRICE_TOKEN_RISK_METRICS,
+        description:
+          'Returns quantitative risk metrics for any ERC-20 token: (1) holder concentration — top 10 holder %, labeled with registry (exchange wallets, DeFi protocols); (2) liquidity depth — total liquidity vs market cap ratio with pool breakdown; (3) contract permissions — detects mint/burn/pause/blacklist/upgrade capabilities from ABI; (4) deployer history — identifies known deployer with registry labeling; (5) composite weighted risk score (0-100) with human-readable flags. Pre-computed for top tokens, live-computed from Etherscan for others.',
+        best_for: 'Pre-trade token screening, risk-threshold filtering in bots, due diligence, detecting honeypots and rugs',
+        input_example: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chain: 'ethereum' },
       },
       gas_oracle: {
         endpoint: 'GET /v1/gas?chain=ethereum',
