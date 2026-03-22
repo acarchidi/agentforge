@@ -47,11 +47,11 @@ function getBaseUrl(req: Request): string {
 // ────────────────────────────────────────────────────────────────────
 
 freeRouter.get('/', (_req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../dashboard/index.html'));
+  res.sendFile(path.join(__dirname, '../../dashboard/index.html'), { dotfiles: 'allow' });
 });
 
 freeRouter.get('/dashboard', (_req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../dashboard/index.html'));
+  res.sendFile(path.join(__dirname, '../../dashboard/index.html'), { dotfiles: 'allow' });
 });
 
 // ────────────────────────────────────────────────────────────────────

@@ -94,7 +94,7 @@ function requireAdminToken(req: Request, res: Response, next: NextFunction) {
 // ────────────────────────────────────────────────────────────────────
 
 adminRouter.get('/admin', (_req: Request, res: Response) => {
-  res.sendFile(path.join(__dirname, '../../dashboard/admin.html'));
+  res.sendFile(path.join(__dirname, '../../dashboard/admin.html'), { dotfiles: 'allow' });
 });
 
 // ────────────────────────────────────────────────────────────────────

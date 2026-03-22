@@ -1,5 +1,2031 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-22T00:00:00.000Z",
-  "entries": []
+  "generatedAt": "2026-03-22T21:56:48.416Z",
+  "entries": [
+    {
+      "address": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xdef1c0ded9bec7f1a1670819833240f027b25eff",
+        "chain": "ethereum",
+        "symbol": "BatchFillNativeOrdersFeature",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:24.667Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x1111111254fb6c44bac0bed2854e76f90643097d",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x1111111254fb6c44bac0bed2854e76f90643097d",
+        "chain": "ethereum",
+        "symbol": "AggregationRouterV4",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:25.424Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "low"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x1111111254eeb25477b68fb85ed929f73a960582",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x1111111254eeb25477b68fb85ed929f73a960582",
+        "chain": "ethereum",
+        "symbol": "AggregationRouterV5",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:25.859Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "low"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xba12222222228d8ba445958a75a0704d566bf2c8",
+        "chain": "ethereum",
+        "symbol": "Vault",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:26.307Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": true,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xbebc44782c7db0a1a60cb6fe97d0b483032ff1c7",
+        "chain": "ethereum",
+        "symbol": "Vyper_contract",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:26.748Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "low"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xd51a44d3fae010294c616388b506acda1bfaae46",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xd51a44d3fae010294c616388b506acda1bfaae46",
+        "chain": "ethereum",
+        "symbol": "Vyper_contract",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:27.179Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x881d40237659c251811cec9c364ef91dc08d300c",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x881d40237659c251811cec9c364ef91dc08d300c",
+        "chain": "ethereum",
+        "symbol": "MetaSwap",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:27.609Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "low"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f",
+        "chain": "ethereum",
+        "symbol": "UniswapV2Router02",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:28.043Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45",
+        "chain": "ethereum",
+        "symbol": "SwapRouter02",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:28.479Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x3fc91a3afd70395cd496c647d5a6cc9d4b2b7fad",
+        "chain": "ethereum",
+        "symbol": "UniversalRouter",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:28.917Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+        "chain": "ethereum",
+        "symbol": "UniswapV2Router02",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:29.354Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xc36442b4a4522e871399cd717abdd847ab11fe88",
+        "chain": "ethereum",
+        "symbol": "NonfungiblePositionManager",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:29.791Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xe592427a0aece92de3edee1f18e0157c05861564",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xe592427a0aece92de3edee1f18e0157c05861564",
+        "chain": "ethereum",
+        "symbol": "SwapRouter",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:30.222Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9",
+        "chain": "ethereum",
+        "symbol": "LendingPool",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:30.658Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x87870bca3f3fd6335c3f4ce8392d69350b4fa4e2",
+        "chain": "ethereum",
+        "symbol": "PoolInstance",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:31.096Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x3d9819210a31b4961b30ef54be2aed79b9c9cd3b",
+        "chain": "ethereum",
+        "symbol": "Comptroller",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:31.533Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": true,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x1a0ad011913a150f69f6a19df447a0cfd9551054",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x1a0ad011913a150f69f6a19df447a0cfd9551054",
+        "chain": "ethereum",
+        "symbol": "OptimismPortal2",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:31.973Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x6b175474e89094c44da98b954eedeac495271d0f",
+        "chain": "ethereum",
+        "symbol": "Dai",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:32.419Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": true,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "critical"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 56,
+          "level": "high",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Owner can blacklist addresses",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48",
+        "chain": "ethereum",
+        "symbol": "FiatTokenV2_2",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:32.851Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": true,
+          "canBlacklist": true,
+          "canUpgrade": true,
+          "hasOwner": true,
+          "permissionRisk": "critical"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 56,
+          "level": "high",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Owner can blacklist addresses",
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xdac17f958d2ee523a2206206994597c13d831ec7",
+        "chain": "ethereum",
+        "symbol": "TetherToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:33.283Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": true,
+          "canBlacklist": true,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "critical"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 56,
+          "level": "high",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Owner can blacklist addresses",
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xbe9895146f7af43049ca1c1ae358b0541ea49704",
+        "chain": "ethereum",
+        "symbol": "StakedTokenV1",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:33.718Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": true,
+          "canBlacklist": true,
+          "canUpgrade": true,
+          "hasOwner": true,
+          "permissionRisk": "critical"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 56,
+          "level": "high",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Owner can blacklist addresses",
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xae78736cd615f374d3085123a210448e74fc6393",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xae78736cd615f374d3085123a210448e74fc6393",
+        "chain": "ethereum",
+        "symbol": "RocketTokenRETH",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:34.152Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xae7ab96520de3a18e5e111b5eaab095312d7fe84",
+        "chain": "ethereum",
+        "symbol": "Lido",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:34.587Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x7f39c581f595b53c5cb19bd0b3f8da6c935e2ca0",
+        "chain": "ethereum",
+        "symbol": "WstETH",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:35.021Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x8315177ab297ba92a06054ce80a67ed4dbd7ed3a",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x8315177ab297ba92a06054ce80a67ed4dbd7ed3a",
+        "chain": "ethereum",
+        "symbol": "Bridge",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:35.474Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x4dbd4fc535ac27206064b68ffcf827b0a60bab3f",
+        "chain": "ethereum",
+        "symbol": "Inbox",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:35.907Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": true,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x99c9fc46f92e8a1c0dec1b1747d010903e884be1",
+        "chain": "ethereum",
+        "symbol": "L1StandardBridge",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:36.337Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x3014ca10b91cb3d0ad85fef7a3cb95bcac9c0f79",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x3014ca10b91cb3d0ad85fef7a3cb95bcac9c0f79",
+        "chain": "ethereum",
+        "symbol": "ForeignBridgeNativeToErc",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:36.771Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": true,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x3ee18b2214aff97000d974cf647e7c347e8fa585",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x3ee18b2214aff97000d974cf647e7c347e8fa585",
+        "chain": "ethereum",
+        "symbol": "BridgeImplementation",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:37.206Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xa238dd80c259a72e81d7e4664a9801593f98d1c5",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xa238dd80c259a72e81d7e4664a9801593f98d1c5",
+        "chain": "ethereum",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:37.646Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x50c5725949a6f0c72e6c4a641f24049a917db0cb",
+        "chain": "ethereum",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:38.493Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x833589fcd6edb6e08f4c7c32d4f71b54bda02913",
+        "chain": "ethereum",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:39.337Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x2ae3f1ec7f1f5012cfeab0185bfc7aa3cf0dec22",
+        "chain": "ethereum",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:40.182Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x64aa3364f17a4d01c6f1751fd97c2bd3d7e7f1d5",
+        "chain": "ethereum",
+        "symbol": "OlympusERC20Token",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:41.028Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xba3335588d9403515223f109edc4eb7269a9ab5d",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xba3335588d9403515223f109edc4eb7269a9ab5d",
+        "chain": "ethereum",
+        "symbol": "GearToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:41.470Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "low"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x643c4e15d7d62ad0abec4a9bd4b001aa3ef52d66",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x643c4e15d7d62ad0abec4a9bd4b001aa3ef52d66",
+        "chain": "ethereum",
+        "symbol": "MapleToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:41.902Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x58d97b57bb95320f9a05dc918aef65434969c2b2",
+        "chain": "ethereum",
+        "symbol": "MorphoTokenEthereum",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:42.337Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": true,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xf0b2dd79324a66d2108c961d680f7616e1486bb0",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xf0b2dd79324a66d2108c961d680f7616e1486bb0",
+        "chain": "ethereum",
+        "symbol": "SiloToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:42.771Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": true,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "critical"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 56,
+          "level": "high",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xb58e61c3098d85632df34eecfb899a1ed80921cb",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xb58e61c3098d85632df34eecfb899a1ed80921cb",
+        "chain": "ethereum",
+        "symbol": "Frankencoin",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:43.209Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x3432b6a60d23ca0dfca7761b7ab56459d9c964d0",
+        "chain": "ethereum",
+        "symbol": "FRAXShares",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:43.644Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x6dea81c8171d0ba574754ef6f8b412f2ed88c54d",
+        "chain": "ethereum",
+        "symbol": "LQTYToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:44.078Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x9f0c013016e8656bc256f948cd4b79ab25c7b94d",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x9f0c013016e8656bc256f948cd4b79ab25c7b94d",
+        "chain": "ethereum",
+        "symbol": "L1Cook",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:44.511Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x0b010000b7624eb9b3dfbc279673c76e9d29d5f7",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x0b010000b7624eb9b3dfbc279673c76e9d29d5f7",
+        "chain": "ethereum",
+        "symbol": "ObolToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:44.947Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xd33526068d116ce69f19a9ee46f0bd304f21a51f",
+        "chain": "ethereum",
+        "symbol": "RocketTokenRPL",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:45.379Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x9d65ff81a3c488d585bbfb0bfe3c7707c7917f54",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x9d65ff81a3c488d585bbfb0bfe3c7707c7917f54",
+        "chain": "ethereum",
+        "symbol": "SSVToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:45.812Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x30d20208d987713f46dfd34ef128bb16c404d10f",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x30d20208d987713f46dfd34ef128bb16c404d10f",
+        "chain": "ethereum",
+        "symbol": "Stader",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:46.245Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": false,
+          "permissionRisk": "none"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 26,
+          "level": "medium",
+          "flags": [
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xa95c5ebb86e0de73b4fb8c47a45b792cfea28c23",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xa95c5ebb86e0de73b4fb8c47a45b792cfea28c23",
+        "chain": "ethereum",
+        "symbol": "StakingAllowance",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:46.679Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x48c3399719b582dd63eb5aadf12a40b4c3f52fa2",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x48c3399719b582dd63eb5aadf12a40b4c3f52fa2",
+        "chain": "ethereum",
+        "symbol": "StakeWiseToken",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:47.114Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": false,
+          "canBurn": false,
+          "canPause": true,
+          "canBlacklist": false,
+          "canUpgrade": true,
+          "hasOwner": false,
+          "permissionRisk": "medium"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 41,
+          "level": "medium",
+          "flags": [
+            "Owner can pause all transfers",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0x467719ad09025fcc6cf6f8311755809d45a5e5f3",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0x467719ad09025fcc6cf6f8311755809d45a5e5f3",
+        "chain": "ethereum",
+        "symbol": "BurnableMintableCappedERC20",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:47.551Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    },
+    {
+      "address": "0xfe67a4450907459c3e1fff623aa927dd4e28c67a",
+      "chain": "ethereum",
+      "metrics": {
+        "address": "0xfe67a4450907459c3e1fff623aa927dd4e28c67a",
+        "chain": "ethereum",
+        "symbol": "ConnextERC20",
+        "source": "cached",
+        "computedAt": "2026-03-22T21:56:47.981Z",
+        "stalenessSec": 0,
+        "holders": {
+          "top10HolderPct": 0,
+          "top10Addresses": [],
+          "concentrationRisk": "low"
+        },
+        "liquidity": {
+          "liquidityRisk": "high"
+        },
+        "permissions": {
+          "canMint": true,
+          "canBurn": true,
+          "canPause": false,
+          "canBlacklist": false,
+          "canUpgrade": false,
+          "hasOwner": true,
+          "permissionRisk": "high"
+        },
+        "deployer": {
+          "deployerRisk": "unknown"
+        },
+        "overallRisk": {
+          "score": 49,
+          "level": "medium",
+          "flags": [
+            "Owner can mint unlimited tokens",
+            "Thin liquidity — large trades may cause significant slippage"
+          ]
+        },
+        "relatedServices": []
+      }
+    }
+  ]
 }

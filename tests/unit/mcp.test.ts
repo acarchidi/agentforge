@@ -8,9 +8,9 @@ describe('MCP Server', () => {
     expect(info.version).toBe('1.0.0');
   });
 
-  it('registers all 14 tools', () => {
+  it('registers all 16 tools', () => {
     const tools = Object.keys((mcpServer as any)._registeredTools);
-    expect(tools).toHaveLength(14);
+    expect(tools).toHaveLength(16);
     expect(tools).toContain('token_intel');
     expect(tools).toContain('token_research');
     expect(tools).toContain('code_review');
