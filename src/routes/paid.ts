@@ -16,26 +16,33 @@ import { walletSafetyWithCost } from '../services/walletSafety/index.js';
 import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
 import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
 import { logCall, logRevenue } from '../analytics/logger.js';
+import { config } from '../config.js';
 
 export const paidRouter = Router();
 
-// Price per endpoint (parsed from config strings)
+function parsePrice(priceString: string): number {
+  return Number(priceString.replace(/^\$/, ''));
+}
+
+// Price per endpoint — derived from config.PRICE_* (the same source the x402
+// middleware charges from) so revenue logging can never drift from what a
+// caller was actually billed.
 const PRICES: Record<string, number> = {
-  '/v1/token-intel': 0.015,
-  '/v1/code-review': 0.05,
-  '/v1/token-research': 0.04,
-  '/v1/contract-docs': 0.02,
-  '/v1/contract-monitor': 0.025,
-  '/v1/token-compare': 0.08,
-  '/v1/tx-decode': 0.01,
-  '/v1/approval-scan': 0.015,
-  '/v1/gas': 0.003,
-  '/v1/sentiment': 0.008,
-  '/v1/summarize': 0.01,
-  '/v1/translate': 0.015,
-  '/v1/wallet-safety': 0.035,
-  '/v1/pool-snapshot': 0.005,
-  '/v1/token-risk-metrics': 0.008,
+  '/v1/token-intel': parsePrice(config.PRICE_TOKEN_INTEL),
+  '/v1/code-review': parsePrice(config.PRICE_CODE_REVIEW),
+  '/v1/token-research': parsePrice(config.PRICE_TOKEN_RESEARCH),
+  '/v1/contract-docs': parsePrice(config.PRICE_CONTRACT_DOCS),
+  '/v1/contract-monitor': parsePrice(config.PRICE_CONTRACT_MONITOR),
+  '/v1/token-compare': parsePrice(config.PRICE_TOKEN_COMPARE),
+  '/v1/tx-decode': parsePrice(config.PRICE_TX_DECODE),
+  '/v1/approval-scan': parsePrice(config.PRICE_APPROVAL_SCAN),
+  '/v1/gas': parsePrice(config.PRICE_GAS),
+  '/v1/sentiment': parsePrice(config.PRICE_SENTIMENT),
+  '/v1/summarize': parsePrice(config.PRICE_SUMMARIZE),
+  '/v1/translate': parsePrice(config.PRICE_TRANSLATE),
+  '/v1/wallet-safety': parsePrice(config.PRICE_WALLET_SAFETY),
+  '/v1/pool-snapshot': parsePrice(config.PRICE_POOL_SNAPSHOT),
+  '/v1/token-risk-metrics': parsePrice(config.PRICE_TOKEN_RISK_METRICS),
   '/v1/ping': 0.001,
 };
 

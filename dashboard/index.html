@@ -365,11 +365,11 @@
     <!-- ═══ Stats Bar ═══ -->
     <div class="stats-bar">
       <div class="stat-item">
-        <span class="stat-value">14</span>
+        <span class="stat-value">16</span>
         <span class="stat-label">Paid Endpoints</span>
       </div>
       <div class="stat-item">
-        <span class="stat-value">14</span>
+        <span class="stat-value">16</span>
         <span class="stat-label">MCP Tools</span>
       </div>
       <div class="stat-item">
@@ -401,7 +401,13 @@
           <div class="method">POST</div>
           <div class="endpoint">/v1/wallet-safety</div>
           <div class="desc">Comprehensive wallet safety assessment before DeFi transactions — combines approval scanning, activity pattern detection, and target contract risk in one call.</div>
-          <div class="price">$0.035<span class="price-unit">USDC</span></div>
+          <div class="price">$0.10<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card featured">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/token-risk-metrics</div>
+          <div class="desc">Quantitative token risk scoring — holder concentration, mint/freeze/pause permissions, liquidity depth, and deployer history rolled into a composite 0-100 score.</div>
+          <div class="price">$0.05<span class="price-unit">USDC</span></div>
         </div>
         <div class="service-card">
           <div class="method">POST</div>
@@ -425,7 +431,7 @@
           <div class="method">POST</div>
           <div class="endpoint">/v1/tx-decode</div>
           <div class="desc">Transaction decoder for EVM chains — human-readable breakdown of calldata, function signatures, and parameter values for any transaction.</div>
-          <div class="price">$0.01<span class="price-unit">USDC</span></div>
+          <div class="price">$0.05<span class="price-unit">USDC</span></div>
         </div>
       </div>
     </div>
@@ -476,6 +482,12 @@
           <div class="endpoint">/v1/gas</div>
           <div class="desc">Real-time gas prices across tiers (slow / standard / fast / instant) for all supported chains.</div>
           <div class="price">$0.003<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">GET</div>
+          <div class="endpoint">/v1/pool-snapshot</div>
+          <div class="desc">Cached snapshot of top 500 DeFi liquidity pools by TVL — filter by protocol, chain, or token, with APY, volume, and IL-risk. Refreshed every 15 minutes.</div>
+          <div class="price">$0.005<span class="price-unit">USDC</span></div>
         </div>
         <div class="service-card">
           <div class="method">GET</div>
