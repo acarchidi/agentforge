@@ -29,7 +29,6 @@ export async function callClaude(
     body: JSON.stringify({
       model: 'claude-sonnet-5',
       max_tokens: params.maxTokens,
-      temperature: params.temperature ?? 0.3,
       system: params.system,
       messages: [{ role: 'user', content: params.userMessage }],
     }),
