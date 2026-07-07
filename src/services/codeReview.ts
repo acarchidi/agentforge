@@ -167,7 +167,7 @@ ${validated.code}
     ...(parsed as Record<string, unknown>),
     gasOptimization: gasOptimization ?? undefined,
     metadata: {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-5',
       processingTimeMs: Date.now() - startTime,
       linesAnalyzed,
     },

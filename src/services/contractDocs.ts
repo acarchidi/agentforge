@@ -375,7 +375,7 @@ export async function contractDocsWithCost(
       overview: 'Documentation generated from contract ABI.',
     },
     metadata: {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-5',
       processingTimeMs: Date.now() - startTime,
       estimatedCostUsd: response.usage.estimatedCostUsd,
       abiSize: abiEntries.length,

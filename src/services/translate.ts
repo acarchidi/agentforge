@@ -69,7 +69,7 @@ export async function translateWithCost(
     ...(parsed as Record<string, unknown>),
     targetLanguage: validated.targetLanguage,
     metadata: {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-5',
       processingTimeMs: Date.now() - startTime,
     },
   });
