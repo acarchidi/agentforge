@@ -34,6 +34,19 @@ const isMainnet = config.X402_NETWORK === 'base';
 const networkName = isMainnet ? 'Base' : 'Base Sepolia';
 const facilitatorUrl = config.X402_FACILITATOR_URL;
 
+// Derived from config.PRICE_* (plus ping, which has no env var) so this can't
+// drift from actual charged amounts the way a hardcoded literal would.
+const ALL_PRICES = [
+  config.PRICE_TOKEN_INTEL, config.PRICE_CODE_REVIEW, config.PRICE_TOKEN_RESEARCH,
+  config.PRICE_CONTRACT_DOCS, config.PRICE_CONTRACT_MONITOR, config.PRICE_TOKEN_COMPARE,
+  config.PRICE_TX_DECODE, config.PRICE_APPROVAL_SCAN, config.PRICE_GAS,
+  config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
+  config.PRICE_WALLET_SAFETY, config.PRICE_POOL_SNAPSHOT, config.PRICE_TOKEN_RISK_METRICS,
+  '$0.001',
+].map((p) => Number(p.replace(/^\$/, '')));
+const minPayment = `$${Math.min(...ALL_PRICES)}`;
+const maxPayment = `$${Math.max(...ALL_PRICES)}`;
+
 export const freeRouter = Router();
 
 /** Build base URL respecting x-forwarded-proto from reverse proxies (Vercel, etc.) */
@@ -52,6 +65,11 @@ freeRouter.get('/', (_req: Request, res: Response) => {
 
 freeRouter.get('/dashboard', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../dashboard/index.html'), { dotfiles: 'allow' });
+});
+
+freeRouter.get('/SKILL.md', (_req: Request, res: Response) => {
+  res.type('text/markdown');
+  res.sendFile(path.join(__dirname, '../../dashboard/SKILL.md'), { dotfiles: 'allow' });
 });
 
 // ────────────────────────────────────────────────────────────────────
@@ -440,6 +458,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
     version: '1.4.0',
+    skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
       'AgentForge is a collection of AI-powered API endpoints that agents can pay for and consume on a per-request basis using the x402 payment protocol with USDC stablecoin on the Base network. No API keys, no accounts, no subscriptions. Just HTTP requests with micropayments.',
@@ -461,8 +480,8 @@ freeRouter.get('/about', (req: Request, res: Response) => {
       network: isMainnet ? 'Base (mainnet)' : 'Base Sepolia (testnet)',
       network_caip2: networkId,
       facilitator: facilitatorUrl,
-      minimum_payment: '$0.001',
-      maximum_payment: '$0.08',
+      minimum_payment: minPayment,
+      maximum_payment: maxPayment,
       settlement: 'Instant on-chain settlement via x402 facilitator. Gasless for the payer.',
     },
 
@@ -618,7 +637,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
     reliability: {
       uptime_target: '99.9%',
       average_latency: '1-3 seconds (varies by endpoint)',
-      backing_model: 'Claude Sonnet 4 (Anthropic)',
+      backing_model: 'Claude Sonnet 5 (Anthropic)',
       output_validation: 'All responses validated against Zod schemas before delivery. Malformed LLM outputs are retried automatically.',
     },
 

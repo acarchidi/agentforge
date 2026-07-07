@@ -49,7 +49,7 @@ export async function callClaude(
     throw new Error('Claude returned no text content');
   }
 
-  // Claude Sonnet 4 pricing: Input $3/1M tokens, Output $15/1M tokens
+  // Claude Sonnet 5 pricing: Input $3/1M tokens, Output $15/1M tokens
   const inputCost = (data.usage.input_tokens / 1_000_000) * 3;
   const outputCost = (data.usage.output_tokens / 1_000_000) * 15;
 
