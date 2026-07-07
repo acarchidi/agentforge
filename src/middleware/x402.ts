@@ -14,7 +14,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Token metadata enrichment with market data and AI-generated risk assessment for EVM and Solana tokens. Returns token info, price data, and risk scoring.',
+      description: 'Quick token lookup for agents screening a trade: price, market data, and an AI risk score for any EVM or Solana token in under 10 seconds. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -85,7 +85,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Smart contract security analysis with gas optimization and diff review mode. Supports Solidity, Rust, Move, TypeScript. Returns severity-ranked issues with line numbers, categories, and fix suggestions.',
+      description: 'Smart contract security audit for developers and auditors: finds vulnerabilities, gas optimizations, and best-practice violations in Solidity, Rust, Move, or TypeScript code, with a diff review mode for proposed changes. Category: inference.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -150,7 +150,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Multi-source token research: market data (CoinGecko), DeFi metrics (DeFiLlama), contract verification (Etherscan), prediction markets (Polymarket), price history, holder distribution, and AI risk assessment.',
+      description: 'Deep token due diligence for analysts and trading agents: aggregates CoinGecko market data, DeFiLlama DeFi metrics, Etherscan contract verification, and Polymarket prediction markets into one multi-source report. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -203,7 +203,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Generate human-readable documentation for any verified smart contract. Returns function descriptions, parameter explanations, risk flags, interaction patterns, security posture, and admin capability analysis.',
+      description: 'Human-readable documentation for agents that need to understand a smart contract before calling it: function descriptions, parameter explanations, risk flags, and a security posture summary. Category: inference.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -253,7 +253,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Monitor recent contract admin activity. Detects ownership transfers, implementation upgrades, pause state changes, and other admin operations. Returns risk assessment.',
+      description: 'Admin activity monitor for contract owners and security teams: flags ownership transfers, implementation upgrades, and pause-state changes in a contract\'s recent history. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -300,7 +300,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Compare a primary token against up to 3 competitors. Returns full research on the primary token, abbreviated metrics for comparisons, and AI-generated comparative analysis.',
+      description: 'Side-by-side token comparison for agents choosing between assets: full research on a primary token plus AI-generated analysis against up to 3 competitors. Category: inference.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -347,7 +347,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Decode any EVM transaction: function call, parameters, token transfers, and plain-English explanation.',
+      description: 'Transaction decoder for agents and users who need to know what a raw EVM transaction actually does: function call, parameters, and token transfers in plain English. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -394,7 +394,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Scan a wallet for risky ERC-20 token approvals. Identifies unlimited approvals, unverified spender contracts, and generates risk assessment.',
+      description: 'ERC-20 approval risk scanner for wallets: flags unlimited allowances and unverified spender contracts before an agent authorizes a new one. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -439,7 +439,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'AI-powered sentiment analysis for crypto, finance, and social media text. Returns sentiment score (-1 to 1), confidence, label (very_bearish to very_bullish), reasoning, and per-entity sentiment.',
+      description: 'Sentiment analysis for agents processing crypto/finance text: scores news, governance proposals, and social posts from very bearish to very bullish with per-entity breakdown. Category: inference.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -488,7 +488,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'AI-powered text summarization with configurable length (brief/standard/detailed), format (prose/bullet_points/structured), and optional topic focus. Returns summary, key points, and compression ratio.',
+      description: 'Text summarization for agents digesting long documents: condenses audit reports and governance discussions into structured summaries with configurable length and format. Category: inference.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -538,7 +538,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'AI-powered text translation with tone control (formal/casual/technical). Automatically detects source language. Preserves formatting and cultural nuances.',
+      description: 'Translation for agents handling multilingual DeFi content: converts protocol docs and error messages across languages with tone control and auto source-language detection. Category: inference.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -586,7 +586,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Comprehensive wallet safety check combining approval scanning, recent transaction analysis, and contract interaction assessment. The endpoint an agent calls before executing any DeFi transaction.',
+      description: 'Pre-transaction wallet safety check for agents about to execute a DeFi action: combines approval scanning, activity pattern detection, and target contract risk into one composite score. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -644,7 +644,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Quantitative token risk metrics: holder concentration, liquidity depth, contract permissions (mint/burn/pause/blacklist), deployer history, and composite risk score (0-100). Pre-computed for top tokens, live computation for others.',
+      description: 'Rug-check risk score for agents evaluating a token before buying: mint/freeze authority, holder concentration, and liquidity depth rolled into a composite 0-100 score. Pre-computed for top tokens, live for others. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -701,7 +701,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Cached snapshot of top 500 DeFi liquidity pools by TVL. Filter by protocol, chain, or token. Returns TVL, APY, volume, IL risk, and registry enrichment. Data refreshed every 15 minutes.',
+      description: 'Liquidity pool data for agents scanning yield opportunities: TVL, APY, volume, and IL risk for the top 500 DeFi pools, filterable by protocol/chain/token, refreshed every 15 minutes. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -753,7 +753,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Current gas prices (slow/standard/fast) for any supported EVM chain with trend analysis.',
+      description: 'Real-time gas price oracle for agents timing a transaction: slow/standard/fast tiers with trend analysis for any supported EVM chain. Category: infra.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -789,7 +789,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Minimal paid endpoint to verify x402 payment flow. Returns server status and timestamp.',
+      description: 'Payment flow verification for agents integrating x402: confirms your wallet and payment channel work before you spend on a real endpoint. Category: infra.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
