@@ -84,7 +84,7 @@ export async function summarizeWithCost(
     compressionRatio:
       summaryWordCount > 0 ? originalWordCount / summaryWordCount : 0,
     metadata: {
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-sonnet-5',
       processingTimeMs: Date.now() - startTime,
     },
   });

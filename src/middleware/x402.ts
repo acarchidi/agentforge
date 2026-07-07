@@ -19,6 +19,10 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2',
+            chain: 'ethereum',
+          },
           inputSchema: {
             type: 'object',
             required: ['address'],
@@ -64,6 +68,12 @@ export function createPaymentMiddleware() {
                 },
               },
             },
+            example: {
+              token: { name: 'Wrapped Ether', symbol: 'WETH', address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum', decimals: 18 },
+              market: { priceUsd: 3500.12, marketCap: 12000000000, volume24h: 500000000, priceChange24h: 2.3 },
+              risk: { score: 5, flags: [], assessment: 'Low risk — canonical wrapped ETH contract.' },
+              metadata: { sources: ['coingecko'], processingTimeMs: 120 },
+            },
           },
         }),
       },
@@ -80,6 +90,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            code: 'pragma solidity ^0.8.0;\ncontract Example {\n  function withdraw() public {\n    payable(msg.sender).transfer(address(this).balance);\n  }\n}',
+            language: 'solidity',
+            focus: 'security',
+          },
           inputSchema: {
             type: 'object',
             required: ['code'],
@@ -118,6 +133,12 @@ export function createPaymentMiddleware() {
                 },
               },
             },
+            example: {
+              overallRisk: 'high',
+              issues: [{ severity: 'high', category: 'access-control', description: 'withdraw() has no access control modifier', line: 3, suggestion: 'Add an onlyOwner modifier or equivalent check' }],
+              summary: '1 high severity issue found: missing access control on withdraw().',
+              metadata: { model: 'claude-sonnet-5', processingTimeMs: 850, linesAnalyzed: 5 },
+            },
           },
         }),
       },
@@ -134,6 +155,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            query: 'AAVE',
+            chain: 'ethereum',
+            include: ['market_data', 'risk_assessment'],
+          },
           inputSchema: {
             type: 'object',
             required: ['query'],
@@ -160,6 +186,12 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              token: { name: 'Aave', symbol: 'AAVE', chain: 'ethereum' },
+              marketData: { priceUsd: 95.4, marketCap: 1400000000 },
+              riskAssessment: { score: 20, level: 'low' },
+              metadata: { sources: ['coingecko', 'defillama'], processingTimeMs: 900 },
+            },
           },
         }),
       },
@@ -176,6 +208,10 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+            chain: 'ethereum',
+          },
           inputSchema: {
             type: 'object',
             required: ['address'],
@@ -199,6 +235,13 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              contract: { address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', name: 'AaveToken', isVerified: true },
+              functions: [{ name: 'transfer', description: 'Transfers tokens to a recipient', riskLevel: 'low' }],
+              events: [{ name: 'Transfer' }],
+              summary: { totalFunctions: 12, riskLevel: 'low', overview: 'Standard ERC-20 governance token contract.' },
+              metadata: { model: 'claude-sonnet-5', processingTimeMs: 650, abiSize: 40 },
+            },
           },
         }),
       },
@@ -215,6 +258,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+            chain: 'ethereum',
+            lookbackHours: 24,
+          },
           inputSchema: {
             type: 'object',
             required: ['address'],
@@ -235,6 +283,12 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              contract: { address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', chain: 'ethereum' },
+              recentActivity: { adminActionsCount: 0, lookbackHours: 24 },
+              riskAlert: { level: 'none', reasons: [] },
+              metadata: { processingTimeMs: 420 },
+            },
           },
         }),
       },
@@ -251,6 +305,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            primary: 'AAVE',
+            compare: ['COMP', 'UNI'],
+            chain: 'ethereum',
+          },
           inputSchema: {
             type: 'object',
             required: ['primary', 'compare'],
@@ -271,6 +330,12 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              primary: { symbol: 'AAVE', priceUsd: 95.4 },
+              comparisons: [{ symbol: 'COMP', priceUsd: 45.1 }, { symbol: 'UNI', priceUsd: 6.2 }],
+              analysis: 'AAVE has the largest market cap and TVL among the three compared protocols.',
+              metadata: { processingTimeMs: 1500 },
+            },
           },
         }),
       },
@@ -287,6 +352,10 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            txHash: '0xb7219192723c6a9ee77cd56ffdd28805d6177f76ffe0d34260bb5dc76abf19cf',
+            chain: 'ethereum',
+          },
           inputSchema: {
             type: 'object',
             required: ['txHash'],
@@ -307,6 +376,13 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              transaction: { hash: '0xb7219192723c6a9ee77cd56ffdd28805d6177f76ffe0d34260bb5dc76abf19cf', from: '0x0000000000000000000000000000000000dEaD', to: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', value: '0' },
+              decodedCall: { name: 'transfer', signature: 'transfer(address,uint256)' },
+              explanation: 'Standard ERC-20 transfer call.',
+              tokenTransfers: [{ token: 'WETH', from: '0x0000000000000000000000000000000000dEaD', to: '0x...', amount: '1.5' }],
+              metadata: { processingTimeMs: 300 },
+            },
           },
         }),
       },
@@ -323,6 +399,10 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+            chain: 'ethereum',
+          },
           inputSchema: {
             type: 'object',
             required: ['address'],
@@ -342,6 +422,12 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              wallet: { address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9', chain: 'ethereum' },
+              approvals: [{ token: 'USDC', spender: '0x...', amount: 'unlimited', riskLevel: 'medium' }],
+              summary: { totalApprovals: 1, riskyApprovals: 0 },
+              metadata: { processingTimeMs: 500 },
+            },
           },
         }),
       },
@@ -358,6 +444,10 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            text: 'Bitcoin just broke its all-time high, huge bullish momentum building.',
+            context: 'crypto',
+          },
           inputSchema: {
             type: 'object',
             required: ['text'],
@@ -379,6 +469,14 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object', properties: { model: { type: 'string' }, processingTimeMs: { type: 'number' } } },
               },
             },
+            example: {
+              sentiment: 0.8,
+              confidence: 0.9,
+              label: 'very_bullish',
+              reasoning: 'Text expresses strong positive price momentum with no hedging language.',
+              entities: [{ name: 'Bitcoin', sentiment: 0.8 }],
+              metadata: { model: 'claude-sonnet-5', processingTimeMs: 250 },
+            },
           },
         }),
       },
@@ -395,6 +493,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            text: 'DeFi lending protocols allow users to lend and borrow crypto assets without intermediaries. Borrowers must over-collateralize their loans, and positions that fall below a required collateral ratio are liquidated to protect lenders.',
+            maxLength: 'brief',
+            format: 'bullet_points',
+          },
           inputSchema: {
             type: 'object',
             required: ['text'],
@@ -417,6 +520,13 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object', properties: { model: { type: 'string' }, processingTimeMs: { type: 'number' } } },
               },
             },
+            example: {
+              summary: 'DeFi lending protocols use over-collateralization and liquidations to manage risk without intermediaries.',
+              keyPoints: ['No intermediaries', 'Over-collateralized loans', 'Liquidation below required ratio'],
+              wordCount: 14,
+              compressionRatio: 2.9,
+              metadata: { model: 'claude-sonnet-5', processingTimeMs: 400 },
+            },
           },
         }),
       },
@@ -433,6 +543,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            text: 'Hello, how are you?',
+            targetLanguage: 'Spanish',
+            tone: 'casual',
+          },
           inputSchema: {
             type: 'object',
             required: ['text', 'targetLanguage'],
@@ -454,6 +569,12 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object', properties: { model: { type: 'string' }, processingTimeMs: { type: 'number' } } },
               },
             },
+            example: {
+              translatedText: 'Hola, ¿cómo estás?',
+              detectedSourceLanguage: 'English',
+              targetLanguage: 'Spanish',
+              metadata: { model: 'claude-sonnet-5', processingTimeMs: 180 },
+            },
           },
         }),
       },
@@ -470,6 +591,11 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            walletAddress: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+            chain: 'ethereum',
+            depth: 'standard',
+          },
           inputSchema: {
             type: 'object',
             required: ['walletAddress'],
@@ -497,6 +623,16 @@ export function createPaymentMiddleware() {
                 relatedServices: { type: 'array' },
               },
             },
+            example: {
+              walletAddress: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+              chain: 'ethereum',
+              overallRisk: 'low',
+              riskScore: 15,
+              approvals: { riskyCount: 0, totalCount: 3 },
+              summary: 'No high-risk approvals or suspicious recent activity detected.',
+              actionItems: [],
+              relatedServices: [],
+            },
           },
         }),
       },
@@ -513,6 +649,10 @@ export function createPaymentMiddleware() {
       extensions: {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
+          input: {
+            address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+            chain: 'ethereum',
+          },
           inputSchema: {
             type: 'object',
             required: ['address'],
@@ -537,6 +677,18 @@ export function createPaymentMiddleware() {
                 overallRisk: { type: 'object', properties: { score: { type: 'number', minimum: 0, maximum: 100 }, level: { type: 'string' }, flags: { type: 'array', items: { type: 'string' } } } },
                 relatedServices: { type: 'array' },
               },
+            },
+            example: {
+              address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+              chain: 'ethereum',
+              source: 'cached',
+              computedAt: '2026-07-07T00:00:00.000Z',
+              holders: { top10HolderPct: 12.5 },
+              liquidity: { totalUsd: 5000000 },
+              permissions: { mintable: false, freezable: false },
+              deployer: { verified: true },
+              overallRisk: { score: 10, level: 'low', flags: [] },
+              relatedServices: [],
             },
           },
         }),
@@ -582,6 +734,14 @@ export function createPaymentMiddleware() {
                 relatedServices: { type: 'array' },
               },
             },
+            example: {
+              timestamp: '2026-07-07T00:00:00.000Z',
+              stalenessSec: 120,
+              totalPoolsIndexed: 500,
+              returned: 1,
+              pools: [{ id: 'abc123', chain: 'ethereum', protocol: 'lido', symbol: 'stETH/ETH', tvlUsd: 500000000, apy: 3.2, ilRisk: 'low', stablecoin: false }],
+              relatedServices: [],
+            },
           },
         }),
       },
@@ -610,6 +770,14 @@ export function createPaymentMiddleware() {
                 metadata: { type: 'object' },
               },
             },
+            example: {
+              chain: 'ethereum',
+              currentPrices: { slow: 20, standard: 25, fast: 35 },
+              baseFee: 18.2,
+              trend: 'stable',
+              timestamp: '2026-07-07T00:00:00.000Z',
+              metadata: {},
+            },
           },
         }),
       },
@@ -634,11 +802,31 @@ export function createPaymentMiddleware() {
                 message: { type: 'string' },
               },
             },
+            example: {
+              status: 'ok',
+              timestamp: '2026-07-07T00:00:00.000Z',
+              message: 'pong',
+            },
           },
         }),
       },
     },
   };
+
+  // Every configured path also gets a wildcard-verb fallback pointing at the
+  // same config, so a mismatched HTTP method (e.g. GET on a POST-only paid
+  // route) still returns 402 instead of falling through to Express's 404.
+  // The specific 'METHOD /path' entry above is matched first (object key
+  // insertion order), so this only ever applies to the "wrong" method; no
+  // real handler exists for it, so next() 404s and settlement is skipped —
+  // no payment is ever taken for a request that has nothing to serve.
+  for (const [key, routeCfg] of Object.entries(routeConfig)) {
+    const path = key.split(/\s+/).pop();
+    const wildcardKey = `* ${path}`;
+    if (!(wildcardKey in routeConfig)) {
+      (routeConfig as Record<string, typeof routeCfg>)[wildcardKey] = routeCfg;
+    }
+  }
 
   const evmScheme = new ExactEvmScheme();
 

@@ -138,7 +138,7 @@ async function main() {
 
   await step('Tx Decode', 'POST /v1/tx-decode', '$0.01', () =>
     paidPost<{ transaction: unknown; explanation: string }>(`${BASE_URL}/v1/tx-decode`, {
-      txHash: '0x5c504ed432cb51138bcf09aa5e8a410dd4a1e204ef84bfed1be16dfba1b22060',
+      txHash: '0xb7219192723c6a9ee77cd56ffdd28805d6177f76ffe0d34260bb5dc76abf19cf',
       chain: 'ethereum',
     }),
   );
