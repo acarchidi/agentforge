@@ -249,6 +249,48 @@ const SKILLS: Skill[] = [
     endpoint: '/v1/ping',
     method: 'GET',
   },
+  {
+    id: 'solana-tx-explain',
+    name: 'Solana Transaction Explain',
+    description: 'Decode a Solana transaction into plain English: labeled programs, token/SOL movements, and risk flags.',
+    tags: ['solana', 'transaction', 'decode transaction', 'explain'],
+    examples: [
+      'What did this Solana transaction do?',
+      'Explain this Solana transaction signature',
+      'Decode this Solana transfer',
+    ],
+    price: config.PRICE_SOLANA_TX_EXPLAIN,
+    endpoint: '/v1/solana/tx-explain',
+    method: 'POST',
+  },
+  {
+    id: 'solana-tx-simulate',
+    name: 'Solana Transaction Simulate',
+    description: 'Simulate a Solana transaction before signing it: balance changes, labeled programs, and a proceed/caution/avoid recommendation.',
+    tags: ['solana', 'simulate transaction', 'defi-safety', 'pre-flight'],
+    examples: [
+      'Simulate this Solana transaction before I sign it',
+      'Is this Solana transaction safe to sign?',
+      'What would this transaction do if I approved it?',
+    ],
+    price: config.PRICE_SOLANA_TX_SIMULATE,
+    endpoint: '/v1/solana/tx-simulate',
+    method: 'POST',
+  },
+  {
+    id: 'solana-token-risk-scan',
+    name: 'Solana Token Risk Scan',
+    description: 'Solana rug check: mint authority, freeze authority, holder concentration, liquidity depth, and a composite 0-100 risk score.',
+    tags: ['solana', 'token risk', 'rug check', 'mint authority', 'freeze authority'],
+    examples: [
+      'Is this Solana token a rug pull risk?',
+      'Can the deployer mint more of this token?',
+      'Check holder concentration for this Solana mint',
+    ],
+    price: config.PRICE_SOLANA_TOKEN_RISK_SCAN,
+    endpoint: '/v1/solana/token-risk-scan',
+    method: 'POST',
+  },
 ];
 
 export function generateAgentCard(baseUrl: string): Record<string, unknown> {
@@ -260,7 +302,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     description:
       'Production-grade AI services for autonomous agents. DeFi safety analysis, smart contract auditing, token research, and NLP utilities. Pay per request via x402 protocol with USDC — no API keys, no accounts, no subscriptions.',
     url: baseUrl,
-    version: '1.4.0',
+    version: '1.5.0',
 
     provider: {
       organization: 'AgentForge',

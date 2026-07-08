@@ -21,6 +21,10 @@ import { translateInput, translateOutput } from '../schemas/translate.js';
 import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.js';
 import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
 import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
+import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
+import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
+import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
+import { solanaTokenRiskScanInput, solanaTokenRiskScanOutput } from '../schemas/solanaTokenRiskScan.js';
 import { feedbackInput } from '../schemas/feedback.js';
 import { config, networkId } from '../config.js';
 
@@ -52,7 +56,7 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.4.0',
+      version: '1.5.0',
       description:
         'Production-grade AI services for autonomous agents. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
@@ -527,6 +531,102 @@ export function generateOpenApiSpec(): object {
                 },
               },
             },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/solana/program-lookup': {
+        get: {
+          operationId: 'solanaProgramLookup',
+          summary: 'Solana program label lookup (free)',
+          description: 'Look up a Solana program ID in the program label registry. Free, no payment required.',
+          tags: ['Free', 'Solana'],
+          'x-agentcash-auth': { mode: 'free' },
+          parameters: [
+            { name: 'programId', in: 'query', required: true, schema: { type: 'string' }, description: 'Base58 Solana program ID' },
+          ],
+          responses: {
+            '200': {
+              description: 'Program lookup result',
+              content: { 'application/json': { schema: schemaOf(solanaProgramLookupOutput) } },
+            },
+          },
+        },
+      },
+      '/v1/solana/tx-explain': {
+        post: {
+          operationId: 'explainSolanaTx',
+          summary: 'Explain a Solana transaction',
+          description:
+            `Decode a Solana transaction into plain English: labeled programs, token/SOL movements, and risk flags. Accepts USDC on Base or Solana. Price: ${config.PRICE_SOLANA_TX_EXPLAIN} USDC via x402.`,
+          tags: ['Solana', 'Crypto Intelligence'],
+          'x-x402-price': config.PRICE_SOLANA_TX_EXPLAIN,
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_SOLANA_TX_EXPLAIN, protocols: ['x402'] },
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: schemaOf(solanaTxExplainInput) } },
+          },
+          responses: {
+            '200': {
+              description: 'Transaction explanation',
+              content: { 'application/json': { schema: schemaOf(solanaTxExplainOutput) } },
+            },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/solana/tx-simulate': {
+        post: {
+          operationId: 'simulateSolanaTx',
+          summary: 'Simulate a Solana transaction',
+          description:
+            `Simulate a Solana transaction before signing it: balance changes, labeled programs, deterministic risk rules, and a proceed/caution/avoid recommendation. Accepts USDC on Base or Solana. Price: ${config.PRICE_SOLANA_TX_SIMULATE} USDC via x402.`,
+          tags: ['Solana', 'Security'],
+          'x-x402-price': config.PRICE_SOLANA_TX_SIMULATE,
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_SOLANA_TX_SIMULATE, protocols: ['x402'] },
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: schemaOf(solanaTxSimulateInput) } },
+          },
+          responses: {
+            '200': {
+              description: 'Simulation result',
+              content: { 'application/json': { schema: schemaOf(solanaTxSimulateOutput) } },
+            },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/solana/token-risk-scan': {
+        post: {
+          operationId: 'scanSolanaTokenRisk',
+          summary: 'Solana token risk / rug check scan',
+          description:
+            `Solana rug check: mint authority, freeze authority, holder concentration, liquidity depth, and a composite 0-100 risk score. Accepts USDC on Base or Solana. Price: ${config.PRICE_SOLANA_TOKEN_RISK_SCAN} USDC via x402.`,
+          tags: ['Solana', 'Security', 'Crypto Intelligence'],
+          'x-x402-price': config.PRICE_SOLANA_TOKEN_RISK_SCAN,
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_SOLANA_TOKEN_RISK_SCAN, protocols: ['x402'] },
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: schemaOf(solanaTokenRiskScanInput) } },
+          },
+          responses: {
+            '200': {
+              description: 'Token risk scan result',
+              content: { 'application/json': { schema: schemaOf(solanaTokenRiskScanOutput) } },
+            },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
             '402': { description: 'Payment required' },
           },
         },

@@ -150,6 +150,9 @@ process.env.PRICE_TX_DECODE = '$0.01';
 process.env.PRICE_APPROVAL_SCAN = '$0.015';
 process.env.PRICE_GAS = '$0.003';
 process.env.PRICE_WALLET_SAFETY = '$0.035';
+process.env.HELIUS_API_KEY = 'test-helius-key';
+process.env.SOLANA_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=test-helius-key';
+process.env.SOLANA_PAY_TO_ADDRESS = 'EtDHxiEoha4nj1LRmnpxxmD5zbbzegH8ohYrknZ2JMZv';
 process.env.DATABASE_PATH = ':memory:';
 
 describe('Solana Schema Validation', () => {

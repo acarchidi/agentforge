@@ -62,7 +62,7 @@ export interface SolanaTransaction {
 
 // ── RPC Helper ────────────────────────────────────────────────────
 
-async function solanaRpc<T>(method: string, params: unknown[]): Promise<T> {
+export async function solanaRpc<T>(method: string, params: unknown[]): Promise<T> {
   const res = await fetch(getRpcUrl(), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

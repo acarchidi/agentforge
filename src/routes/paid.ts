@@ -15,6 +15,9 @@ import { translateWithCost } from '../services/translate.js';
 import { walletSafetyWithCost } from '../services/walletSafety/index.js';
 import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
 import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
+import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
+import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
+import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
 import { logCall, logRevenue } from '../analytics/logger.js';
 import { config } from '../config.js';
 
@@ -43,6 +46,9 @@ const PRICES: Record<string, number> = {
   '/v1/wallet-safety': parsePrice(config.PRICE_WALLET_SAFETY),
   '/v1/pool-snapshot': parsePrice(config.PRICE_POOL_SNAPSHOT),
   '/v1/token-risk-metrics': parsePrice(config.PRICE_TOKEN_RISK_METRICS),
+  '/v1/solana/tx-explain': parsePrice(config.PRICE_SOLANA_TX_EXPLAIN),
+  '/v1/solana/tx-simulate': parsePrice(config.PRICE_SOLANA_TX_SIMULATE),
+  '/v1/solana/token-risk-scan': parsePrice(config.PRICE_SOLANA_TOKEN_RISK_SCAN),
   '/v1/ping': 0.001,
 };
 
@@ -121,6 +127,9 @@ paidRouter.post('/v1/summarize', createHandler('/v1/summarize', summarizeWithCos
 paidRouter.post('/v1/translate', createHandler('/v1/translate', translateWithCost));
 paidRouter.post('/v1/wallet-safety', createHandler('/v1/wallet-safety', walletSafetyWithCost));
 paidRouter.post('/v1/token-risk-metrics', createHandler('/v1/token-risk-metrics', getTokenRiskMetricsWithCost));
+paidRouter.post('/v1/solana/tx-explain', createHandler('/v1/solana/tx-explain', explainSolanaTxWithCost));
+paidRouter.post('/v1/solana/tx-simulate', createHandler('/v1/solana/tx-simulate', simulateSolanaTxWithCost));
+paidRouter.post('/v1/solana/token-risk-scan', createHandler('/v1/solana/token-risk-scan', scanSolanaTokenRiskWithCost));
 
 // Gas oracle — GET endpoint, chain from query param
 paidRouter.get('/v1/gas', async (req: Request, res: Response) => {

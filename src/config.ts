@@ -30,6 +30,12 @@ const envSchema = z.object({
   ETHERSCAN_API_KEY: z.string().optional(),
   CDP_API_KEY_ID: z.string().optional(),
   CDP_API_KEY_SECRET: z.string().optional(),
+  HELIUS_API_KEY: z.string().min(1),
+  SOLANA_RPC_URL: z.string().url(),
+  SOLANA_PAY_TO_ADDRESS: z.string().min(32).max(44),
+  PRICE_SOLANA_TX_EXPLAIN: z.string().startsWith('$').default('$0.05'),
+  PRICE_SOLANA_TX_SIMULATE: z.string().startsWith('$').default('$0.15'),
+  PRICE_SOLANA_TOKEN_RISK_SCAN: z.string().startsWith('$').default('$0.35'),
 });
 
 export type Config = z.infer<typeof envSchema>;

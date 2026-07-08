@@ -25,6 +25,16 @@ export function isSolanaAddress(address: string): boolean {
 }
 
 /**
+ * Check if a string is a valid Solana transaction signature.
+ * Signatures are 64-byte ed25519 signatures, base58-encoded to ~86-88 chars —
+ * longer than the 32-44 char range used for addresses/public keys.
+ */
+export function isValidSolanaSignature(signature: string): boolean {
+  if (!signature || signature.length < 80 || signature.length > 90) return false;
+  return BASE58_REGEX.test(signature);
+}
+
+/**
  * Check if an address is a valid EVM address (0x + 40 hex chars).
  */
 export function isEvmAddress(address: string): boolean {

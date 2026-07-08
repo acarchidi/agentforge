@@ -1,5 +1,7 @@
 import { paymentMiddlewareFromConfig } from '@x402/express';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
+import { ExactSvmScheme } from '@x402/svm/exact/server';
+import { SOLANA_MAINNET_CAIP2 } from '@x402/svm';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { facilitator } from '@coinbase/x402';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
@@ -811,6 +813,190 @@ export function createPaymentMiddleware() {
         }),
       },
     },
+    'POST /v1/solana/tx-explain': {
+      accepts: [
+        {
+          scheme: 'exact' as const,
+          price: config.PRICE_SOLANA_TX_EXPLAIN,
+          network: networkId,
+          payTo: config.PAY_TO_ADDRESS,
+        },
+        {
+          scheme: 'exact' as const,
+          price: config.PRICE_SOLANA_TX_EXPLAIN,
+          network: SOLANA_MAINNET_CAIP2 as `${string}:${string}`,
+          payTo: config.SOLANA_PAY_TO_ADDRESS,
+        },
+      ],
+      description: 'Explain a Solana transaction for agents and users who need to know what it actually did: labeled programs, token/SOL movements, and plain-English summary. Accepts USDC on Base or Solana. Category: data.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            signature: '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1',
+          },
+          inputSchema: {
+            type: 'object',
+            required: ['signature'],
+            properties: {
+              signature: { type: 'string', description: 'Base58 Solana transaction signature' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['signature', 'success', 'instructions', 'tokenMovements', 'explanation', 'riskFlags', 'parseQuality'],
+              properties: {
+                signature: { type: 'string' },
+                success: { type: 'boolean' },
+                instructions: { type: 'array' },
+                tokenMovements: { type: 'array' },
+                explanation: { type: 'string' },
+                riskFlags: { type: 'array', items: { type: 'string' } },
+                parseQuality: { type: 'string', enum: ['full', 'partial'] },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              signature: '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1',
+              success: true,
+              fee: 5000,
+              instructions: [{ programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', label: 'SPL Token Program', category: 'token', isVerified: true }],
+              tokenMovements: [{ mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', amount: 10, from: 'wallet1', to: 'wallet2' }],
+              explanation: 'A standard SPL token transfer of 10 USDC between two wallets.',
+              riskFlags: [],
+              parseQuality: 'full',
+              relatedServices: [],
+            },
+          },
+        }),
+      },
+    },
+    'POST /v1/solana/tx-simulate': {
+      accepts: [
+        {
+          scheme: 'exact' as const,
+          price: config.PRICE_SOLANA_TX_SIMULATE,
+          network: networkId,
+          payTo: config.PAY_TO_ADDRESS,
+        },
+        {
+          scheme: 'exact' as const,
+          price: config.PRICE_SOLANA_TX_SIMULATE,
+          network: SOLANA_MAINNET_CAIP2 as `${string}:${string}`,
+          payTo: config.SOLANA_PAY_TO_ADDRESS,
+        },
+      ],
+      description: 'Simulate a Solana transaction for agents about to sign it: balance changes, labeled programs, deterministic risk rules, and a proceed/caution/avoid recommendation. Accepts USDC on Base or Solana. Category: data.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            transaction: 'AQABAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=',
+          },
+          inputSchema: {
+            type: 'object',
+            required: ['transaction'],
+            properties: {
+              transaction: { type: 'string', description: 'Base64-encoded unsigned (or signed) Solana transaction' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['success', 'logs', 'balanceChanges', 'programsInvoked', 'riskFlags', 'recommendation', 'explanation'],
+              properties: {
+                success: { type: 'boolean' },
+                computeUnitsConsumed: { type: 'number' },
+                logs: { type: 'array', items: { type: 'string' } },
+                balanceChanges: { type: 'array' },
+                programsInvoked: { type: 'array' },
+                riskFlags: { type: 'array', items: { type: 'string' } },
+                recommendation: { type: 'string', enum: ['proceed', 'caution', 'avoid'] },
+                explanation: { type: 'string' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              success: true,
+              computeUnitsConsumed: 12000,
+              logs: ['Program TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA invoke [1]', 'Program log: Instruction: Transfer'],
+              balanceChanges: [{ account: 'wallet1', type: 'sol', before: 1.5, after: 1.4998, delta: -0.0002 }],
+              programsInvoked: [{ programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', label: 'SPL Token Program', isVerified: true }],
+              riskFlags: [],
+              recommendation: 'proceed',
+              explanation: 'This transaction would succeed and only moves a small amount of SOL for fees.',
+              relatedServices: [],
+            },
+          },
+        }),
+      },
+    },
+    'POST /v1/solana/token-risk-scan': {
+      accepts: [
+        {
+          scheme: 'exact' as const,
+          price: config.PRICE_SOLANA_TOKEN_RISK_SCAN,
+          network: networkId,
+          payTo: config.PAY_TO_ADDRESS,
+        },
+        {
+          scheme: 'exact' as const,
+          price: config.PRICE_SOLANA_TOKEN_RISK_SCAN,
+          network: SOLANA_MAINNET_CAIP2 as `${string}:${string}`,
+          payTo: config.SOLANA_PAY_TO_ADDRESS,
+        },
+      ],
+      description: 'Solana rug check for agents evaluating a token before buying: mint authority, freeze authority, holder concentration, and liquidity depth rolled into a composite 0-100 score. Accepts USDC on Base or Solana. Category: data.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+          },
+          inputSchema: {
+            type: 'object',
+            required: ['mint'],
+            properties: {
+              mint: { type: 'string', description: 'Base58 Solana token mint address' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['mint', 'authorities', 'holders', 'liquidity', 'metadata', 'score', 'level', 'flags', 'dataCompleteness'],
+              properties: {
+                mint: { type: 'string' },
+                authorities: { type: 'object' },
+                holders: { type: 'object' },
+                liquidity: { type: 'object' },
+                metadata: { type: 'object' },
+                score: { type: 'number', minimum: 0, maximum: 100 },
+                level: { type: 'string', enum: ['safe', 'low', 'medium', 'high', 'critical'] },
+                flags: { type: 'array', items: { type: 'string' } },
+                dataCompleteness: { type: 'object' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+              authorities: { mintAuthority: null, canMint: false, freezeAuthority: null, canFreeze: false, supply: '10000000000000', decimals: 6 },
+              holders: { top10Pct: 8.4, entries: [{ address: 'wallet1', pct: 2.1, isPool: false }] },
+              liquidity: { totalUsd: 50000000, volume24hUsd: 8000000, ageDays: 1800, available: true },
+              metadata: { name: 'USD Coin', symbol: 'USDC', mutable: false },
+              score: 3,
+              level: 'safe',
+              flags: [],
+              dataCompleteness: { holdersAvailable: true, liquidityAvailable: true, metadataAvailable: true },
+              relatedServices: [],
+            },
+          },
+        }),
+      },
+    },
   };
 
   // Every configured path also gets a wildcard-verb fallback pointing at the
@@ -829,6 +1015,7 @@ export function createPaymentMiddleware() {
   }
 
   const evmScheme = new ExactEvmScheme();
+  const svmScheme = new ExactSvmScheme();
 
   // Use CDP facilitator for mainnet (Base), default x402.org for testnet
   const facilitatorClient = config.X402_NETWORK === 'base'
@@ -838,6 +1025,9 @@ export function createPaymentMiddleware() {
   return paymentMiddlewareFromConfig(
     routeConfig,
     facilitatorClient,
-    [{ network: networkId, server: evmScheme }],
+    [
+      { network: networkId, server: evmScheme },
+      { network: SOLANA_MAINNET_CAIP2, server: svmScheme },
+    ],
   );
 }

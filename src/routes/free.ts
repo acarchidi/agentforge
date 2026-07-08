@@ -17,11 +17,15 @@ import { translateInput, translateOutput } from '../schemas/translate.js';
 import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.js';
 import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
 import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
+import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
+import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
+import { solanaTokenRiskScanInput, solanaTokenRiskScanOutput } from '../schemas/solanaTokenRiskScan.js';
 import { feedbackInput } from '../schemas/feedback.js';
 import { generateOpenApiSpec } from '../utils/openapi.js';
 import { config, networkId } from '../config.js';
 import { getDb } from '../analytics/db.js';
 import { getRegistry } from '../registry/lookup.js';
+import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
 import { getCacheStore } from '../cache/store.js';
 import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 import { getPoolSnapshotsCache } from '../cache/poolSnapshotsCache.js';
@@ -90,7 +94,7 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.4.0',
+    version: '1.5.0',
     description:
       'Production-grade AI services for autonomous agents. Pay per request via x402 protocol with USDC on Base. All service responses include relatedServices suggestions for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
@@ -254,6 +258,81 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
           },
         },
       },
+      {
+        endpoint: 'POST /v1/solana/tx-explain',
+        operationId: 'explainSolanaTx',
+        description: 'Decode a Solana transaction into plain English: labeled programs, token/SOL movements, and risk flags. Falls back to raw RPC decoding if enhanced parsing is unavailable.',
+        price: config.PRICE_SOLANA_TX_EXPLAIN,
+        tags: ['solana', 'transaction', 'decode transaction', 'explain'],
+        inputSchema: schemaOf(solanaTxExplainInput),
+        outputSchema: schemaOf(solanaTxExplainOutput),
+      },
+      {
+        endpoint: 'POST /v1/solana/tx-simulate',
+        operationId: 'simulateSolanaTx',
+        description: 'Simulate a Solana transaction before signing it: balance changes, program labels, deterministic risk rules, and a proceed/caution/avoid recommendation.',
+        price: config.PRICE_SOLANA_TX_SIMULATE,
+        tags: ['solana', 'simulate transaction', 'defi-safety', 'pre-flight'],
+        inputSchema: schemaOf(solanaTxSimulateInput),
+        outputSchema: schemaOf(solanaTxSimulateOutput),
+      },
+      {
+        endpoint: 'POST /v1/solana/token-risk-scan',
+        operationId: 'scanSolanaTokenRisk',
+        description: 'Solana token risk / rug check: mint authority, freeze authority, holder concentration, liquidity depth, and a composite 0-100 risk score.',
+        price: config.PRICE_SOLANA_TOKEN_RISK_SCAN,
+        tags: ['solana', 'token risk', 'rug check', 'mint authority', 'freeze authority'],
+        inputSchema: schemaOf(solanaTokenRiskScanInput),
+        outputSchema: schemaOf(solanaTokenRiskScanOutput),
+      },
+    ],
+  });
+});
+
+// ────────────────────────────────────────────────────────────────────
+// Solana program lookup (free, top-of-funnel — no x402 gate)
+// ────────────────────────────────────────────────────────────────────
+
+freeRouter.get('/v1/solana/program-lookup', (req: Request, res: Response) => {
+  const programId = req.query.programId as string | undefined;
+
+  if (!programId) {
+    res.status(400).json({ error: 'VALIDATION_ERROR', message: 'programId query parameter required' });
+    return;
+  }
+
+  const entry = getSolanaProgramRegistry().lookup(programId);
+
+  res.json({
+    found: entry !== null,
+    programId,
+    entry: entry
+      ? {
+          name: entry.name,
+          protocol: entry.protocol,
+          category: entry.category,
+          riskLevel: entry.riskLevel,
+          description: entry.description,
+          website: entry.website,
+          verified: entry.verified,
+        }
+      : null,
+    relatedServices: [
+      {
+        endpoint: '/v1/solana/tx-explain',
+        description: 'Explain a transaction that invokes this program',
+        suggestedInput: { signature: '<a transaction signature>' },
+      },
+      {
+        endpoint: '/v1/solana/tx-simulate',
+        description: 'Simulate a transaction before signing it',
+        suggestedInput: { transaction: '<base64 unsigned transaction>' },
+      },
+      {
+        endpoint: '/v1/solana/token-risk-scan',
+        description: 'Run a full rug-check risk scan if this program is a token mint',
+        suggestedInput: { mint: programId },
+      },
     ],
   });
 });
@@ -377,6 +456,9 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'GET /v1/pool-snapshot',
       'POST /v1/token-risk-metrics',
       'GET /v1/ping',
+      'POST /v1/solana/tx-explain',
+      'POST /v1/solana/tx-simulate',
+      'POST /v1/solana/token-risk-scan',
     ],
   });
 });
@@ -406,9 +488,9 @@ freeRouter.get('/.well-known/ai-plugin.json', (req: Request, res: Response) => {
     name_for_human: 'AgentForge',
     name_for_model: 'agentforge',
     description_for_human:
-      'AI-powered DeFi safety and analysis services: wallet safety checks, token intelligence, smart contract auditing, multi-source token research, contract documentation, contract monitoring, token comparison, sentiment analysis, text summarization, and translation. Pay per request with USDC.',
+      'AI-powered DeFi safety and analysis services on Ethereum, Base, and Solana: wallet safety checks, token risk / rug-check scoring, transaction decode and simulate, smart contract auditing, multi-source token research, and more. Pay per request with USDC.',
     description_for_model:
-      'AgentForge provides production-grade AI analysis services accessible via x402 micropayments in USDC on Base. Available tools: (1) token metadata enrichment with risk scoring, (2) smart contract security auditing with gas optimization, (3) multi-source token research, (4) smart contract documentation generation, (5) contract admin activity monitoring, (6) multi-token comparative analysis, (7) transaction decoding with plain-English explanations, (8) wallet approval risk scanning, (9) comprehensive wallet safety check with pattern detection and risk scoring, (10) gas price oracle with trend analysis, (11) sentiment analysis for crypto/finance/social media text, (12) text summarization with configurable length and format, (13) translation with tone control and auto-detection, (14) DeFi liquidity pool snapshots with TVL/APY/IL-risk for top 500 pools, (15) quantitative token risk metrics with holder concentration, permissions, and composite score. All endpoints accept JSON requests and return structured JSON. Payment is handled automatically via x402 protocol — no API keys or accounts needed.',
+      'AgentForge provides production-grade AI analysis services accessible via x402 micropayments in USDC on Base or Solana. Available tools: (1) token metadata enrichment with risk scoring, (2) smart contract security auditing with gas optimization, (3) multi-source token research, (4) smart contract documentation generation, (5) contract admin activity monitoring, (6) multi-token comparative analysis, (7) transaction decoding with plain-English explanations, (8) wallet approval risk scanning, (9) comprehensive wallet safety check with pattern detection and risk scoring, (10) gas price oracle with trend analysis, (11) sentiment analysis for crypto/finance/social media text, (12) text summarization with configurable length and format, (13) translation with tone control and auto-detection, (14) DeFi liquidity pool snapshots with TVL/APY/IL-risk for top 500 pools, (15) quantitative token risk metrics with holder concentration, permissions, and composite score, (16) Solana transaction explanation with labeled programs and risk flags, (17) Solana transaction simulation with balance deltas and a proceed/caution/avoid recommendation, (18) Solana token rug-check risk scoring with mint/freeze authority and holder concentration. All endpoints accept JSON requests and return structured JSON. Payment is handled automatically via x402 protocol — no API keys or accounts needed.',
     auth: { type: 'none' },
     api: { type: 'openapi', url: `${baseUrl}/openapi.json` },
     mcp: {
@@ -457,7 +539,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.4.0',
+    version: '1.5.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:

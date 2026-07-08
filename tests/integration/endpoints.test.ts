@@ -21,6 +21,9 @@ process.env.PRICE_TX_DECODE = '$0.01';
 process.env.PRICE_APPROVAL_SCAN = '$0.015';
 process.env.PRICE_GAS = '$0.003';
 process.env.PRICE_WALLET_SAFETY = '$0.035';
+process.env.HELIUS_API_KEY = 'test-helius-key';
+process.env.SOLANA_RPC_URL = 'https://mainnet.helius-rpc.com/?api-key=test-helius-key';
+process.env.SOLANA_PAY_TO_ADDRESS = 'EtDHxiEoha4nj1LRmnpxxmD5zbbzegH8ohYrknZ2JMZv';
 process.env.DATABASE_PATH = ':memory:';
 
 let app: express.Application;
@@ -61,13 +64,13 @@ describe('Free Endpoints', () => {
     expect(res.body.timestamp).toBeDefined();
   });
 
-  it('GET /catalog returns service list with 16 services', async () => {
+  it('GET /catalog returns service list with 19 services (16 EVM + 3 Solana)', async () => {
     const res = await request(app).get('/catalog');
     expect(res.status).toBe(200);
     expect(res.body.services).toBeInstanceOf(Array);
-    expect(res.body.services.length).toBe(16);
+    expect(res.body.services.length).toBe(19);
     expect(res.body.payment.protocol).toBe('x402');
-    expect(res.body.version).toBe('1.4.0');
+    expect(res.body.version).toBe('1.5.0');
   });
 
   it('GET /catalog services have endpoint and price', async () => {
@@ -314,7 +317,7 @@ describe('Discovery Layer', () => {
     expect(res.status).toBe(200);
     expect(res.body.openapi).toBe('3.1.0');
     expect(res.body.info.title).toBe('AgentForge API');
-    expect(res.body.info.version).toBe('1.4.0');
+    expect(res.body.info.version).toBe('1.5.0');
     const paths = Object.keys(res.body.paths);
     // Must contain all current service paths
     expect(paths).toContain('/v1/token-intel');
@@ -376,7 +379,7 @@ describe('Discovery Layer', () => {
     const res = await request(app).get('/about');
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('AgentForge');
-    expect(res.body.version).toBe('1.4.0');
+    expect(res.body.version).toBe('1.5.0');
     expect(res.body.services).toBeDefined();
     // Current services
     expect(res.body.services.token_intelligence).toBeDefined();
@@ -417,7 +420,7 @@ describe('Discovery Layer', () => {
     const res = await request(app).get('/.well-known/agent.json');
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('AgentForge');
-    expect(res.body.version).toBe('1.4.0');
+    expect(res.body.version).toBe('1.5.0');
     expect(res.body.description).toBeDefined();
     expect(res.body.provider).toBeDefined();
     expect(res.body.provider.organization).toBe('AgentForge');
@@ -432,7 +435,7 @@ describe('Discovery Layer', () => {
     expect(x402.asset).toBe('USDC');
     // Skills
     expect(res.body.skills).toBeInstanceOf(Array);
-    expect(res.body.skills.length).toBe(16);
+    expect(res.body.skills.length).toBe(19);
     const skillIds = res.body.skills.map((s: { id: string }) => s.id);
     expect(skillIds).toContain('wallet-safety');
     expect(skillIds).toContain('token-research');

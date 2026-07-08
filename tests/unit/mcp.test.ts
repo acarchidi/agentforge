@@ -8,9 +8,9 @@ describe('MCP Server', () => {
     expect(info.version).toBe('1.0.0');
   });
 
-  it('registers all 16 tools', () => {
+  it('registers all 20 tools (16 EVM + 4 Solana)', () => {
     const tools = Object.keys((mcpServer as any)._registeredTools);
-    expect(tools).toHaveLength(16);
+    expect(tools).toHaveLength(20);
     expect(tools).toContain('token_intel');
     expect(tools).toContain('token_research');
     expect(tools).toContain('code_review');
@@ -25,6 +25,10 @@ describe('MCP Server', () => {
     expect(tools).toContain('translate');
     expect(tools).toContain('wallet_safety');
     expect(tools).toContain('registry_lookup');
+    expect(tools).toContain('solana_program_lookup');
+    expect(tools).toContain('solana_tx_explain');
+    expect(tools).toContain('solana_tx_simulate');
+    expect(tools).toContain('solana_token_risk_scan');
   });
 
   it('does not register duplicate tools', () => {

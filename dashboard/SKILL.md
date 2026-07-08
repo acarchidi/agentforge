@@ -1,23 +1,24 @@
 ---
 name: agentforge
-description: Free DeFi lookups (384-contract label registry, full service catalog, service overview) plus optional pay-per-call x402 APIs for wallet safety, token risk / rug check scoring, transaction decoding, and smart contract docs. Use when an agent needs to check wallet safety, scan token risk, decode a transaction, or get contract documentation. Start free via MCP or the registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
+description: Free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus optional pay-per-call x402 APIs for wallet safety, token risk / rug check scoring, transaction decode and simulate, and smart contract docs — on Ethereum, Base, and Solana. Use when an agent needs to check wallet safety, scan token risk, decode or simulate a transaction, or get contract documentation. Start free via MCP or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
 metadata:
   author: agentforge
-  version: "1.4.0"
+  version: "1.5.0"
 ---
 
 # AgentForge
 
-AgentForge is a DeFi safety layer on Base mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
+AgentForge is a DeFi safety layer on Base and Solana mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
-1. **Free** — contract label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
-2. **Paid** — 16 deeper analysis endpoints (wallet safety, rug checks, transaction decoding, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden or bundled.
+1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
+2. **Paid** — 19 deeper analysis endpoints (wallet safety, rug checks, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden or bundled.
 
 ## Free entry points (start here, no payment required)
 
-- `GET /registry/lookup?address=0x...&chain=ethereum` — look up a contract in our 384-contract label registry (protocol name, category, risk level). Often enough on its own; a natural first call before paying for a deeper check.
-- `GET /registry/stats` — registry coverage stats (entry count, chains, categories).
-- `GET /catalog` — full machine-readable catalog of all 16 paid endpoints with current prices and JSON schemas.
+- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 384-contract label registry (protocol name, category, risk level).
+- `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 30-program label registry (protocol, category, risk level). Same idea, Solana side.
+- `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
+- `GET /catalog` — full machine-readable catalog of all 19 paid endpoints with current prices and JSON schemas.
 - `GET /about` — service overview, every endpoint with description and `input_example` payload.
 - `GET /.well-known/x402` — x402 discovery document (accepted networks, assets, payTo address).
 - `POST /feedback` — report a bad response or suggest an improvement.
@@ -28,9 +29,9 @@ Every paid endpoint is also exposed as an MCP tool at `https://agentforge-taupe.
 
 ## When to use the paid endpoints
 
-- Before executing a DeFi transaction: check `wallet-safety` or `approval-scan`.
-- Before touching a new token: run `token-risk-metrics` (rug check — mint/freeze authority, holder concentration, liquidity).
-- To understand a transaction: `tx-decode` turns raw calldata into a plain-English explanation.
+- Before executing a DeFi transaction: check `wallet-safety` or `approval-scan` (EVM) — or `solana/tx-simulate` (Solana).
+- Before touching a new token: run `token-risk-metrics` (EVM) or `solana/token-risk-scan` (Solana) — rug check: mint/freeze authority, holder concentration, liquidity.
+- To understand a transaction: `tx-decode` (EVM) or `solana/tx-explain` (Solana) turn raw transaction data into a plain-English explanation.
 - To understand a contract: `contract-docs` generates function-level documentation with a security posture summary.
 - For general AI text tasks tied to crypto/DeFi content: `sentiment`, `summarize`, `translate`.
 
@@ -54,8 +55,11 @@ Every paid endpoint is also exposed as an MCP tool at `https://agentforge-taupe.
 | POST | `/v1/summarize` | $0.01 | Text summarization with configurable length and format. |
 | POST | `/v1/translate` | $0.015 | Translation with tone control, auto-detects source language. |
 | GET | `/v1/ping` | $0.001 | Verifies your x402 payment flow works end to end. |
+| POST | `/v1/solana/token-risk-scan` | $0.35 | Solana rug check: mint/freeze authority, holder concentration, liquidity depth, composite 0-100 score. Base or Solana USDC. |
+| POST | `/v1/solana/tx-simulate` | $0.15 | Simulate a Solana transaction before signing: balance changes, labeled programs, proceed/caution/avoid recommendation. Base or Solana USDC. |
+| POST | `/v1/solana/tx-explain` | $0.05 | Explain a Solana transaction: labeled programs, token/SOL movements, plain-English summary. Base or Solana USDC. |
 
-Prices and JSON Schemas for every endpoint are always authoritative at `GET /catalog` — treat the table above as a snapshot, not the source of truth.
+Prices and JSON Schemas for every endpoint are always authoritative at `GET /catalog` — treat the table above as a snapshot, not the source of truth. The three `solana/*` endpoints accept payment on **either** Base or Solana mainnet USDC — pick whichever network your wallet holds funds on.
 
 ## Paying via x402 (3 representative examples)
 
@@ -105,6 +109,7 @@ const res = await paidFetch('https://agentforge-taupe.vercel.app/v1/wallet-safet
 
 ## Notes for buying agents
 
-- All 16 endpoints declare `discoverable` bazaar metadata with example inputs/outputs — use `GET /catalog` or the CDP x402 Bazaar discovery index to pull JSON Schemas programmatically rather than hardcoding request shapes from this file.
+- All 19 endpoints declare bazaar discovery metadata with example inputs/outputs — use `GET /catalog` or the CDP x402 Bazaar discovery index to pull JSON Schemas programmatically rather than hardcoding request shapes from this file.
 - Every paid response includes a `relatedServices` field suggesting other AgentForge endpoints relevant to the same wallet/token/contract — follow these to chain checks (e.g. `token-risk-metrics` → `tx-decode` for the token's deploy transaction).
-- Network is Base mainnet, asset is USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`).
+- EVM endpoints: network is Base mainnet, asset is USDC (`0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913`).
+- Solana endpoints (`solana/tx-explain`, `solana/tx-simulate`, `solana/token-risk-scan`): accept USDC on **either** Base or Solana mainnet (`EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v`) — the 402 response lists both `accepts` entries, pick the one matching your wallet.

@@ -1,14 +1,15 @@
 # AgentForge — Full Endpoint Reference
 
-Base URL: `https://agentforge-taupe.vercel.app`. All prices in USDC on Base mainnet. This table is a snapshot — `GET /catalog` is always the authoritative, live source (current prices + JSON Schemas).
+Base URL: `https://agentforge-taupe.vercel.app`. Prices are USDC. The 16 EVM endpoints accept Base mainnet USDC only; the 3 `solana/*` endpoints accept **either** Base or Solana mainnet USDC. This table is a snapshot — `GET /catalog` is always the authoritative, live source (current prices + JSON Schemas).
 
 ## Free endpoints (no payment)
 
 | Method | Path | What it does |
 |---|---|---|
-| GET | `/registry/lookup?address=0x...&chain=ethereum` | Look up a contract in the 384-contract label registry: protocol, category, risk level. |
-| GET | `/registry/stats` | Registry coverage stats. |
-| GET | `/catalog` | Full machine-readable catalog of all 16 paid endpoints, current prices, JSON Schemas. |
+| GET | `/registry/lookup?address=0x...&chain=ethereum` | Look up an EVM contract in the 384-contract label registry: protocol, category, risk level. |
+| GET | `/v1/solana/program-lookup?programId=...` | Look up a Solana program in the 30-program label registry: protocol, category, risk level. |
+| GET | `/registry/stats` | EVM registry coverage stats. |
+| GET | `/catalog` | Full machine-readable catalog of all 19 paid endpoints, current prices, JSON Schemas. |
 | GET | `/about` | Service overview, every endpoint with description and `input_example`. |
 | GET | `/.well-known/x402` | x402 discovery document. |
 | POST | `/feedback` | Report a bad response or suggest an improvement. |
@@ -33,6 +34,14 @@ Base URL: `https://agentforge-taupe.vercel.app`. All prices in USDC on Base main
 | GET | `/v1/pool-snapshot` | $0.005 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
 | GET | `/v1/gas` | $0.003 | Real-time gas prices (slow/standard/fast) with trend analysis, any supported EVM chain. |
 | GET | `/v1/ping` | $0.001 | Verifies your x402 payment flow works end to end. |
+
+## Solana endpoints (x402, USDC on Base or Solana)
+
+| Method | Path | Price | What it does |
+|---|---|---|---|
+| POST | `/v1/solana/token-risk-scan` | $0.35 | Rug check: mint/freeze authority, holder concentration, liquidity depth, composite 0-100 score. |
+| POST | `/v1/solana/tx-simulate` | $0.15 | Simulate a transaction before signing: balance changes, labeled programs, proceed/caution/avoid recommendation. |
+| POST | `/v1/solana/tx-explain` | $0.05 | Explain a transaction: labeled programs, token/SOL movements, plain-English summary. |
 
 ## Paying via x402 (3 representative examples)
 

@@ -5,6 +5,7 @@ interface ClaudeCallParams {
   userMessage: string;
   maxTokens: number;
   temperature?: number;
+  model?: 'claude-sonnet-5' | 'claude-haiku-4-5-20251001';
 }
 
 export interface ClaudeResponse {
@@ -27,7 +28,7 @@ export async function callClaude(
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-5',
+      model: params.model ?? 'claude-sonnet-5',
       max_tokens: params.maxTokens,
       system: params.system,
       messages: [{ role: 'user', content: params.userMessage }],
@@ -49,9 +50,12 @@ export async function callClaude(
     throw new Error('Claude returned no text content');
   }
 
-  // Claude Sonnet 5 pricing: Input $3/1M tokens, Output $15/1M tokens
-  const inputCost = (data.usage.input_tokens / 1_000_000) * 3;
-  const outputCost = (data.usage.output_tokens / 1_000_000) * 15;
+  // Sonnet 5: Input $3/1M, Output $15/1M. Haiku 4.5: Input $0.25/1M, Output $1.25/1M (estimate).
+  const isHaiku = params.model === 'claude-haiku-4-5-20251001';
+  const inputRate = isHaiku ? 0.25 : 3;
+  const outputRate = isHaiku ? 1.25 : 15;
+  const inputCost = (data.usage.input_tokens / 1_000_000) * inputRate;
+  const outputCost = (data.usage.output_tokens / 1_000_000) * outputRate;
 
   return {
     text: textBlock.text,

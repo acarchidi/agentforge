@@ -160,6 +160,7 @@
     .tag-flagship { background: rgba(0,255,136,0.12); color: var(--green); border: 1px solid rgba(0,255,136,0.3); }
     .tag-research { background: rgba(0,136,255,0.1); color: var(--blue); border: 1px solid rgba(0,136,255,0.25); }
     .tag-utils { background: rgba(107,107,128,0.15); color: var(--text-secondary); border: 1px solid var(--border); }
+    .tag-solana { background: rgba(136,85,255,0.12); color: var(--purple); border: 1px solid rgba(136,85,255,0.3); }
 
     /* ─── Catalog grid ─── */
     .catalog-section { margin-bottom: 32px; }
@@ -341,7 +342,7 @@
   <!-- ═══ Header ═══ -->
   <header class="header">
     <div class="header-left">
-      <div class="logo">AGENTFORGE<span>v1.4.0</span></div>
+      <div class="logo">AGENTFORGE<span>v1.5.0</span></div>
       <div class="status-badge">
         <div class="status-dot" id="statusDot"></div>
         <span id="statusText">CHECKING</span>
@@ -365,11 +366,11 @@
     <!-- ═══ Stats Bar ═══ -->
     <div class="stats-bar">
       <div class="stat-item">
-        <span class="stat-value">16</span>
+        <span class="stat-value">19</span>
         <span class="stat-label">Paid Endpoints</span>
       </div>
       <div class="stat-item">
-        <span class="stat-value">16</span>
+        <span class="stat-value">20</span>
         <span class="stat-label">MCP Tools</span>
       </div>
       <div class="stat-item">
@@ -516,6 +517,40 @@
       </div>
     </div>
 
+    <!-- ═══ Solana ═══ -->
+    <div class="catalog-section">
+      <div class="section-header">
+        Solana
+        <span class="tag tag-solana">SOLANA</span>
+      </div>
+      <div class="catalog-grid">
+        <div class="service-card featured">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/solana/token-risk-scan</div>
+          <div class="desc">Solana rug check — mint/freeze authority, holder concentration, liquidity depth, and a composite 0-100 risk score. Pays with Base or Solana USDC.</div>
+          <div class="price">$0.35<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/solana/tx-simulate</div>
+          <div class="desc">Simulate a Solana transaction before signing it — balance changes, labeled programs, and a proceed/caution/avoid recommendation.</div>
+          <div class="price">$0.15<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/solana/tx-explain</div>
+          <div class="desc">Explain a Solana transaction in plain English — labeled programs, token/SOL movements, and risk flags.</div>
+          <div class="price">$0.05<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">GET</div>
+          <div class="endpoint">/v1/solana/program-lookup</div>
+          <div class="desc">Free lookup in the 30-program Solana label registry — protocol, category, risk level. No payment required.</div>
+          <div class="price">FREE<span class="price-unit"></span></div>
+        </div>
+      </div>
+    </div>
+
     <!-- ═══ Why It Works ═══ -->
     <div class="why-section">
       <div class="section-header">What Makes It Useful</div>
@@ -624,7 +659,7 @@
     <!-- ═══ Footer ═══ -->
     <div class="footer">
       <div class="footer-left">
-        <div class="footer-item"><span class="label">version</span>&nbsp;<span class="value">v1.4.0</span></div>
+        <div class="footer-item"><span class="label">version</span>&nbsp;<span class="value">v1.5.0</span></div>
         <div class="footer-item"><span class="label">network</span>&nbsp;<span class="value">Base Mainnet</span></div>
         <div class="footer-item"><span class="label">protocol</span>&nbsp;<span class="value">x402</span></div>
         <div class="footer-item"><span class="label">payment</span>&nbsp;<span class="value">USDC</span></div>

@@ -25,7 +25,11 @@ import { translateWithCost } from '../services/translate.js';
 import { walletSafetyWithCost } from '../services/walletSafety/index.js';
 import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
 import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
+import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
+import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
+import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
 import { getRegistry } from '../registry/lookup.js';
+import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
 
 export const mcpServer = new McpServer({
   name: 'agentforge',
@@ -305,4 +309,48 @@ mcpServer.tool(
       }],
     };
   },
+);
+
+mcpServer.tool(
+  'solana_program_lookup',
+  'Look up a Solana program ID in the program label registry. Returns protocol name, category, risk level. Free — no payment required.',
+  {
+    programId: z.string().describe('Base58 Solana program ID'),
+  },
+  async (input) => {
+    const entry = getSolanaProgramRegistry().lookup(input.programId);
+    return {
+      content: [{
+        type: 'text' as const,
+        text: JSON.stringify({ found: entry !== null, programId: input.programId, entry }, null, 2),
+      }],
+    };
+  },
+);
+
+mcpServer.tool(
+  'solana_tx_explain',
+  'Explain a Solana transaction in plain English: labeled programs, token/SOL movements, success status, and risk flags.',
+  {
+    signature: z.string().describe('Base58 Solana transaction signature'),
+  },
+  async (input) => callService(explainSolanaTxWithCost, input),
+);
+
+mcpServer.tool(
+  'solana_tx_simulate',
+  'Simulate a Solana transaction before signing it: balance changes, labeled programs, deterministic risk rules, and a proceed/caution/avoid recommendation.',
+  {
+    transaction: z.string().describe('Base64-encoded unsigned (or signed) Solana transaction'),
+  },
+  async (input) => callService(simulateSolanaTxWithCost, input),
+);
+
+mcpServer.tool(
+  'solana_token_risk_scan',
+  'Solana token rug check: mint/freeze authority, holder concentration, liquidity depth, and a composite 0-100 risk score.',
+  {
+    mint: z.string().describe('Base58 Solana token mint address'),
+  },
+  async (input) => callService(scanSolanaTokenRiskWithCost, input),
 );

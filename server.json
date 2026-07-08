@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.acarchidi/agentforge",
-  "description": "DeFi safety layer for AI agents: wallet safety, token risk, tx decode, contract docs. 16 tools.",
+  "description": "DeFi safety layer for AI agents: wallet safety, token risk, tx decode/simulate. 20 tools.",
   "repository": {
     "url": "https://github.com/acarchidi/agentforge",
     "source": "github"
   },
-  "version": "1.4.0",
+  "version": "1.5.0",
   "remotes": [
     {
       "type": "streamable-http",
