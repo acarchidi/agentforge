@@ -168,9 +168,9 @@ describe('SolanaProgramRegistryLookup', () => {
 
   it('getStats returns accurate totals', () => {
     const stats = registry.getStats();
-    expect(stats.totalEntries).toBe(30);
+    expect(stats.totalEntries).toBe(63);
     expect(stats.categoryCounts.dex).toBeGreaterThan(0);
-    expect(Object.values(stats.categoryCounts).reduce((a, b) => a + b, 0)).toBe(30);
+    expect(Object.values(stats.categoryCounts).reduce((a, b) => a + b, 0)).toBe(63);
   });
 
   it('getSolanaProgramRegistry singleton returns the same instance', () => {

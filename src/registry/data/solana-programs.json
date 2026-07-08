@@ -1,6 +1,6 @@
 {
-  "version": "1.0.0",
-  "generatedAt": "2026-07-08T00:00:00.000Z",
+  "version": "2.0.0",
+  "generatedAt": "2026-07-08T17:00:00.000Z",
   "entries": [
     {
       "programId": "11111111111111111111111111111111",
@@ -329,6 +329,336 @@
       "website": "https://squads.so",
       "verified": true,
       "source": "https://github.com/Squads-Protocol/v4"
+    },
+    {
+      "programId": "Eo7WjKq67rjJQSZxS6z3YkapzY3eMj6Xy8X5EQVn5UaB",
+      "name": "Meteora Dynamic AMM (Pools Program v1)",
+      "protocol": "Meteora",
+      "category": "amm",
+      "riskLevel": "low",
+      "description": "Constant-product AMM pools with integrated lending yield for LPs; high daily volume.",
+      "verified": true,
+      "source": "https://github.com/MeteoraAg/damm-v1-sdk/blob/main/Anchor.toml"
+    },
+    {
+      "programId": "24Uqj9JCLxUeoC3hGfh5W3s9FM9uCHDS2SG3LYwBpyTi",
+      "name": "Meteora Dynamic Vault",
+      "protocol": "Meteora",
+      "category": "amm",
+      "riskLevel": "low",
+      "description": "Yield-vault layer backing Meteora AMM pools; vault-owned token accounts can hold very large balances.",
+      "verified": true,
+      "source": "https://github.com/MeteoraAg/damm-v1-sdk/blob/main/ts-client/src/amm/constants.ts"
+    },
+    {
+      "programId": "vaU6kP7iNEGkbmPkLmZfGwiGxd4Mob24QQCie5R9kd2",
+      "name": "Meteora Alpha Vault",
+      "protocol": "Meteora",
+      "category": "amm",
+      "riskLevel": "low",
+      "description": "Anti-bot/anti-snipe token-launch vault that pools deposits before releasing tokens at launch.",
+      "verified": true,
+      "source": "https://github.com/MeteoraAg/alpha-vault-sdk/blob/main/ts-client/src/alpha-vault/constant.ts"
+    },
+    {
+      "programId": "9W959DqEETiGZocYWCQPaJ6sBmUzgfxXfqGeTEdp3aQP",
+      "name": "Orca Token Swap V2 (legacy)",
+      "protocol": "Orca",
+      "category": "amm",
+      "riskLevel": "low",
+      "description": "Orca's legacy constant-product swap program (pre-Whirlpool); superseded but still holds legacy pools.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "SSwapUtytfBdBn1b9NUGG6foMVPtcWgpRU32HToDUZr",
+      "name": "Saros AMM (V1)",
+      "protocol": "Saros Finance",
+      "category": "amm",
+      "riskLevel": "low",
+      "description": "Saros Finance's core constant-product AMM/swap program.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "1qbkdrr3z4ryLA7pZykqxvxWPoeifcVKo6ZG9CfkvVE",
+      "name": "Saros DLMM",
+      "protocol": "Saros Finance",
+      "category": "amm",
+      "riskLevel": "low",
+      "description": "Saros Finance's concentrated-liquidity (DLMM) program.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "FLUXubRmkEi2q6K3Y9kBPg9248ggaZVsoSFhtJHSrm1X",
+      "name": "FluxBeam",
+      "protocol": "FluxBeam",
+      "category": "amm",
+      "riskLevel": "medium",
+      "description": "DEX/AMM specializing in Token-2022 (Token Extensions) swaps and pools.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "swapNyd8XiQwJ6ianp9snpu4brUqFxadzvHebnAXjJZ",
+      "name": "Stabble Stable Swap",
+      "protocol": "Stabble",
+      "category": "amm",
+      "riskLevel": "unknown",
+      "description": "Stabble's stable-asset AMM pool program.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "GAMMA7meSFWaBXF25oSUgmGRwaW6sCMFLmBNiMSdbHVT",
+      "name": "GooseFX GAMMA",
+      "protocol": "GooseFX",
+      "category": "amm",
+      "riskLevel": "unknown",
+      "description": "GooseFX's dynamic-fee AMM for spot token swaps.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "CLMM9tUoggJu2wagPkkqs9eFG4BWhVBZWkP1qv3Sp7tR",
+      "name": "Crema Finance CLMM",
+      "protocol": "Crema Finance",
+      "category": "amm",
+      "riskLevel": "high",
+      "description": "Uniswap-v3-style concentrated-liquidity AMM; suffered an $8.78M exploit in July 2022, relaunched since.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "HyaB3W9q6XdA5xwpU4XnSZV94htfmbmqJXZcEbRaJutt",
+      "name": "Invariant",
+      "protocol": "Invariant",
+      "category": "amm",
+      "riskLevel": "unknown",
+      "description": "Concentrated-liquidity AMM DEX on Solana.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "H8W3ctz92svYg6mkn1UtGfu2aQr2fnUFHM1RhScEtQDt",
+      "name": "Cropper Finance AMM",
+      "protocol": "Cropper Finance",
+      "category": "amm",
+      "riskLevel": "unknown",
+      "description": "Cropper Finance's permissionless AMM/swap program.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "SSwpkEEcbUqx4vtoEByFjSkhKdCT862DNVb52nZg1UZ",
+      "name": "Saber Stable Swap",
+      "protocol": "Saber",
+      "category": "amm",
+      "riskLevel": "medium",
+      "description": "StableSwap curve AMM for pegged assets/LSTs; team wound down active development around 2022, contract still live.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "MERLuDFBMmsHnsBPZw2sDQZHvXFMwp8EdjudcU2HKky",
+      "name": "Mercurial Stable Swap (legacy)",
+      "protocol": "Mercurial Finance (rebranded to Meteora)",
+      "category": "amm",
+      "riskLevel": "medium",
+      "description": "Legacy stable-swap AMM from Mercurial Finance, the project that rebranded to Meteora in December 2022.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "NUMERUNsFCP3kuNmWZuXtm1AaQCPj9uw6Guv2Ekoi5P",
+      "name": "Perena Numeraire",
+      "protocol": "Perena",
+      "category": "amm",
+      "riskLevel": "unknown",
+      "description": "Multi-asset bounded stable-swap program for stablecoin liquidity.",
+      "verified": true,
+      "source": "https://api.jup.ag/swap/v1/program-id-to-label"
+    },
+    {
+      "programId": "LanMV9sAd7wArD4vJFi2qDdfnVhFxYSUg6eADduJ3uj",
+      "name": "LaunchLab",
+      "protocol": "Raydium",
+      "category": "launchpad",
+      "riskLevel": "low",
+      "description": "Raydium's bonding-curve token launch program; also underlies LetsBonk.fun via a platform-config PDA.",
+      "verified": true,
+      "source": "https://github.com/raydium-io/raydium-idl/blob/master/raydium_launchpad/raydium_launchpad.json"
+    },
+    {
+      "programId": "dbcij3LWUppWqq96dh6gJWwBifmcGfLSB5D4DuSMaqN",
+      "name": "Dynamic Bonding Curve (DBC)",
+      "protocol": "Meteora",
+      "category": "launchpad",
+      "riskLevel": "low",
+      "description": "Meteora's customizable bonding-curve launch program; underlies Believe, Jupiter Studio, and Bags.fm token launches before graduation to Meteora DAMM v2.",
+      "verified": true,
+      "source": "https://github.com/MeteoraAg/dynamic-bonding-curve"
+    },
+    {
+      "programId": "MoonCVVNZFSYkqNXP6bxHLPL6QQJiMagDL3qcqUQTrG",
+      "name": "Token Launchpad (Moonshot / Moonit)",
+      "protocol": "Moonshot (rebranded Moonit)",
+      "category": "launchpad",
+      "riskLevel": "low",
+      "description": "DEX Screener's bonding-curve memecoin launchpad program, now rebranded Moonit.",
+      "verified": true,
+      "source": "https://github.com/gomoonit/moonit-sdk/blob/master/src/solana/program/tokenLaunchpadIdlV4.ts"
+    },
+    {
+      "programId": "CndyV3LdqHUfDLmE5naZjVN8rBZz4tqhdefbAnjHG3JR",
+      "name": "Candy Machine Core v3",
+      "protocol": "Metaplex",
+      "category": "nft",
+      "riskLevel": "safe",
+      "description": "Metaplex's current-generation NFT collection minting/distribution program.",
+      "verified": true,
+      "source": "https://github.com/metaplex-foundation/mpl-candy-machine/blob/main/programs/candy-machine-core/program/src/lib.rs"
+    },
+    {
+      "programId": "Guard1JwRhJkVH6XZhzoYxeBVQe872VH6QggF4BWmS9g",
+      "name": "Candy Guard",
+      "protocol": "Metaplex",
+      "category": "nft",
+      "riskLevel": "safe",
+      "description": "Access-control companion program for Candy Machine v3 (allowlists, payment/bot-tax guards).",
+      "verified": true,
+      "source": "https://github.com/metaplex-foundation/mpl-candy-machine/blob/main/programs/candy-guard/program/src/lib.rs"
+    },
+    {
+      "programId": "strmRqUCoQUgGUan5YhzUZa6KqdzwX5L6FpUxfmKg5m",
+      "name": "Streamflow Protocol",
+      "protocol": "Streamflow",
+      "category": "memecoin-infra",
+      "riskLevel": "low",
+      "description": "Token vesting/streaming-payments program, commonly used by launchpads and teams to lock creator allocations.",
+      "verified": true,
+      "source": "https://github.com/streamflow-finance/js-sdk/blob/master/packages/stream/solana/constants.ts"
+    },
+    {
+      "programId": "BUYfFzeTWeRW5JrPjCutbsvzjA5ERS8EnGujJjfmnJu6",
+      "name": "Streamflow Launchpad",
+      "protocol": "Streamflow",
+      "category": "launchpad",
+      "riskLevel": "unknown",
+      "description": "Streamflow's own token-launchpad product (separate from its vesting program); newer, limited track record.",
+      "verified": true,
+      "source": "https://github.com/streamflow-finance/js-sdk/blob/master/packages/launchpad/solana/constants.ts"
+    },
+    {
+      "programId": "HEAVENoP2qxoeuF8Dj2oT1GHEnu49U5mJYkdeC8BAX2o",
+      "name": "Heaven AMM",
+      "protocol": "Heaven",
+      "category": "amm",
+      "riskLevel": "unknown",
+      "description": "Combined launchpad and AMM: every token gets a live liquidity pool with a virtual-SOL floor at creation, no bonding-curve migration step.",
+      "verified": true,
+      "source": "https://docs.heaven.xyz/sdk/contract/addresses.md"
+    },
+    {
+      "programId": "FEE2tBhCKAt7shrod19QttSVREUYPiyMzoku1mL1gqVK",
+      "name": "Bags Fee Share V2",
+      "protocol": "Bags.fm",
+      "category": "memecoin-infra",
+      "riskLevel": "low",
+      "description": "Current fee-configuration/claiming program for Bags.fm creator royalties (Bags' token launches run through Meteora DBC).",
+      "verified": true,
+      "source": "https://docs.bags.fm/principles/program-ids"
+    },
+    {
+      "programId": "13gDzEXCdocbj8iAiqrScGo47NiSuYENGsRqi3SEAwet",
+      "name": "Adrena Protocol",
+      "protocol": "Adrena Protocol",
+      "category": "dex",
+      "riskLevel": "medium",
+      "description": "Perpetuals leverage-trading exchange on Solana supporting BTC/SOL/BONK with a pool-to-peer liquidity model.",
+      "verified": true,
+      "source": "https://github.com/AdrenaFoundation/adrena-abi/blob/main/idl/adrena.json"
+    },
+    {
+      "programId": "FLASH6Lo6h3iasJKWDs2F8TkW2UKf3s15C8PMGuVfgBn",
+      "name": "Flash Trade (Perpetuals)",
+      "protocol": "Flash Trade",
+      "category": "dex",
+      "riskLevel": "medium",
+      "description": "Asset-backed perpetuals and spot leverage-trading exchange on Solana with Pyth-based pricing.",
+      "verified": true,
+      "source": "https://github.com/flash-trade/flash-trade-sdk/blob/main/SDK/src/PoolConfig.json"
+    },
+    {
+      "programId": "PERPHjGBqRHArX4DySjwM6UJHiR3sWAatqfdBS2qQJu",
+      "name": "Jupiter Perpetuals",
+      "protocol": "Jupiter",
+      "category": "dex",
+      "riskLevel": "low",
+      "description": "LP-to-trader perpetuals exchange (SOL/BTC/ETH, up to 100x) that is part of the Jupiter DeFi suite.",
+      "verified": true,
+      "source": "https://github.com/julianfssen/jupiter-perps-anchor-idl-parsing/blob/main/src/constants.ts"
+    },
+    {
+      "programId": "4MangoMjqJ2firMokCjjGgoK8d4MXcrgL7XJaL3w6fVg",
+      "name": "Mango Markets v4",
+      "protocol": "Mango Markets",
+      "category": "lending",
+      "riskLevel": "medium",
+      "description": "Cross-margin spot/lending and perpetuals trading program (rewrite that replaced Mango v3 after its 2022 exploit).",
+      "verified": true,
+      "source": "https://github.com/blockworks-foundation/mango-v4/blob/main/programs/mango-v4/src/lib.rs"
+    },
+    {
+      "programId": "pythWSnswVUd12oZpeFP8e9CVaEqJg25g1Vtc2biRsT",
+      "name": "Pyth Price Feed Program",
+      "protocol": "Pyth Network",
+      "category": "oracle",
+      "riskLevel": "safe",
+      "description": "Core program that owns all individual Pyth price-feed accounts on Solana mainnet.",
+      "verified": true,
+      "source": "https://docs.pyth.network/price-feeds/core/contract-addresses/solana"
+    },
+    {
+      "programId": "SW1TCH7qEPTdLsDHRgPuMQjbQxKdH2aBStViMFnt64f",
+      "name": "Switchboard Oracle Program (V2)",
+      "protocol": "Switchboard",
+      "category": "oracle",
+      "riskLevel": "safe",
+      "description": "Core Switchboard V2 program owning oracle aggregator/queue accounts on Solana mainnet.",
+      "verified": true,
+      "source": "https://docs.switchboard.xyz/tooling-and-resources/technical-resources-and-documentation/solana-accounts"
+    },
+    {
+      "programId": "3parcLrT7WnXAcyPfkCz49oofuuf2guUKkjuFkAhZW8Y",
+      "name": "Parcl v3",
+      "protocol": "Parcl",
+      "category": "dex",
+      "riskLevel": "medium",
+      "description": "Perpetuals exchange for trading real-estate price index synthetics on Solana.",
+      "verified": true,
+      "source": "https://github.com/ParclFinance/parcl-v3-idl/blob/main/parcl-v3-idl.json"
+    },
+    {
+      "programId": "HEvSKofvBgfaexv23kMabbYqxasxU3mQ4ibBMEmJWHny",
+      "name": "Chainlink Data Feeds (OCR2 Program)",
+      "protocol": "Chainlink",
+      "category": "oracle",
+      "riskLevel": "safe",
+      "description": "Program that owns Chainlink OCR2 price-feed accounts consumed on-chain on Solana mainnet.",
+      "verified": true,
+      "source": "https://docs.chain.link/data-feeds/solana/using-data-feeds-solana"
+    },
+    {
+      "programId": "1oopBoJG58DgkUVKkEzKgyG9dvRmpgeEm1AVjoHkF78",
+      "name": "Loopscale",
+      "protocol": "Loopscale",
+      "category": "lending",
+      "riskLevel": "high",
+      "description": "Order-book-style fixed-rate lending/borrowing protocol on Solana; suffered a roughly $5.8M exploit in 2025.",
+      "verified": true,
+      "source": "https://github.com/DefiLlama/DefiLlama-Adapters/blob/main/projects/loopscale/index.js"
     }
   ]
 }
