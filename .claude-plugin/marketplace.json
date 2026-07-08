@@ -1,0 +1,25 @@
+{
+  "name": "agentforge",
+  "owner": {
+    "name": "acarchidi"
+  },
+  "description": "DeFi safety layer for AI agents: wallet safety, token risk / rug check, tx decode, contract docs. Free registry lookups; paid endpoints via x402 (USDC on Base).",
+  "plugins": [
+    {
+      "name": "agentforge",
+      "source": "./",
+      "description": "DeFi safety skill: wallet safety, token risk scoring, transaction decoding, contract docs. Free lookups plus x402-paid endpoints.",
+      "version": "1.4.0",
+      "author": {
+        "name": "acarchidi"
+      },
+      "homepage": "https://agentforge-taupe.vercel.app",
+      "repository": "https://github.com/acarchidi/agentforge",
+      "license": "MIT",
+      "keywords": ["defi", "solana", "x402", "security", "web3", "token-risk", "wallet-safety", "rug-check"],
+      "category": "web3",
+      "skills": ["./skills/agentforge"],
+      "strict": false
+    }
+  ]
+}
