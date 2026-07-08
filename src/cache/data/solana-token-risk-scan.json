@@ -1,0 +1,64 @@
+{
+  "version": "1.0.0",
+  "generatedAt": "2026-07-08T16:24:00.000Z",
+  "entries": [
+    {
+      "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+      "scan": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "source": "cached",
+        "computedAt": "2026-07-08T16:24:00.000Z",
+        "authorities": {
+          "mintAuthority": "BJE5MMbqXjVwjAF7oxwPYXnTXDyspzZyt4vwenNw5ruG",
+          "canMint": true,
+          "freezeAuthority": "7dGbd2QZcCKcTndnHcTL8q7SMVXAkp688NTQYwrRCrar",
+          "canFreeze": true,
+          "supply": "8270183434727852",
+          "decimals": 6
+        },
+        "holders": {
+          "top10Pct": 0,
+          "entries": []
+        },
+        "liquidity": {
+          "totalUsd": 24715261.93,
+          "volume24hUsd": 27313470.13,
+          "topPoolCount": 30,
+          "ageDays": 1318,
+          "available": true
+        },
+        "metadata": {
+          "name": "USD Coin",
+          "symbol": "USDC",
+          "mutable": true
+        },
+        "score": 45,
+        "level": "medium",
+        "flags": [
+          "Mint authority is active — supply can be inflated at any time",
+          "Freeze authority is active — holder accounts can be frozen",
+          "Token metadata is mutable — name/symbol/image can change post-launch",
+          "Holder concentration data unavailable"
+        ],
+        "summary": "This token has medium risk because the creator can inflate supply, freeze your account, and alter the token's identity whenever they want, while you can't see if whales control most of it.",
+        "dataCompleteness": {
+          "holdersAvailable": false,
+          "liquidityAvailable": true,
+          "metadataAvailable": true
+        },
+        "relatedServices": [
+          {
+            "endpoint": "/v1/solana/tx-explain",
+            "description": "Explain this token's deploy or recent transactions",
+            "suggestedInput": { "signature": "<a transaction signature involving this mint>" }
+          },
+          {
+            "endpoint": "/v1/solana/program-lookup",
+            "description": "Look up the mint or freeze authority program",
+            "suggestedInput": { "programId": "BJE5MMbqXjVwjAF7oxwPYXnTXDyspzZyt4vwenNw5ruG" }
+          }
+        ]
+      }
+    }
+  ]
+}

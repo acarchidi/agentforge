@@ -11,6 +11,9 @@ import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/
 
 const app = express();
 
+// Trust proxy headers (Vercel terminates TLS; without this, req.protocol is always 'http')
+app.set('trust proxy', true);
+
 // Parse JSON bodies
 app.use(express.json({ limit: '1mb' }));
 

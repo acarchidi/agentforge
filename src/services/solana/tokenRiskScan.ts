@@ -3,6 +3,7 @@ import { solanaRpc } from '../dataSources/solana.js';
 import { fetchHeliusAsset } from '../dataSources/helius.js';
 import { fetchDexScreenerData } from '../dataSources/dexscreener.js';
 import { getSolanaProgramRegistry } from '../../registry/solanaPrograms.js';
+import { getSolanaTokenRiskScanCache } from '../../cache/solanaTokenRiskScanCache.js';
 import type { SolanaTokenRiskScanInput, SolanaTokenRiskScanOutput } from '../../schemas/solanaTokenRiskScan.js';
 
 // ── Base weights (must sum to 100) ──────────────────────────────────
@@ -186,6 +187,12 @@ export async function scanSolanaTokenRiskWithCost(
 ): Promise<{ output: SolanaTokenRiskScanOutput; estimatedCostUsd: number }> {
   const mint = input.mint;
 
+  const cache = getSolanaTokenRiskScanCache();
+  const cached = cache.lookup(mint);
+  if (cached) {
+    return { output: cached, estimatedCostUsd: 0 };
+  }
+
   const mintInfo = await solanaRpc<ParsedMintAccountInfo>('getAccountInfo', [
     mint,
     { encoding: 'jsonParsed' },
@@ -269,6 +276,8 @@ export async function scanSolanaTokenRiskWithCost(
 
   const output: SolanaTokenRiskScanOutput = {
     mint,
+    source: 'live',
+    computedAt: new Date().toISOString(),
     authorities: {
       mintAuthority,
       canMint,
@@ -317,6 +326,8 @@ export async function scanSolanaTokenRiskWithCost(
       },
     ],
   };
+
+  cache.set(mint, output);
 
   return { output, estimatedCostUsd };
 }

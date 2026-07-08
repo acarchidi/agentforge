@@ -10,6 +10,10 @@ const overallRiskLevel = z.enum(['safe', 'low', 'medium', 'high', 'critical']);
 
 export const solanaTokenRiskScanOutput = z.object({
   mint: z.string(),
+  /** 'cached' if served from the trending-token cache, 'live' if freshly computed */
+  source: z.enum(['cached', 'live']).default('live'),
+  computedAt: z.string().optional(),
+  stalenessSec: z.number().optional(),
   authorities: z.object({
     mintAuthority: z.string().nullable(),
     canMint: z.boolean(),

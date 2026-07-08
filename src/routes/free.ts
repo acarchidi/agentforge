@@ -26,10 +26,12 @@ import { config, networkId } from '../config.js';
 import { getDb } from '../analytics/db.js';
 import { getRegistry } from '../registry/lookup.js';
 import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
+import { getPaidHealth } from '../health/paidHealthCheck.js';
 import { getCacheStore } from '../cache/store.js';
 import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 import { getPoolSnapshotsCache } from '../cache/poolSnapshotsCache.js';
 import { getTokenRiskMetricsCache } from '../cache/tokenRiskMetricsCache.js';
+import { getSolanaTokenRiskScanCache } from '../cache/solanaTokenRiskScanCache.js';
 import { generateAgentCard } from '../discovery/agentCard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -82,6 +84,11 @@ freeRouter.get('/SKILL.md', (_req: Request, res: Response) => {
 
 freeRouter.get('/health', (_req: Request, res: Response) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
+});
+
+freeRouter.get('/health/paid', async (req: Request, res: Response) => {
+  const result = await getPaidHealth(getBaseUrl(req));
+  res.status(result.status === 'ok' ? 200 : 503).json(result);
 });
 
 /** Convert a Zod schema to JSON Schema, stripping the $schema wrapper */
@@ -393,6 +400,7 @@ freeRouter.get('/cache/stats', async (_req: Request, res: Response) => {
   const precomputedStats = precomputed.getStats();
   const poolStats = getPoolSnapshotsCache().getStats();
   const riskStats = getTokenRiskMetricsCache().getStats();
+  const solanaRiskScanStats = getSolanaTokenRiskScanCache().getStats();
   res.json({
     ...stats,
     runtimeCachedDocs: docsKeys.length,
@@ -413,6 +421,10 @@ freeRouter.get('/cache/stats', async (_req: Request, res: Response) => {
     tokenRiskMetrics: {
       total: riskStats.totalCached,
       generatedAt: riskStats.generatedAt,
+    },
+    solanaTokenRiskScan: {
+      total: solanaRiskScanStats.totalCached,
+      generatedAt: solanaRiskScanStats.seedGeneratedAt,
     },
   });
 });
