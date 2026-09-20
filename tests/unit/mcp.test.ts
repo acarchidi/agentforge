@@ -5,7 +5,7 @@ describe('MCP Server', () => {
   it('has correct server name and version', () => {
     const info = (mcpServer as any).server._serverInfo;
     expect(info.name).toBe('agentforge');
-    expect(info.version).toBe('1.0.0');
+    expect(info.version).toBe('1.1.0');
   });
 
   it('registers all 20 tools (16 EVM + 4 Solana)', () => {

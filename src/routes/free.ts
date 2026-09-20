@@ -23,7 +23,7 @@ import { solanaTokenRiskScanInput, solanaTokenRiskScanOutput } from '../schemas/
 import { feedbackInput } from '../schemas/feedback.js';
 import { generateOpenApiSpec } from '../utils/openapi.js';
 import { config, networkId } from '../config.js';
-import { getDb } from '../analytics/db.js';
+import { getStore } from '../analytics/store.js';
 import { getRegistry } from '../registry/lookup.js';
 import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
 import { getPaidHealth } from '../health/paidHealthCheck.js';
@@ -348,14 +348,16 @@ freeRouter.get('/v1/solana/program-lookup', (req: Request, res: Response) => {
 // Feedback (free, rate-limited)
 // ────────────────────────────────────────────────────────────────────
 
-freeRouter.post('/feedback', (req: Request, res: Response) => {
+freeRouter.post('/feedback', async (req: Request, res: Response) => {
   try {
     const validated = feedbackInput.parse(req.body);
 
-    const db = getDb();
-    db.prepare(
-      `INSERT INTO feedback (type, endpoint, message, contact, created_at) VALUES (?, ?, ?, ?, datetime('now'))`,
-    ).run(validated.type, validated.endpoint ?? null, validated.message, validated.contact ?? null);
+    await getStore().insertFeedback({
+      type: validated.type,
+      endpoint: validated.endpoint ?? null,
+      message: validated.message,
+      contact: validated.contact ?? null,
+    });
 
     res.json({ status: 'ok', message: 'Thank you for your feedback.' });
   } catch (err) {

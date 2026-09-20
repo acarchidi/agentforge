@@ -180,6 +180,23 @@
       </div>
 
       <div class="panel">
+        <div class="panel-title">Daily Summary <span id="dailyMeta" style="font-size:10px;color:var(--text-secondary);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
+        <div class="metrics-grid" id="dailySplit"></div>
+        <table class="perf-table" style="margin-top:12px;">
+          <thead><tr><th>Top tools (volume)</th><th>Kind</th><th>Calls</th><th>Unique clients</th></tr></thead>
+          <tbody id="topToolsTable"></tbody>
+        </table>
+        <table class="perf-table" style="margin-top:12px;">
+          <thead><tr><th>Paid endpoint</th><th>Payers</th><th>Repeat payers</th><th>Calls / payer</th></tr></thead>
+          <tbody id="repeatTable"></tbody>
+        </table>
+        <table class="perf-table" style="margin-top:12px;">
+          <thead><tr><th>Date</th><th>Endpoint / tool</th><th>Kind</th><th>Calls</th><th>Unique</th><th>Success</th></tr></thead>
+          <tbody id="dailyTable"></tbody>
+        </table>
+      </div>
+
+      <div class="panel">
         <div class="panel-title">Recent Activity <span id="feedRefresh" style="font-size:10px;color:var(--text-secondary);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
         <div class="feed-list" id="feedList"></div>
       </div>
@@ -265,14 +282,16 @@
     async function refreshDashboard(cachedStats) {
       if (!adminToken) return;
       try {
-        const [stats, dailyRes, feedRes, fbRes] = await Promise.all([
+        const [stats, dailyRes, feedRes, fbRes, summary] = await Promise.all([
           cachedStats ? Promise.resolve(cachedStats) :
             fetch('/admin/stats', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
           fetch('/admin/revenue/daily', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
           fetch('/admin/recent-calls?limit=25', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
           fetch('/admin/feedback?limit=20', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
+          fetch('/admin/daily?days=30', { headers: { 'Authorization': 'Bearer ' + adminToken } }).then(r => r.json()),
         ]);
         renderMetrics(stats);
+        renderDaily(summary);
         renderRevenueChart(stats, dailyRes);
         renderPerfTable(stats);
         renderFeed(feedRes);
@@ -380,6 +399,24 @@
         ${f.endpoint ? `<span style="font-size:11px;color:var(--text-secondary);">${esc(f.endpoint)}</span>` : ''}
         <span class="feed-time">${timeAgo(f.timestamp)}</span>
       </div>`).join('');
+    }
+
+    function renderDaily(summary) {
+      if (!summary || !summary.split) return;
+      const esc = (v) => String(v ?? '').replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+      const totals = summary.split.reduce((a, d) => ({ mcp: a.mcp + d.mcp, paid: a.paid + d.paid, capHits: a.capHits + d.capHits }), { mcp: 0, paid: 0, capHits: 0 });
+      document.getElementById('dailyMeta').textContent = `last ${summary.days} days · ${summary.generatedAt.slice(0, 19).replace('T', ' ')} UTC`;
+      document.getElementById('dailySplit').innerHTML = `
+        <div class="metric-card"><div class="metric-label">MCP calls</div><div class="metric-value blue">${totals.mcp.toLocaleString()}</div><div class="metric-sub">free tools via /mcp</div></div>
+        <div class="metric-card"><div class="metric-label">Paid calls</div><div class="metric-value green">${totals.paid.toLocaleString()}</div><div class="metric-sub">x402 settled requests</div></div>
+        <div class="metric-card"><div class="metric-label">Cap hits</div><div class="metric-value amber">${totals.capHits.toLocaleString()}</div><div class="metric-sub">MCP → paid conversion prompts</div></div>
+      `;
+      document.getElementById('topToolsTable').innerHTML = summary.topTools.map(t =>
+        `<tr><td>${esc(t.name)}</td><td>${esc(t.kind)}</td><td>${t.calls}</td><td>${t.uniqueClients}</td></tr>`).join('') || '<tr><td colspan="4">No calls yet</td></tr>';
+      document.getElementById('repeatTable').innerHTML = summary.repeatClients.map(r =>
+        `<tr><td>${esc(r.name)}</td><td>${r.clients}</td><td>${r.repeatClients}</td><td>${r.callsPerClient}</td></tr>`).join('') || '<tr><td colspan="4">No paid calls yet</td></tr>';
+      document.getElementById('dailyTable').innerHTML = summary.perDay.slice(0, 60).map(d =>
+        `<tr><td>${esc(d.date)}</td><td>${esc(d.name)}</td><td>${esc(d.kind)}</td><td>${d.calls}</td><td>${d.uniqueClients}</td><td>${Math.round((d.successRate ?? 0) * 100)}%</td></tr>`).join('') || '<tr><td colspan="6">No data</td></tr>';
     }
 
     function renderFooter(stats) {

@@ -3,12 +3,15 @@ import crypto from 'crypto';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config } from '../config.js';
-import { getDb } from '../analytics/db.js';
+import { getStore } from '../analytics/store.js';
 import {
   getOverviewStats,
   getRevenueStats,
   getLast24hStats,
   getDailyRevenue,
+  getRecentCalls,
+  getFeedback,
+  getDailySummary,
 } from '../analytics/queries.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -101,44 +104,49 @@ adminRouter.get('/admin', (_req: Request, res: Response) => {
 // Admin API endpoints
 // ────────────────────────────────────────────────────────────────────
 
-adminRouter.get('/admin/stats', requireAdminToken, (_req: Request, res: Response) => {
-  const overview = getOverviewStats();
-  const revenue = getRevenueStats();
-  const last24h = getLast24hStats();
+function wrap(fn: (req: Request) => Promise<unknown>) {
+  return async (req: Request, res: Response) => {
+    try {
+      res.json(await fn(req));
+    } catch (error) {
+      console.error('admin query failed:', error);
+      res.status(500).json({ error: 'ANALYTICS_UNAVAILABLE', message: error instanceof Error ? error.message : 'query failed' });
+    }
+  };
+}
 
-  res.json({
+adminRouter.get('/admin/stats', requireAdminToken, wrap(async () => {
+  const [overview, revenue, last24h] = await Promise.all([
+    getOverviewStats(),
+    getRevenueStats(),
+    getLast24hStats(),
+  ]);
+  return {
     overview,
     revenue,
     last24h,
+    backend: getStore().backend,
     generatedAt: new Date().toISOString(),
-  });
-});
+  };
+}));
 
-adminRouter.get('/admin/revenue/daily', requireAdminToken, (_req: Request, res: Response) => {
-  const daily = getDailyRevenue();
-  res.json({ daily });
-});
+adminRouter.get('/admin/revenue/daily', requireAdminToken, wrap(async () => ({ daily: await getDailyRevenue(30) })));
 
-adminRouter.get('/admin/recent-calls', requireAdminToken, (req: Request, res: Response) => {
+adminRouter.get('/admin/recent-calls', requireAdminToken, wrap(async (req) => {
   const limit = Math.min(parseInt(req.query.limit as string) || 25, 100);
-  const db = getDb();
-  const calls = db.prepare(`
-    SELECT endpoint, success, latency_ms as latencyMs, error_type as errorType, created_at as timestamp
-    FROM calls
-    ORDER BY id DESC
-    LIMIT ?
-  `).all(limit);
-  res.json({ calls });
-});
+  return { calls: await getRecentCalls(limit) };
+}));
 
-adminRouter.get('/admin/feedback', requireAdminToken, (req: Request, res: Response) => {
+adminRouter.get('/admin/feedback', requireAdminToken, wrap(async (req) => {
   const limit = Math.min(parseInt(req.query.limit as string) || 50, 200);
-  const db = getDb();
-  const feedback = db.prepare(`
-    SELECT id, type, endpoint, message, contact, created_at as timestamp
-    FROM feedback
-    ORDER BY id DESC
-    LIMIT ?
-  `).all(limit);
-  res.json({ feedback });
-});
+  return { feedback: await getFeedback(limit) };
+}));
+
+/**
+ * Daily summary: calls + unique clients per endpoint/tool per day, MCP vs paid
+ * split (with cap hits), top 10 tools by volume, and repeat-payer stats.
+ */
+adminRouter.get('/admin/daily', requireAdminToken, wrap(async (req) => {
+  const days = Math.min(Math.max(parseInt(req.query.days as string) || 30, 1), 90);
+  return getDailySummary(days);
+}));

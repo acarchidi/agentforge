@@ -18,99 +18,94 @@ import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
-import { logCall, logRevenue } from '../analytics/logger.js';
-import { config } from '../config.js';
+import { logEvent } from '../analytics/logger.js';
+import { paymentContextFromRequest } from '../analytics/clientId.js';
+import { ENDPOINT_PRICES } from '../pricing.js';
 
 export const paidRouter = Router();
 
-function parsePrice(priceString: string): number {
-  return Number(priceString.replace(/^\$/, ''));
+// Kept for callers that imported PRICES from this module.
+export const PRICES = ENDPOINT_PRICES;
+
+type ServiceFn = (input: any) => Promise<{ output: unknown; estimatedCostUsd: number }>;
+
+/** Chain requested, when the input carries one; Solana routes are implicit. */
+function chainOf(endpoint: string, input: Record<string, unknown> | undefined): string | undefined {
+  if (endpoint.startsWith('/v1/solana/')) return 'solana';
+  const chain = input?.chain;
+  return typeof chain === 'string' ? chain : undefined;
 }
 
-// Price per endpoint — derived from config.PRICE_* (the same source the x402
-// middleware charges from) so revenue logging can never drift from what a
-// caller was actually billed.
-const PRICES: Record<string, number> = {
-  '/v1/token-intel': parsePrice(config.PRICE_TOKEN_INTEL),
-  '/v1/code-review': parsePrice(config.PRICE_CODE_REVIEW),
-  '/v1/token-research': parsePrice(config.PRICE_TOKEN_RESEARCH),
-  '/v1/contract-docs': parsePrice(config.PRICE_CONTRACT_DOCS),
-  '/v1/contract-monitor': parsePrice(config.PRICE_CONTRACT_MONITOR),
-  '/v1/token-compare': parsePrice(config.PRICE_TOKEN_COMPARE),
-  '/v1/tx-decode': parsePrice(config.PRICE_TX_DECODE),
-  '/v1/approval-scan': parsePrice(config.PRICE_APPROVAL_SCAN),
-  '/v1/gas': parsePrice(config.PRICE_GAS),
-  '/v1/sentiment': parsePrice(config.PRICE_SENTIMENT),
-  '/v1/summarize': parsePrice(config.PRICE_SUMMARIZE),
-  '/v1/translate': parsePrice(config.PRICE_TRANSLATE),
-  '/v1/wallet-safety': parsePrice(config.PRICE_WALLET_SAFETY),
-  '/v1/pool-snapshot': parsePrice(config.PRICE_POOL_SNAPSHOT),
-  '/v1/token-risk-metrics': parsePrice(config.PRICE_TOKEN_RISK_METRICS),
-  '/v1/solana/tx-explain': parsePrice(config.PRICE_SOLANA_TX_EXPLAIN),
-  '/v1/solana/tx-simulate': parsePrice(config.PRICE_SOLANA_TX_SIMULATE),
-  '/v1/solana/token-risk-scan': parsePrice(config.PRICE_SOLANA_TOKEN_RISK_SCAN),
-  '/v1/ping': 0.001,
-};
+function classifyError(error: unknown): string {
+  if (error instanceof z.ZodError) return 'validation';
+  const msg = error instanceof Error ? error.message.toLowerCase() : '';
+  if (/timeout|timed out|etimedout/.test(msg)) return 'upstream_timeout';
+  if (/429|rate limit/.test(msg)) return 'upstream_rate_limit';
+  if (/not found|404/.test(msg)) return 'not_found';
+  if (/anthropic|claude|llm/.test(msg)) return 'llm';
+  return 'internal';
+}
 
-// Handler factory with cost tracking
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function createHandler(
+/**
+ * Shared request lifecycle for every paid route: run the service, log ONE
+ * analytics event carrying latency, success, error class, requested chain,
+ * payment network/scheme, and the hashed payer — then respond.
+ */
+async function handlePaid(
+  req: Request,
+  res: Response,
   endpoint: string,
-  serviceFn: (input: any) => Promise<{ output: unknown; estimatedCostUsd: number }>,
-) {
-  return async (req: Request, res: Response) => {
-    const startTime = Date.now();
-    try {
-      const result = await serviceFn(req.body);
-
-      const latencyMs = Date.now() - startTime;
-      logCall({
-        endpoint,
-        success: true,
-        latencyMs,
-        inputSize: JSON.stringify(req.body).length,
-        outputSize: JSON.stringify(result.output).length,
-      });
-
-      // Log revenue with real cost data
-      logRevenue(
-        endpoint,
-        PRICES[endpoint] ?? 0,
-        result.estimatedCostUsd,
-        (req.headers['x-payment-response'] as string) ?? undefined,
-      );
-
-      res.json(result.output);
-    } catch (error) {
-      const latencyMs = Date.now() - startTime;
-
-      if (error instanceof z.ZodError) {
-        logCall({
-          endpoint,
-          success: false,
-          latencyMs,
-          errorType: 'validation',
-        });
-        res.status(400).json({
-          error: 'VALIDATION_ERROR',
-          message: 'Invalid input',
-          details: error.issues.map((e) => ({
-            path: e.path.join('.'),
-            message: e.message,
-          })),
-        });
-        return;
-      }
-
-      logCall({ endpoint, success: false, latencyMs, errorType: 'internal' });
-      console.error(`${endpoint} error:`, error);
-      res.status(500).json({
-        error: 'INTERNAL_ERROR',
-        message:
-          error instanceof Error ? error.message : 'Unknown error',
-      });
-    }
+  serviceFn: ServiceFn,
+  input: unknown,
+): Promise<void> {
+  const startTime = Date.now();
+  const payment = paymentContextFromRequest(req);
+  const inputObj = (input && typeof input === 'object' ? input : undefined) as Record<string, unknown> | undefined;
+  const base = {
+    kind: 'paid' as const,
+    name: endpoint,
+    chain: chainOf(endpoint, inputObj),
+    clientHash: payment.clientHash,
+    paymentNetwork: payment.paymentNetwork,
+    paymentScheme: payment.paymentScheme,
   };
+
+  try {
+    const result = await serviceFn(input);
+    const latencyMs = Date.now() - startTime;
+    await logEvent({
+      ...base,
+      success: true,
+      latencyMs,
+      inputSize: input === undefined ? undefined : JSON.stringify(input).length,
+      outputSize: JSON.stringify(result.output).length,
+      amountUsd: ENDPOINT_PRICES[endpoint] ?? 0,
+      estimatedCostUsd: result.estimatedCostUsd,
+    });
+    res.json(result.output);
+  } catch (error) {
+    const latencyMs = Date.now() - startTime;
+    const errorClass = classifyError(error);
+    await logEvent({ ...base, success: false, latencyMs, errorClass });
+
+    if (error instanceof z.ZodError) {
+      res.status(400).json({
+        error: 'VALIDATION_ERROR',
+        message: 'Invalid input',
+        details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+      });
+      return;
+    }
+    console.error(`${endpoint} error:`, error);
+    res.status(500).json({
+      error: 'INTERNAL_ERROR',
+      message: error instanceof Error ? error.message : 'Unknown error',
+    });
+  }
+}
+
+function createHandler(endpoint: string, serviceFn: ServiceFn) {
+  return (req: Request, res: Response) => handlePaid(req, res, endpoint, serviceFn, req.body);
 }
 
 // Paid endpoints
@@ -132,67 +127,20 @@ paidRouter.post('/v1/solana/tx-simulate', createHandler('/v1/solana/tx-simulate'
 paidRouter.post('/v1/solana/token-risk-scan', createHandler('/v1/solana/token-risk-scan', scanSolanaTokenRiskWithCost));
 
 // Gas oracle — GET endpoint, chain from query param
-paidRouter.get('/v1/gas', async (req: Request, res: Response) => {
-  const startTime = Date.now();
-  const endpoint = '/v1/gas';
-  try {
-    const chain = (req.query.chain as string | undefined) ?? undefined;
-    const result = await getGasPriceWithCost({ chain } as any);
-    const latencyMs = Date.now() - startTime;
-    logCall({ endpoint, success: true, latencyMs, outputSize: JSON.stringify(result.output).length });
-    logRevenue(endpoint, PRICES[endpoint] ?? 0, result.estimatedCostUsd);
-    res.json(result.output);
-  } catch (error) {
-    const latencyMs = Date.now() - startTime;
-    if (error instanceof z.ZodError) {
-      logCall({ endpoint, success: false, latencyMs, errorType: 'validation' });
-      res.status(400).json({
-        error: 'VALIDATION_ERROR',
-        message: 'Invalid input',
-        details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
-      });
-      return;
-    }
-    logCall({ endpoint, success: false, latencyMs, errorType: 'internal' });
-    console.error(`${endpoint} error:`, error);
-    res.status(500).json({ error: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+paidRouter.get('/v1/gas', (req: Request, res: Response) =>
+  handlePaid(req, res, '/v1/gas', getGasPriceWithCost, { chain: (req.query.chain as string | undefined) ?? undefined }));
 
 // Pool snapshot — GET endpoint, query params
-paidRouter.get('/v1/pool-snapshot', async (req: Request, res: Response) => {
-  const startTime = Date.now();
-  const endpoint = '/v1/pool-snapshot';
-  try {
-    const result = await getPoolSnapshotWithCost(req.query);
-    const latencyMs = Date.now() - startTime;
-    logCall({ endpoint, success: true, latencyMs, outputSize: JSON.stringify(result.output).length });
-    logRevenue(endpoint, PRICES[endpoint] ?? 0, result.estimatedCostUsd);
-    res.json(result.output);
-  } catch (error) {
-    const latencyMs = Date.now() - startTime;
-    if (error instanceof z.ZodError) {
-      logCall({ endpoint, success: false, latencyMs, errorType: 'validation' });
-      res.status(400).json({
-        error: 'VALIDATION_ERROR',
-        message: 'Invalid input',
-        details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
-      });
-      return;
-    }
-    logCall({ endpoint, success: false, latencyMs, errorType: 'internal' });
-    console.error(`${endpoint} error:`, error);
-    res.status(500).json({ error: 'INTERNAL_ERROR', message: error instanceof Error ? error.message : 'Unknown error' });
-  }
-});
+paidRouter.get('/v1/pool-snapshot', (req: Request, res: Response) =>
+  handlePaid(req, res, '/v1/pool-snapshot', getPoolSnapshotWithCost, req.query));
 
 // Ping — minimal paid endpoint to verify x402 flow
-paidRouter.get('/v1/ping', (_req: Request, res: Response) => {
-  logCall({ endpoint: '/v1/ping', success: true, latencyMs: 0 });
-  logRevenue('/v1/ping', PRICES['/v1/ping'] ?? 0.001, 0);
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    message: 'Payment verified. AgentForge is operational.',
-  });
-});
+paidRouter.get('/v1/ping', (req: Request, res: Response) =>
+  handlePaid(req, res, '/v1/ping', async () => ({
+    output: {
+      status: 'ok',
+      timestamp: new Date().toISOString(),
+      message: 'Payment verified. AgentForge is operational.',
+    },
+    estimatedCostUsd: 0,
+  }), undefined));

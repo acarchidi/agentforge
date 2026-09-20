@@ -3,10 +3,14 @@
   "installCommand": "npm install --include=dev",
   "functions": {
     "api/index.ts": {
-      "maxDuration": 60
+      "maxDuration": 60,
+      "includeFiles": "{public,dashboard}/**"
     }
   },
   "rewrites": [
-    { "source": "/(.*)", "destination": "/api" }
+    {
+      "source": "/(.*)",
+      "destination": "/api"
+    }
   ]
 }

@@ -36,6 +36,15 @@ const envSchema = z.object({
   PRICE_SOLANA_TX_EXPLAIN: z.string().startsWith('$').default('$0.05'),
   PRICE_SOLANA_TX_SIMULATE: z.string().startsWith('$').default('$0.15'),
   PRICE_SOLANA_TOKEN_RISK_SCAN: z.string().startsWith('$').default('$0.35'),
+  // Durable analytics (Neon/Vercel Postgres). Falls back to SQLite when unset.
+  DATABASE_URL: z.string().url().optional(),
+  POSTGRES_URL: z.string().url().optional(),
+  ANALYTICS_HASH_SALT: z.string().optional(),
+  MCP_DAILY_CAP: z.coerce.number().int().positive().optional(),
+  // Discoverability
+  PUBLIC_BASE_URL: z.string().url().default('https://agentforge-taupe.vercel.app'),
+  BASE_BUILDER_CODE: z.string().regex(/^[a-z0-9_]{1,32}$/).optional(),
+  X402_ENABLE_PERMIT2: z.enum(['true', 'false']).default('true'),
 });
 
 export type Config = z.infer<typeof envSchema>;

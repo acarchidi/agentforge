@@ -1,11 +1,53 @@
-import { paymentMiddlewareFromConfig } from '@x402/express';
+import { paymentMiddleware, x402ResourceServer } from '@x402/express';
+import type { RouteConfig } from '@x402/core/server';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
 import { SOLANA_MAINNET_CAIP2 } from '@x402/svm';
 import { HTTPFacilitatorClient } from '@x402/core/server';
 import { facilitator } from '@coinbase/x402';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
+import { declareBuilderCodeExtension, builderCodeResourceServerExtension } from '@x402/extensions/builder-code';
 import { config, networkId } from '../config.js';
+import { logEvent } from '../analytics/logger.js';
+
+type PaymentOption = Extract<RouteConfig['accepts'], unknown[]>[number];
+
+export const SERVICE_NAME = 'AgentForge';
+export const ICON_URL = `${config.PUBLIC_BASE_URL}/brand/agentforge-icon-512.png`;
+
+/**
+ * Discoverability metadata per route.
+ *
+ * `tags` are agent search terms; they are emitted both as the top-level
+ * `tags` field (SDK RouteConfig → index `tags`) and inside `extensions.bazaar`.
+ *
+ * `category` / `discoverable` are NOT part of the @x402/extensions bazaar
+ * schema — the index echoes the bazaar object verbatim and top sellers (Apify,
+ * cheaptokens) add them as free-form keys. Values below are taken from what is
+ * already in use across the index, not invented: "Data" (Apify), "security",
+ * "Infra", "AI".
+ */
+export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }> = {
+  '/v1/token-intel': { category: 'Data', tags: ['token intel', 'token price', 'market data', 'risk score', 'evm', 'solana'] },
+  '/v1/code-review': { category: 'security', tags: ['code review', 'smart contract audit', 'solidity', 'vulnerability scan', 'gas optimization'] },
+  '/v1/token-research': { category: 'Data', tags: ['token research', 'defi metrics', 'holder analysis', 'prediction markets', 'due diligence'] },
+  '/v1/contract-docs': { category: 'Data', tags: ['contract docs', 'abi', 'proxy resolution', 'smart contract'] },
+  '/v1/contract-monitor': { category: 'security', tags: ['contract monitor', 'admin operations', 'proxy upgrade', 'ownership change', 'pause event'] },
+  '/v1/token-compare': { category: 'Data', tags: ['token compare', 'token comparison', 'market data', 'defi', 'due diligence'] },
+  '/v1/tx-decode': { category: 'Data', tags: ['transaction decode', 'evm', 'calldata', 'plain english', 'token transfers'] },
+  '/v1/approval-scan': { category: 'security', tags: ['approval scan', 'token approvals', 'unlimited approval', 'wallet safety', 'revoke'] },
+  '/v1/sentiment': { category: 'AI', tags: ['sentiment analysis', 'crypto sentiment', 'nlp', 'market sentiment'] },
+  '/v1/summarize': { category: 'AI', tags: ['summarize', 'text summary', 'nlp', 'key points'] },
+  '/v1/translate': { category: 'AI', tags: ['translate', 'translation', 'nlp', 'multilingual'] },
+  '/v1/wallet-safety': { category: 'security', tags: ['wallet safety', 'approval scan', 'pre-transaction check', 'defi risk'] },
+  '/v1/token-risk-metrics': { category: 'security', tags: ['token risk', 'holder concentration', 'rug check', 'evm'] },
+  '/v1/pool-snapshot': { category: 'Data', tags: ['liquidity pools', 'defi', 'tvl', 'apy', 'pool snapshot'] },
+  '/v1/gas': { category: 'Data', tags: ['gas price', 'gas oracle', 'evm', 'transaction fees'] },
+  '/v1/ping': { category: 'Infra', tags: ['ping', 'x402 test', 'payment check', 'health'] },
+  '/v1/solana/tx-explain': { category: 'Data', tags: ['solana', 'transaction explain', 'decode', 'plain english'] },
+  '/v1/solana/tx-simulate': { category: 'security', tags: ['solana', 'simulate transaction', 'pre-sign check', 'balance changes'] },
+  '/v1/solana/token-risk-scan': { category: 'security', tags: ['solana', 'rug check', 'token risk', 'mint authority', 'freeze authority', 'memecoin'] },
+};
 
 export function createPaymentMiddleware() {
   const routeConfig = {
@@ -1007,12 +1049,14 @@ export function createPaymentMiddleware() {
   // real handler exists for it, so next() 404s and settlement is skipped —
   // no payment is ever taken for a request that has nothing to serve.
   for (const [key, routeCfg] of Object.entries(routeConfig)) {
-    const path = key.split(/\s+/).pop();
+    const path = key.split(/\s+/).pop() as string;
     const wildcardKey = `* ${path}`;
     if (!(wildcardKey in routeConfig)) {
       (routeConfig as Record<string, typeof routeCfg>)[wildcardKey] = routeCfg;
     }
   }
+
+  applyDiscoverabilityMetadata(routeConfig as unknown as Record<string, RouteConfig>);
 
   const evmScheme = new ExactEvmScheme();
   const svmScheme = new ExactSvmScheme();
@@ -1022,12 +1066,65 @@ export function createPaymentMiddleware() {
     ? new HTTPFacilitatorClient(facilitator)
     : undefined;
 
-  return paymentMiddlewareFromConfig(
-    routeConfig,
-    facilitatorClient,
-    [
-      { network: networkId, server: evmScheme },
-      { network: SOLANA_MAINNET_CAIP2, server: svmScheme },
-    ],
-  );
+  const server = new x402ResourceServer(facilitatorClient)
+    .register(networkId, evmScheme)
+    .register(SOLANA_MAINNET_CAIP2, svmScheme);
+
+  if (config.BASE_BUILDER_CODE) {
+    server.registerExtension(builderCodeResourceServerExtension);
+  }
+
+  // Settlement failures never reach the route handler (the SDK has already
+  // buffered the response), so record them here for the analytics store.
+  server.onSettleFailure(async (ctx) => {
+    const resource = (ctx.paymentPayload as { resource?: { url?: string } }).resource?.url ?? '';
+    let name = resource;
+    try { name = new URL(resource).pathname; } catch { /* keep raw */ }
+    await logEvent({
+      kind: 'settle_failed',
+      name: name || 'unknown',
+      success: false,
+      paymentNetwork: ctx.requirements.network,
+      paymentScheme: ctx.requirements.scheme,
+      errorClass: ctx.error.name || 'settle_error',
+    });
+  });
+
+  return paymentMiddleware(routeConfig, server);
+}
+
+/**
+ * Enrich every route with service metadata, bazaar category/discoverable/tags,
+ * a Permit2 accept for EVM routes, and the builder-code extension when configured.
+ */
+export function applyDiscoverabilityMetadata(routes: Record<string, RouteConfig>): void {
+  const seen = new Set<RouteConfig>(); // '* path' aliases share the same object
+  for (const [key, route] of Object.entries(routes)) {
+    const path = key.split(/\s+/).pop() as string;
+    const meta = ROUTE_METADATA[path];
+    if (!meta || seen.has(route)) continue;
+    seen.add(route);
+
+    route.serviceName = SERVICE_NAME;
+    route.tags = meta.tags;
+    route.iconUrl = ICON_URL;
+
+    const ext = (route.extensions ?? {}) as Record<string, unknown>;
+    const bazaar = (ext.bazaar ?? {}) as Record<string, unknown>;
+    ext.bazaar = { ...bazaar, category: meta.category, discoverable: true, tags: meta.tags };
+    if (config.BASE_BUILDER_CODE) {
+      ext['builder-code'] = declareBuilderCodeExtension(config.BASE_BUILDER_CODE);
+    }
+    route.extensions = ext;
+
+    if (config.X402_ENABLE_PERMIT2 === 'true') {
+      const accepts = Array.isArray(route.accepts) ? route.accepts : [route.accepts];
+      const evmExact = accepts.filter((a) => a.scheme === 'exact' && a.network.startsWith('eip155:'));
+      const permit2: PaymentOption[] = evmExact
+        .filter((a) => (a.extra as Record<string, unknown> | undefined)?.assetTransferMethod !== 'permit2')
+        .map((a) => ({ ...a, extra: { ...(a.extra ?? {}), assetTransferMethod: 'permit2' } }));
+      // EIP-3009 stays first so default clients keep picking it; Permit2 is an additional option.
+      route.accepts = [...accepts, ...permit2];
+    }
+  }
 }

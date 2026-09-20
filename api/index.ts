@@ -9,7 +9,10 @@ import { paidRouter } from '../src/routes/paid.js';
 import { freeRouter } from '../src/routes/free.js';
 import { adminRouter } from '../src/routes/admin.js';
 import { initDb } from '../src/analytics/db.js';
-import { mcpServer } from '../src/mcp/server.js';
+import { createMcpServer } from '../src/mcp/server.js';
+import { mcpClientHash } from '../src/analytics/clientId.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 
 const app = express();
@@ -39,6 +42,10 @@ app.use((_req, res, next) => {
 // Rate limiting
 app.use(rateLimit);
 
+// Static brand assets (bazaar iconUrl points here)
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+app.use('/brand', express.static(path.join(__dirname, '../public/brand'), { maxAge: '7d', immutable: true }));
+
 // Free routes (no payment required)
 app.use(freeRouter);
 
@@ -47,9 +54,16 @@ app.use(adminRouter);
 
 // MCP server (free — bypasses x402)
 app.post('/mcp', async (req, res) => {
+  // One server + transport per request: the MCP Protocol binds to a single
+  // transport, so a shared instance 500s on every warm-instance request after the first.
+  const server = createMcpServer({ clientHash: mcpClientHash(req) });
+  const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
+  res.on('close', () => {
+    transport.close().catch(() => {});
+    server.close().catch(() => {});
+  });
   try {
-    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined });
-    await mcpServer.connect(transport);
+    await server.connect(transport);
     await transport.handleRequest(req, res, req.body);
   } catch (error) {
     console.error('MCP error:', error);
