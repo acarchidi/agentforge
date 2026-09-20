@@ -60,6 +60,7 @@ async function handlePaid(
 ): Promise<void> {
   const startTime = Date.now();
   const payment = paymentContextFromRequest(req);
+  const viaAgentkitTrial = !payment.paymentNetwork && typeof req.headers['agentkit'] === 'string';
   const inputObj = (input && typeof input === 'object' ? input : undefined) as Record<string, unknown> | undefined;
   const base = {
     kind: 'paid' as const,
@@ -67,7 +68,7 @@ async function handlePaid(
     chain: chainOf(endpoint, inputObj),
     clientHash: payment.clientHash,
     paymentNetwork: payment.paymentNetwork,
-    paymentScheme: payment.paymentScheme,
+    paymentScheme: viaAgentkitTrial ? 'agentkit-free-trial' : payment.paymentScheme,
   };
 
   try {
@@ -79,7 +80,7 @@ async function handlePaid(
       latencyMs,
       inputSize: input === undefined ? undefined : JSON.stringify(input).length,
       outputSize: JSON.stringify(result.output).length,
-      amountUsd: ENDPOINT_PRICES[endpoint] ?? 0,
+      amountUsd: viaAgentkitTrial ? 0 : (ENDPOINT_PRICES[endpoint] ?? 0),
       estimatedCostUsd: result.estimatedCostUsd,
     });
     res.json(result.output);

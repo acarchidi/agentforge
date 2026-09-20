@@ -127,3 +127,49 @@ describe('MCP daily cap and relatedServices', () => {
     expect(Array.isArray(body.relatedServices)).toBe(true);
   });
 });
+
+describe('AgentKit free trial storage', () => {
+  it('increments atomically up to the limit then refuses', async () => {
+    const store = getStore();
+    expect(await store.tryIncrementUsage('/v1/solana/tx-explain', 'h1', 2)).toBe(true);
+    expect(await store.tryIncrementUsage('/v1/solana/tx-explain', 'h1', 2)).toBe(true);
+    expect(await store.tryIncrementUsage('/v1/solana/tx-explain', 'h1', 2)).toBe(false);
+    expect(await store.tryIncrementUsage('/v1/solana/tx-explain', 'h2', 2)).toBe(true);
+  });
+
+  it('tracks nonces', async () => {
+    const store = getStore();
+    expect(await store.hasUsedNonce('n1')).toBe(false);
+    await store.recordNonce('n1');
+    expect(await store.hasUsedNonce('n1')).toBe(true);
+  });
+});
+
+describe('discoverability metadata', () => {
+  it('declares the agentkit trial only on tx-explain and permit2 once per EVM route', async () => {
+    const { applyDiscoverabilityMetadata, ROUTE_METADATA } = await import('../../src/middleware/x402.ts');
+    const mk = (path: string) => ({
+      accepts: [{ scheme: 'exact', network: 'eip155:8453', payTo: '0x0', price: '$0.01' }],
+      extensions: { bazaar: { info: {}, schema: {} } },
+    });
+    const routes: Record<string, any> = {
+      'POST /v1/solana/tx-explain': mk('/v1/solana/tx-explain'),
+      'POST /v1/solana/token-risk-scan': mk('/v1/solana/token-risk-scan'),
+      'GET /v1/ping': mk('/v1/ping'),
+    };
+    routes['* /v1/ping'] = routes['GET /v1/ping']; // alias shares the object, like the real config
+    applyDiscoverabilityMetadata(routes);
+    expect(routes['POST /v1/solana/tx-explain'].extensions.agentkit).toBeDefined();
+    expect(routes['POST /v1/solana/tx-explain'].extensions.agentkit._options.mode).toEqual({ type: 'free-trial', uses: 25 });
+    expect(routes['POST /v1/solana/token-risk-scan'].extensions.agentkit).toBeUndefined();
+    expect(routes['GET /v1/ping'].extensions.agentkit).toBeUndefined();
+    for (const r of Object.values(routes)) {
+      expect(r.serviceName).toBe('AgentForge');
+      expect(r.iconUrl).toContain('/brand/agentforge-icon-512.png');
+      expect(r.extensions.bazaar.discoverable).toBe(true);
+      expect(Object.keys(ROUTE_METADATA)).toContain(r.extensions.bazaar.tags && Object.keys(ROUTE_METADATA).find((k) => ROUTE_METADATA[k].tags === r.tags));
+      const permit2 = r.accepts.filter((a: any) => a.extra?.assetTransferMethod === 'permit2');
+      expect(permit2).toHaveLength(1);
+    }
+  });
+});

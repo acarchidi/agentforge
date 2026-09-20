@@ -30,14 +30,14 @@ const paidFetch = wrapFetchWithPayment(fetch, client);
 
 const SAMPLE_CONTRACT = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'; // Uniswap V2 Router
 const SAMPLE_WALLET = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'; // vitalik.eth
-const SAMPLE_SOL_SIG = '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1';
+const SAMPLE_SOL_SIG = process.env.SAMPLE_SOL_SIG ?? '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1';
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 
 interface Call { name: string; method: 'GET' | 'POST'; path: string; body?: unknown }
 
 const CALLS: Call[] = [
   { name: 'ping', method: 'GET', path: '/v1/ping' },
-  { name: 'gas', method: 'GET', path: '/v1/gas?chain=base' },
+  { name: 'gas', method: 'GET', path: `/v1/gas?chain=${process.env.GAS_CHAIN ?? 'ethereum'}` },
   { name: 'pool-snapshot', method: 'GET', path: '/v1/pool-snapshot?chain=ethereum&limit=3' },
   { name: 'token-intel', method: 'POST', path: '/v1/token-intel', body: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' } },
   { name: 'token-research', method: 'POST', path: '/v1/token-research', body: { query: 'AAVE', chain: 'ethereum' } },
@@ -61,8 +61,23 @@ const only = process.argv.includes('--only')
   ? process.argv[process.argv.indexOf('--only') + 1].split(',')
   : null;
 
+async function sampleSolanaTx(): Promise<string> {
+  if (process.env.SAMPLE_SOL_TX_BASE64) return process.env.SAMPLE_SOL_TX_BASE64;
+  const { Connection, Keypair, SystemProgram, Transaction, PublicKey } = await import('@solana/web3.js');
+  const conn = new Connection(process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com');
+  const payer = new PublicKey('EtDHxiEoha4nj1LRmnpxxmD5zbbzegH8ohYrknZ2JMZv');
+  const tx = new Transaction().add(SystemProgram.transfer({ fromPubkey: payer, toPubkey: Keypair.generate().publicKey, lamports: 1000 }));
+  tx.feePayer = payer;
+  tx.recentBlockhash = (await conn.getLatestBlockhash()).blockhash;
+  return tx.serialize({ requireAllSignatures: false, verifySignatures: false }).toString('base64');
+}
+
 async function main() {
   console.log(`Buyer: ${account.address} → ${BASE_URL}`);
+  const simulate = CALLS.find((c) => c.name === 'solana/tx-simulate');
+  if (simulate && (!only || only.includes(simulate.name))) {
+    simulate.body = { transaction: await sampleSolanaTx() };
+  }
   const results: Array<{ name: string; status: number; ms: number; tx?: string; note?: string }> = [];
   for (const c of CALLS) {
     if (only && !only.includes(c.name)) continue;

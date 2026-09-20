@@ -57,6 +57,10 @@ export interface AnalyticsStore {
   feedback(limit: number): Promise<Row[]>;
   dailySummary(days: number): Promise<DailySummary>;
   pruneOlderThan(days: number): Promise<number>;
+  /** AgentKit free-trial counter: atomically increment if below `limit`; false when exhausted. */
+  tryIncrementUsage(endpoint: string, humanHash: string, limit: number): Promise<boolean>;
+  hasUsedNonce(nonce: string): Promise<boolean>;
+  recordNonce(nonce: string): Promise<void>;
 }
 
 export interface DailySummary {
@@ -111,6 +115,17 @@ const PG_SCHEMA = `
     endpoint TEXT,
     message TEXT NOT NULL,
     contact TEXT
+  );
+  CREATE TABLE IF NOT EXISTS agentkit_usage (
+    endpoint TEXT NOT NULL,
+    human_hash TEXT NOT NULL,
+    uses INTEGER NOT NULL DEFAULT 0,
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    PRIMARY KEY (endpoint, human_hash)
+  );
+  CREATE TABLE IF NOT EXISTS agentkit_nonces (
+    nonce TEXT PRIMARY KEY,
+    ts TIMESTAMPTZ NOT NULL DEFAULT now()
   );
 `;
 
@@ -256,12 +271,39 @@ class PostgresStore implements AnalyticsStore {
     return { days, generatedAt: new Date().toISOString(), perDay, split, topTools, repeatClients };
   }
 
+  async tryIncrementUsage(endpoint: string, humanHash: string, limit: number): Promise<boolean> {
+    await this.init();
+    // Single statement: insert-or-increment guarded by the limit, so the check and
+    // the increment are atomic (no TOCTOU window between concurrent requests).
+    const rows = await this.q<{ uses: number }>(
+      `INSERT INTO agentkit_usage (endpoint, human_hash, uses) VALUES ($1, $2, 1)
+       ON CONFLICT (endpoint, human_hash) DO UPDATE
+         SET uses = agentkit_usage.uses + 1, updated_at = now()
+         WHERE agentkit_usage.uses < $3
+       RETURNING uses`,
+      [endpoint, humanHash, limit],
+    );
+    return rows.length > 0 && Number(rows[0].uses) <= limit;
+  }
+
+  async hasUsedNonce(nonce: string): Promise<boolean> {
+    await this.init();
+    const rows = await this.q(`SELECT 1 FROM agentkit_nonces WHERE nonce = $1`, [nonce]);
+    return rows.length > 0;
+  }
+
+  async recordNonce(nonce: string): Promise<void> {
+    await this.init();
+    await this.q(`INSERT INTO agentkit_nonces (nonce) VALUES ($1) ON CONFLICT DO NOTHING`, [nonce]);
+  }
+
   async pruneOlderThan(days: number): Promise<number> {
     await this.init();
     const rows = await this.q<{ n: string }>(
       `WITH d AS (DELETE FROM events WHERE ts < now() - ($1 || ' days')::interval RETURNING 1) SELECT COUNT(*)::text AS n FROM d`,
       [String(days)]);
     await this.q(`DELETE FROM feedback WHERE ts < now() - ($1 || ' days')::interval`, [String(days)]);
+    await this.q(`DELETE FROM agentkit_nonces WHERE ts < now() - interval '2 days'`);
     return Number(rows[0]?.n ?? 0);
   }
 }
@@ -302,6 +344,16 @@ class SqliteStore implements AnalyticsStore {
         message TEXT NOT NULL,
         contact TEXT,
         created_at TEXT NOT NULL DEFAULT (datetime('now'))
+      );
+      CREATE TABLE IF NOT EXISTS agentkit_usage (
+        endpoint TEXT NOT NULL,
+        human_hash TEXT NOT NULL,
+        uses INTEGER NOT NULL DEFAULT 0,
+        PRIMARY KEY (endpoint, human_hash)
+      );
+      CREATE TABLE IF NOT EXISTS agentkit_nonces (
+        nonce TEXT PRIMARY KEY,
+        ts TEXT NOT NULL DEFAULT (datetime('now'))
       );
     `);
   }
@@ -397,6 +449,22 @@ class SqliteStore implements AnalyticsStore {
              WHERE kind='paid' AND client_hash IS NOT NULL AND ts > strftime('%Y-%m-%dT%H:%M:%fZ','now',?)
              GROUP BY name, client_hash) GROUP BY name ORDER BY clients DESC`).all(since) as DailySummary['repeatClients'];
     return { days, generatedAt: new Date().toISOString(), perDay, split, topTools, repeatClients };
+  }
+
+  async tryIncrementUsage(endpoint: string, humanHash: string, limit: number): Promise<boolean> {
+    const r = getDb().prepare(
+      `INSERT INTO agentkit_usage (endpoint, human_hash, uses) VALUES (?, ?, 1)
+       ON CONFLICT (endpoint, human_hash) DO UPDATE SET uses = uses + 1 WHERE uses < ?`,
+    ).run(endpoint, humanHash, limit);
+    return r.changes > 0;
+  }
+
+  async hasUsedNonce(nonce: string): Promise<boolean> {
+    return !!getDb().prepare(`SELECT 1 FROM agentkit_nonces WHERE nonce = ?`).get(nonce);
+  }
+
+  async recordNonce(nonce: string): Promise<void> {
+    getDb().prepare(`INSERT OR IGNORE INTO agentkit_nonces (nonce) VALUES (?)`).run(nonce);
   }
 
   async pruneOlderThan(days: number): Promise<number> {

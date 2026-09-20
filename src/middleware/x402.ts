@@ -1,4 +1,4 @@
-import { paymentMiddleware, x402ResourceServer } from '@x402/express';
+import { paymentMiddlewareFromHTTPServer, x402HTTPResourceServer, x402ResourceServer } from '@x402/express';
 import type { RouteConfig } from '@x402/core/server';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
 import { ExactSvmScheme } from '@x402/svm/exact/server';
@@ -9,6 +9,13 @@ import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { declareBuilderCodeExtension, builderCodeResourceServerExtension } from '@x402/extensions/builder-code';
 import { config, networkId } from '../config.js';
 import { logEvent } from '../analytics/logger.js';
+import {
+  agentkitResourceServerExtension,
+  declareAgentkitTrial,
+  getAgentkitHooks,
+  isAgentkitEnabled,
+  isAgentkitTrialRoute,
+} from './agentkit.js';
 
 type PaymentOption = Extract<RouteConfig['accepts'], unknown[]>[number];
 
@@ -1090,7 +1097,31 @@ export function createPaymentMiddleware() {
     });
   });
 
-  return paymentMiddleware(routeConfig, server);
+  if (isAgentkitEnabled()) {
+    // World AgentKit free trial — hooks are scoped to AGENTKIT_TRIAL_ROUTES only.
+    server.registerExtension(agentkitResourceServerExtension);
+    const { verifyFailureHook } = getAgentkitHooks();
+    if (verifyFailureHook) {
+      server.onVerifyFailure(async (ctx) => {
+        let path = '';
+        try { path = new URL(ctx.paymentPayload.resource?.url ?? '').pathname; } catch { /* not a trial route */ }
+        if (!isAgentkitTrialRoute(path)) return;
+        return verifyFailureHook(ctx as unknown as Parameters<typeof verifyFailureHook>[0]);
+      });
+    }
+  }
+
+  const httpServer = new x402HTTPResourceServer(server, routeConfig);
+
+  if (isAgentkitEnabled()) {
+    const { requestHook } = getAgentkitHooks();
+    httpServer.onProtectedRequest(async (ctx) => {
+      if (!isAgentkitTrialRoute(ctx.path)) return;
+      return requestHook(ctx);
+    });
+  }
+
+  return paymentMiddlewareFromHTTPServer(httpServer);
 }
 
 /**
@@ -1114,6 +1145,9 @@ export function applyDiscoverabilityMetadata(routes: Record<string, RouteConfig>
     ext.bazaar = { ...bazaar, category: meta.category, discoverable: true, tags: meta.tags };
     if (config.BASE_BUILDER_CODE) {
       ext['builder-code'] = declareBuilderCodeExtension(config.BASE_BUILDER_CODE);
+    }
+    if (isAgentkitEnabled() && isAgentkitTrialRoute(path)) {
+      Object.assign(ext, declareAgentkitTrial(path));
     }
     route.extensions = ext;
 
