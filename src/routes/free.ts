@@ -75,7 +75,7 @@ freeRouter.get('/dashboard', (_req: Request, res: Response) => {
 
 freeRouter.get('/SKILL.md', (_req: Request, res: Response) => {
   res.type('text/markdown');
-  res.sendFile(path.join(__dirname, '../../dashboard/SKILL.md'), { dotfiles: 'allow' });
+  res.sendFile(path.join(__dirname, '../../dashboard/agent-skill.md'), { dotfiles: 'allow' });
 });
 
 // ────────────────────────────────────────────────────────────────────
