@@ -9,6 +9,7 @@
  * only a real request through the actual middleware does.
  */
 
+import { Connection, PublicKey } from '@solana/web3.js';
 import { SimpleCache } from '../utils/cache.js';
 
 export interface PaidEndpointSpec {
@@ -25,8 +26,21 @@ export interface PaidEndpointCheckResult {
   error?: string;
 }
 
+/**
+ * The x402 SVM client transfers straight into the seller's USDC associated token
+ * account and never creates it. If that account is missing, every Solana-paid call
+ * fails at settlement while the 402 checks above still look green.
+ */
+export interface SolanaReceiverCheck {
+  owner: string;
+  usdcAccount: string;
+  exists: boolean | null;
+  error?: string;
+}
+
 export interface PaidHealthResult {
   status: 'ok' | 'degraded';
+  solanaReceiver?: SolanaReceiverCheck;
   checkedAt: string;
   totalEndpoints: number;
   healthyCount: number;
@@ -55,6 +69,36 @@ export const PAID_ENDPOINTS_FOR_HEALTH: PaidEndpointSpec[] = [
   { method: 'POST', path: '/v1/solana/tx-simulate' },
   { method: 'POST', path: '/v1/solana/token-risk-scan' },
 ];
+
+const SOLANA_USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
+const SPL_TOKEN_PROGRAM = 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA';
+const ASSOCIATED_TOKEN_PROGRAM = 'ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL';
+
+/** Derive the USDC associated token account for a Solana owner. Pure — no I/O. */
+export function deriveUsdcAta(owner: string): string {
+  const [ata] = PublicKey.findProgramAddressSync(
+    [new PublicKey(owner).toBuffer(), new PublicKey(SPL_TOKEN_PROGRAM).toBuffer(), new PublicKey(SOLANA_USDC_MINT).toBuffer()],
+    new PublicKey(ASSOCIATED_TOKEN_PROGRAM),
+  );
+  return ata.toBase58();
+}
+
+async function checkSolanaReceiver(): Promise<SolanaReceiverCheck | undefined> {
+  const owner = process.env.SOLANA_PAY_TO_ADDRESS;
+  if (!owner) return undefined;
+  let usdcAccount = '';
+  try {
+    usdcAccount = deriveUsdcAta(owner);
+    const conn = new Connection(process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com');
+    const info = await Promise.race([
+      conn.getAccountInfo(new PublicKey(usdcAccount)),
+      new Promise<never>((_, reject) => setTimeout(() => reject(new Error('timeout')), CHECK_TIMEOUT_MS)),
+    ]);
+    return { owner, usdcAccount, exists: info !== null };
+  } catch (error) {
+    return { owner, usdcAccount, exists: null, error: error instanceof Error ? error.message : 'Unknown error' };
+  }
+}
 
 const CACHE_TTL_SECONDS = 30;
 const CHECK_TIMEOUT_MS = 8000;
@@ -108,10 +152,15 @@ export async function getPaidHealth(baseUrl: string): Promise<PaidHealthResult> 
   const cached = cache.get(CACHE_KEY);
   if (cached) return cached;
 
-  const checks = await Promise.all(
-    PAID_ENDPOINTS_FOR_HEALTH.map((spec) => checkOneEndpoint(baseUrl, spec)),
-  );
+  const [checks, solanaReceiver] = await Promise.all([
+    Promise.all(PAID_ENDPOINTS_FOR_HEALTH.map((spec) => checkOneEndpoint(baseUrl, spec))),
+    checkSolanaReceiver(),
+  ]);
   const result = aggregatePaidHealth(checks);
+  if (solanaReceiver) {
+    result.solanaReceiver = solanaReceiver;
+    if (solanaReceiver.exists === false) result.status = 'degraded';
+  }
   cache.set(CACHE_KEY, result);
   return result;
 }

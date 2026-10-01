@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { aggregatePaidHealth, PAID_ENDPOINTS_FOR_HEALTH } from '../../src/health/paidHealthCheck.js';
+import { aggregatePaidHealth, deriveUsdcAta, PAID_ENDPOINTS_FOR_HEALTH } from '../../src/health/paidHealthCheck.js';
 import type { PaidEndpointCheckResult } from '../../src/health/paidHealthCheck.js';
 
 function check(overrides: Partial<PaidEndpointCheckResult> = {}): PaidEndpointCheckResult {
@@ -80,5 +80,11 @@ describe('aggregatePaidHealth', () => {
     const result = aggregatePaidHealth(checks);
     expect(result.status).toBe('degraded');
     expect(result.unhealthyCount).toBe(19);
+  });
+});
+
+describe('deriveUsdcAta', () => {
+  it('derives the USDC associated token account for the AgentForge Solana pay-to wallet', () => {
+    expect(deriveUsdcAta('EtDHxiEoha4nj1LRmnpxxmD5zbbzegH8ohYrknZ2JMZv')).toBe('79tPW93qjYBCYVvdb9M6nNWXEidrSjT9nTstvS7zkFmh');
   });
 });
