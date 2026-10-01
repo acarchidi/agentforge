@@ -7,7 +7,7 @@ Base URL: `https://agentforge-taupe.vercel.app`. Prices are USDC. The 16 EVM end
 | Method | Path | What it does |
 |---|---|---|
 | GET | `/registry/lookup?address=0x...&chain=ethereum` | Look up an EVM contract in the 384-contract label registry: protocol, category, risk level. |
-| GET | `/v1/solana/program-lookup?programId=...` | Look up a Solana program in the 30-program label registry: protocol, category, risk level. |
+| GET | `/v1/solana/program-lookup?programId=...` | Look up a Solana program in the 63-program label registry: protocol, category, risk level. |
 | GET | `/registry/stats` | EVM registry coverage stats. |
 | GET | `/catalog` | Full machine-readable catalog of all 19 paid endpoints, current prices, JSON Schemas. |
 | GET | `/about` | Service overview, every endpoint with description and `input_example`. |

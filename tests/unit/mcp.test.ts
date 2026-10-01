@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { mcpServer } from '../../src/mcp/server.js';
+import { mcpServer, CAPPED_TOOLS } from '../../src/mcp/server.js';
 
 describe('MCP Server', () => {
   it('has correct server name and version', () => {
     const info = (mcpServer as any).server._serverInfo;
     expect(info.name).toBe('agentforge');
-    expect(info.version).toBe('1.1.0');
+    expect(info.version).toBe('1.5.0');
   });
 
   it('registers all 20 tools (16 EVM + 4 Solana)', () => {
@@ -43,5 +43,17 @@ describe('MCP Server', () => {
       expect(tool.description, `${name} should have a description`).toBeTruthy();
       expect(typeof tool.description).toBe('string');
     }
+  });
+
+  it('caps every LLM-backed analysis tool but leaves free lookups unlimited', () => {
+    expect(CAPPED_TOOLS.has('code_review')).toBe(true);
+    expect(CAPPED_TOOLS.has('summarize')).toBe(true);
+    expect(CAPPED_TOOLS.has('wallet_safety')).toBe(true);
+    expect(CAPPED_TOOLS.has('solana_token_risk_scan')).toBe(true);
+    expect(CAPPED_TOOLS.has('registry_lookup')).toBe(false);
+    expect(CAPPED_TOOLS.has('solana_program_lookup')).toBe(false);
+    expect(CAPPED_TOOLS.has('gas_oracle')).toBe(false);
+    expect(CAPPED_TOOLS.has('pool_snapshot')).toBe(false);
+    expect(CAPPED_TOOLS.size).toBe(16);
   });
 });

@@ -5,9 +5,11 @@
  * Cursor, Windsurf, and other MCP environments can discover and use them.
  *
  * MCP tools call service functions directly — no x402 payment required — but
- * every call is logged to the durable analytics store, and the three paid
- * Solana tools carry a per-client daily cap that points callers at the paid
- * x402 endpoint once exhausted.
+ * every call is logged to the durable analytics store. Free lookups
+ * (registry_lookup, solana_program_lookup) and cheap data tools (gas_oracle,
+ * pool_snapshot) are unlimited; every analysis tool (all of which call an LLM or
+ * a metered upstream) carries a per-client daily cap that points callers at the
+ * paid x402 endpoint once exhausted.
  *
  * A NEW server instance is created per HTTP request (see createMcpServer):
  * the MCP SDK's Protocol can only be connected to one transport at a time, so a
@@ -41,10 +43,17 @@ import { logEvent } from '../analytics/logger.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.1.0';
+export const MCP_SERVER_VERSION = '1.5.0';
 
-/** Tools that are capped per client per day when invoked via MCP. */
-export const CAPPED_TOOLS = new Set(['solana_tx_explain', 'solana_tx_simulate', 'solana_token_risk_scan']);
+/** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
+export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
+
+/**
+ * Tools that are capped per client per day when invoked via MCP: every tool that
+ * maps to a paid endpoint, minus the cheap uncapped ones. These spend Anthropic /
+ * upstream API budget, so the free MCP channel needs a ceiling.
+ */
+export const CAPPED_TOOLS = new Set(Object.keys(TOOL_TO_ENDPOINT).filter((t) => !UNCAPPED_TOOLS.has(t)));
 
 export const MCP_DAILY_CAP = Math.max(1, Number(process.env.MCP_DAILY_CAP) || 10);
 

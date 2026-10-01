@@ -7,3 +7,13 @@ dist/
 .vercel
 .claude/
 .playwright-mcp/
+
+# Local credentials (MCP registry publisher tokens)
+.mcpregistry_*
+
+# Logs
+*.log
+
+# Private launch notes, checklists and source brand assets (not for the public repo)
+START_HERE.md
+_launch/
