@@ -29,9 +29,9 @@ app.use((_req, res, next) => {
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, X-PAYMENT, X-PAYMENT-RESPONSE',
+    'Content-Type, Authorization, PAYMENT-SIGNATURE, X-PAYMENT, X-PAYMENT-RESPONSE, agentkit',
   );
-  res.setHeader('Access-Control-Expose-Headers', 'X-PAYMENT-RESPONSE');
+  res.setHeader('Access-Control-Expose-Headers', 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE');
   if (_req.method === 'OPTIONS') {
     res.status(204).end();
     return;
