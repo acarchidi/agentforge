@@ -31,9 +31,15 @@ function secretBytes(raw: string): Uint8Array {
 }
 
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
-const SAMPLE_SOL_SIG =
-  process.env.SAMPLE_SOL_SIG ??
-  '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1';
+/** A real, recent signature: the latest transaction touching the USDC mint. */
+async function sampleSolanaSig(): Promise<string> {
+  if (process.env.SAMPLE_SOL_SIG) return process.env.SAMPLE_SOL_SIG;
+  const { Connection, PublicKey } = await import('@solana/web3.js');
+  const conn = new Connection(process.env.SOLANA_RPC_URL ?? 'https://api.mainnet-beta.solana.com');
+  const [latest] = await conn.getSignaturesForAddress(new PublicKey(USDC_MINT), { limit: 1 }, 'finalized');
+  if (!latest) throw new Error('could not fetch a sample Solana signature');
+  return latest.signature;
+}
 
 async function sampleSolanaTx(): Promise<string> {
   const { Connection, Keypair, SystemProgram, Transaction, PublicKey } = await import('@solana/web3.js');
@@ -57,7 +63,7 @@ async function main() {
   console.log(`Solana buyer: ${signer.address} -> ${BASE_URL}`);
 
   const calls: Array<{ name: string; path: string; body: unknown }> = [
-    { name: 'solana/tx-explain', path: '/v1/solana/tx-explain', body: { signature: SAMPLE_SOL_SIG } },
+    { name: 'solana/tx-explain', path: '/v1/solana/tx-explain', body: { signature: await sampleSolanaSig() } },
   ];
   if (process.argv.includes('--all')) {
     calls.push(

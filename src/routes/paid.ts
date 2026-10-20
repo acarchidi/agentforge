@@ -97,6 +97,15 @@ async function handlePaid(
       });
       return;
     }
+    // Unknown tx signature / mint / contract: the caller's input, not our fault.
+    // Any status >= 400 skips settlement, so the caller is not charged either way.
+    if (errorClass === 'not_found') {
+      res.status(404).json({
+        error: 'NOT_FOUND',
+        message: error instanceof Error ? error.message : 'Not found',
+      });
+      return;
+    }
     console.error(`${endpoint} error:`, error);
     res.status(500).json({
       error: 'INTERNAL_ERROR',

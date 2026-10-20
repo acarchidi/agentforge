@@ -883,7 +883,7 @@ export function createPaymentMiddleware() {
         ...declareDiscoveryExtension({
           bodyType: 'json' as const,
           input: {
-            signature: '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1',
+            signature: '2BNGxnHYPBGX268CdR3KcxWaDdb84fCftoaBpyu91RunfWvzaSb6YiW5qE9G2bZ9KeX8KsAKTj1tXLruQRTNuoFt',
           },
           inputSchema: {
             type: 'object',
@@ -908,7 +908,7 @@ export function createPaymentMiddleware() {
               },
             },
             example: {
-              signature: '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1',
+              signature: '2BNGxnHYPBGX268CdR3KcxWaDdb84fCftoaBpyu91RunfWvzaSb6YiW5qE9G2bZ9KeX8KsAKTj1tXLruQRTNuoFt',
               success: true,
               fee: 5000,
               instructions: [{ programId: 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA', label: 'SPL Token Program', category: 'token', isVerified: true }],

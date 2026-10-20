@@ -30,7 +30,7 @@ const paidFetch = wrapFetchWithPayment(fetch, client);
 
 const SAMPLE_CONTRACT = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'; // Uniswap V2 Router
 const SAMPLE_WALLET = '0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045'; // vitalik.eth
-const SAMPLE_SOL_SIG = process.env.SAMPLE_SOL_SIG ?? '5VfydnLu4XwH6dEufsQEnCidCXfE6xVzX3JAiG8g3q4pump1SVpMwrz4gYbBw2eeqUJgvV6ySMWtCXjPz3jq2CR1';
+const SAMPLE_SOL_SIG = process.env.SAMPLE_SOL_SIG ?? '2BNGxnHYPBGX268CdR3KcxWaDdb84fCftoaBpyu91RunfWvzaSb6YiW5qE9G2bZ9KeX8KsAKTj1tXLruQRTNuoFt';
 const USDC_MINT = 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v';
 
 interface Call { name: string; method: 'GET' | 'POST'; path: string; body?: unknown }
