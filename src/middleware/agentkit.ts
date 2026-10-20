@@ -81,4 +81,19 @@ export function getAgentkitHooks() {
   return hooks;
 }
 
-export { agentkitResourceServerExtension };
+/**
+ * The agentkit extension re-issues `nonce` / `issuedAt` / `expirationTime` on
+ * every 402, but @worldcoin/agentkit 0.2.1 does not declare them as
+ * `dynamicInfoFields`. x402 core 2.26 compares the extension a client echoes
+ * back against a freshly generated copy, so without this every paid request
+ * to a trial route fails with `extension_echo_mismatch` before verification.
+ * Same field list the SDK's own sign-in-with-x extension declares.
+ */
+export const AGENTKIT_DYNAMIC_INFO_FIELDS = ['nonce', 'issuedAt', 'expirationTime'];
+
+export const agentkitServerExtension: typeof agentkitResourceServerExtension = {
+  ...agentkitResourceServerExtension,
+  dynamicInfoFields: [
+    ...new Set([...(agentkitResourceServerExtension.dynamicInfoFields ?? []), ...AGENTKIT_DYNAMIC_INFO_FIELDS]),
+  ],
+};

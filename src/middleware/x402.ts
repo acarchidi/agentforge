@@ -10,7 +10,7 @@ import { declareBuilderCodeExtension, builderCodeResourceServerExtension } from 
 import { config, networkId } from '../config.js';
 import { logEvent } from '../analytics/logger.js';
 import {
-  agentkitResourceServerExtension,
+  agentkitServerExtension,
   declareAgentkitTrial,
   getAgentkitHooks,
   isAgentkitEnabled,
@@ -1099,7 +1099,7 @@ export function createPaymentMiddleware() {
 
   if (isAgentkitEnabled()) {
     // World AgentKit free trial — hooks are scoped to AGENTKIT_TRIAL_ROUTES only.
-    server.registerExtension(agentkitResourceServerExtension);
+    server.registerExtension(agentkitServerExtension);
     const { verifyFailureHook } = getAgentkitHooks();
     if (verifyFailureHook) {
       server.onVerifyFailure(async (ctx) => {
