@@ -17,3 +17,4 @@ dist/
 # Private launch notes, checklists and source brand assets (not for the public repo)
 START_HERE.md
 _launch/
+.env*.local

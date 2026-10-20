@@ -13,7 +13,7 @@
 import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
 import { getDb } from './db.js';
 
-export type EventKind = 'paid' | 'mcp' | 'cap_hit' | 'settle_failed';
+export type EventKind = 'paid' | 'mcp' | 'cap_hit' | 'settle_failed' | 'settled';
 
 export interface AnalyticsEvent {
   kind: EventKind;

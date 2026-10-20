@@ -9,6 +9,7 @@ import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { declareBuilderCodeExtension, builderCodeResourceServerExtension } from '@x402/extensions/builder-code';
 import { config, networkId } from '../config.js';
 import { logEvent } from '../analytics/logger.js';
+import { hashClientId } from '../analytics/clientId.js';
 import {
   agentkitServerExtension,
   declareAgentkitTrial,
@@ -1084,16 +1085,30 @@ export function createPaymentMiddleware() {
   // Settlement failures never reach the route handler (the SDK has already
   // buffered the response), so record them here for the analytics store.
   server.onSettleFailure(async (ctx) => {
-    const resource = (ctx.paymentPayload as { resource?: { url?: string } }).resource?.url ?? '';
-    let name = resource;
-    try { name = new URL(resource).pathname; } catch { /* keep raw */ }
     await logEvent({
       kind: 'settle_failed',
-      name: name || 'unknown',
+      name: resourcePath((ctx.paymentPayload as { resource?: { url?: string } }).resource?.url),
       success: false,
       paymentNetwork: ctx.requirements.network,
       paymentScheme: ctx.requirements.scheme,
       errorClass: ctx.error.name || 'settle_error',
+    });
+  });
+
+  // The revenue record: one row per on-chain settlement, with its tx hash.
+  // Route handlers log `paid` before settlement, so only `settled` proves the money arrived.
+  server.onAfterSettle(async (ctx) => {
+    if (!ctx.result.success) return;
+    await logEvent({
+      kind: 'settled',
+      name: resourcePath((ctx.paymentPayload as { resource?: { url?: string } }).resource?.url),
+      success: true,
+      paymentNetwork: ctx.result.network,
+      paymentScheme: ctx.requirements.scheme,
+      clientHash: ctx.result.payer ? hashClientId(ctx.result.payer) : undefined,
+      // USDC has 6 decimals on Base and Solana.
+      amountUsd: Number(ctx.result.amount ?? ctx.requirements.amount) / 1e6,
+      txHash: ctx.result.transaction,
     });
   });
 
@@ -1131,6 +1146,12 @@ export function createPaymentMiddleware() {
  * request and the retries never run. 10s per attempt keeps all 3 inside the limit.
  * verify/settle keep the default timeout.
  */
+/** Pathname of a paid resource URL, for analytics names. */
+function resourcePath(url: string | undefined): string {
+  if (!url) return 'unknown';
+  try { return new URL(url).pathname; } catch { return url; }
+}
+
 export const SUPPORTED_TIMEOUT_MS = 10_000;
 
 export function createCdpFacilitatorClient(): HTTPFacilitatorClient {
