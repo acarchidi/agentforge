@@ -5,8 +5,17 @@ interface ClaudeCallParams {
   userMessage: string;
   maxTokens: number;
   temperature?: number;
-  model?: 'claude-sonnet-5' | 'claude-haiku-4-5-20251001';
+  model?: ClaudeModel;
 }
+
+export type ClaudeModel = 'claude-sonnet-5' | 'claude-haiku-4-5-20251001' | 'claude-haiku-5-5';
+
+/** Anthropic list prices, USD per 1M tokens (Haiku 5.5: prompts up to 100K tokens). */
+const RATES: Record<ClaudeModel, { input: number; output: number }> = {
+  'claude-sonnet-5': { input: 2, output: 10 },
+  'claude-haiku-4-5-20251001': { input: 1, output: 5 },
+  'claude-haiku-5-5': { input: 0.1, output: 0.5 },
+};
 
 export interface ClaudeResponse {
   text: string;
@@ -30,6 +39,9 @@ export async function callClaude(
     body: JSON.stringify({
       model: params.model ?? 'claude-sonnet-5',
       max_tokens: params.maxTokens,
+      // Haiku 5.5 thinks by default; these are short single-shot tasks, so keep
+      // max_tokens for the answer (disabled is accepted at its default effort).
+      ...(params.model === 'claude-haiku-5-5' ? { thinking: { type: 'disabled' } } : {}),
       system: params.system,
       messages: [{ role: 'user', content: params.userMessage }],
     }),
@@ -50,12 +62,9 @@ export async function callClaude(
     throw new Error('Claude returned no text content');
   }
 
-  // Anthropic list prices per 1M tokens: Sonnet 5 $2 in / $10 out; Haiku 4.5 $1 in / $5 out.
-  const isHaiku = params.model === 'claude-haiku-4-5-20251001';
-  const inputRate = isHaiku ? 1 : 2;
-  const outputRate = isHaiku ? 5 : 10;
-  const inputCost = (data.usage.input_tokens / 1_000_000) * inputRate;
-  const outputCost = (data.usage.output_tokens / 1_000_000) * outputRate;
+  const rate = RATES[params.model ?? 'claude-sonnet-5'];
+  const inputCost = (data.usage.input_tokens / 1_000_000) * rate.input;
+  const outputCost = (data.usage.output_tokens / 1_000_000) * rate.output;
 
   return {
     text: textBlock.text,

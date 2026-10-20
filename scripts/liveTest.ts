@@ -197,7 +197,7 @@ async function main() {
   // AND wall-clock < 5s (live LLM calls take 30-80s)
   console.log('\n  Note: USDC (0xa0b8...) is pre-cached — expect estimatedCostUsd=0 and <5s response');
   const docsStart = Date.now();
-  const contractDocsResult = await runTest('/v1/contract-docs', 0.02, 'POST',
+  const contractDocsResult = await runTest('/v1/contract-docs', 0.05, 'POST',
     { address: '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48', chain: 'ethereum' },
     contractDocsOutput,
     (d) => {
@@ -237,7 +237,7 @@ async function main() {
     (d) => `${d.token?.name ?? '?'} (${d.token?.symbol ?? '?'})`);
 
   // ── 10. POST /v1/code-review ─────────────────────────────────────
-  await runTest('/v1/code-review', 0.05, 'POST',
+  await runTest('/v1/code-review', 0.10, 'POST',
     {
       code: 'pragma solidity ^0.8.0;\ncontract Simple {\n    uint256 public value;\n    function setValue(uint256 _value) public {\n        value = _value;\n    }\n}',
       language: 'solidity',

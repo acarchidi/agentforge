@@ -54,12 +54,12 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 | POST | `/v1/token-risk-metrics` | $0.05 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |
 | POST | `/v1/approval-scan` | $0.015 | Scans a wallet for risky ERC-20 approvals (unlimited allowances, unverified spenders). |
 | POST | `/v1/contract-monitor` | $0.025 | Recent contract admin activity: ownership transfers, upgrades, pause changes. |
-| POST | `/v1/contract-docs` | $0.02 | Human-readable smart contract documentation with security posture and interaction patterns. |
+| POST | `/v1/contract-docs` | $0.05 | Human-readable smart contract documentation with security posture and interaction patterns. |
 | POST | `/v1/tx-decode` | $0.05 | Decode any EVM transaction: function call, params, token transfers, plain-English explanation. |
 | POST | `/v1/token-research` | $0.04 | Multi-source token research: CoinGecko + DeFiLlama + Etherscan + Polymarket in one report. |
 | POST | `/v1/token-compare` | $0.08 | Compare a token against up to 3 competitors with AI-generated analysis. |
 | POST | `/v1/token-intel` | $0.015 | Quick token lookup: market data + risk score in under 10 seconds. |
-| POST | `/v1/code-review` | $0.05 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
+| POST | `/v1/code-review` | $0.10 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
 | GET | `/v1/gas` | $0.003 | Real-time gas prices (slow/standard/fast) with trend analysis, any supported EVM chain. |
 | GET | `/v1/pool-snapshot` | $0.005 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
 | POST | `/v1/sentiment` | $0.008 | Sentiment analysis for crypto/finance/social text. |

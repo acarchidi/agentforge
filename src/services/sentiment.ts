@@ -51,6 +51,7 @@ export async function analyzeSentimentWithCost(
   const prompt = `Context type: ${validated.context}\n\nText to analyze:\n${validated.text}`;
 
   const response: ClaudeResponse = await callClaude({
+    model: 'claude-haiku-5-5',
     system: SYSTEM_PROMPT,
     userMessage: prompt,
     maxTokens: 500,
@@ -69,7 +70,7 @@ export async function analyzeSentimentWithCost(
   const output = sentimentOutput.parse({
     ...(parsed as Record<string, unknown>),
     metadata: {
-      model: 'claude-sonnet-5',
+      model: 'claude-haiku-5-5',
       processingTimeMs: Date.now() - startTime,
     },
   });

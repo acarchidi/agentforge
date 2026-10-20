@@ -21,11 +21,11 @@ Base URL: `https://agentforge-taupe.vercel.app`. Prices are USDC. The 16 EVM end
 | POST | `/v1/wallet-safety` | $0.10 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
 | POST | `/v1/token-risk-metrics` | $0.05 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |
 | POST | `/v1/tx-decode` | $0.05 | Decode any EVM transaction: function call, params, token transfers, plain-English explanation. |
-| POST | `/v1/code-review` | $0.05 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
+| POST | `/v1/code-review` | $0.10 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
 | POST | `/v1/token-compare` | $0.08 | Compare a token against up to 3 competitors with AI-generated analysis. |
 | POST | `/v1/token-research` | $0.04 | Multi-source token research: CoinGecko + DeFiLlama + Etherscan + Polymarket in one report. |
 | POST | `/v1/contract-monitor` | $0.025 | Recent contract admin activity: ownership transfers, upgrades, pause changes. |
-| POST | `/v1/contract-docs` | $0.02 | Human-readable smart contract documentation with security posture and interaction patterns. |
+| POST | `/v1/contract-docs` | $0.05 | Human-readable smart contract documentation with security posture and interaction patterns. |
 | POST | `/v1/token-intel` | $0.015 | Quick token lookup: market data + risk score in under 10 seconds. |
 | POST | `/v1/approval-scan` | $0.015 | Scans a wallet for risky ERC-20 approvals (unlimited allowances, unverified spenders). |
 | POST | `/v1/translate` | $0.015 | Translation with tone control, auto-detects source language. |

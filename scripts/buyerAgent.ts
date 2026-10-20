@@ -4,7 +4,7 @@
  * Tests the full composability flow:
  *   1. GET  /v1/ping           → verify payment works ($0.001)
  *   2. POST /v1/token-research → research "AAVE" ($0.04)
- *   3. POST /v1/contract-docs  → docs for contract found in step 2 ($0.02)
+ *   3. POST /v1/contract-docs  → docs for contract found in step 2 ($0.05)
  *   4. POST /v1/contract-monitor → monitor that same contract ($0.025)
  *
  * Total cost: ~$0.086 in real USDC on Base mainnet.

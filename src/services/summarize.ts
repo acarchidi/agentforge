@@ -55,6 +55,7 @@ export async function summarizeWithCost(
   prompt += `\nText to summarize:\n${validated.text}`;
 
   const response: ClaudeResponse = await callClaude({
+    model: 'claude-haiku-5-5',
     system: SYSTEM_PROMPT,
     userMessage: prompt,
     maxTokens: 2000,
@@ -84,7 +85,7 @@ export async function summarizeWithCost(
     compressionRatio:
       summaryWordCount > 0 ? originalWordCount / summaryWordCount : 0,
     metadata: {
-      model: 'claude-sonnet-5',
+      model: 'claude-haiku-5-5',
       processingTimeMs: Date.now() - startTime,
     },
   });

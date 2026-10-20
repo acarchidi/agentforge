@@ -50,6 +50,7 @@ export async function translateWithCost(
   prompt += `\nText to translate:\n${validated.text}`;
 
   const response: ClaudeResponse = await callClaude({
+    model: 'claude-haiku-5-5',
     system: SYSTEM_PROMPT,
     userMessage: prompt,
     maxTokens: 4000,
@@ -69,7 +70,7 @@ export async function translateWithCost(
     ...(parsed as Record<string, unknown>),
     targetLanguage: validated.targetLanguage,
     metadata: {
-      model: 'claude-sonnet-5',
+      model: 'claude-haiku-5-5',
       processingTimeMs: Date.now() - startTime,
     },
   });

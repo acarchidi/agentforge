@@ -173,7 +173,7 @@ async function main() {
 
   // ── 7. Code Review ────────────────────────────────────────────────
 
-  await step('Code Review', 'POST /v1/code-review', '$0.05', () =>
+  await step('Code Review', 'POST /v1/code-review', '$0.10', () =>
     paidPost<{ overallRisk: string; issues: unknown[] }>(`${BASE_URL}/v1/code-review`, {
       code: `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
@@ -242,7 +242,7 @@ contract SimpleVault {
     }),
   );
 
-  await step('Contract Docs', 'POST /v1/contract-docs', '$0.02', () =>
+  await step('Contract Docs', 'POST /v1/contract-docs', '$0.05', () =>
     paidPost<{ contract: unknown }>(`${BASE_URL}/v1/contract-docs`, {
       address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
       chain: 'ethereum',
