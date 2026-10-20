@@ -50,10 +50,10 @@ export async function callClaude(
     throw new Error('Claude returned no text content');
   }
 
-  // Sonnet 5: Input $3/1M, Output $15/1M. Haiku 4.5: Input $0.25/1M, Output $1.25/1M (estimate).
+  // Anthropic list prices per 1M tokens: Sonnet 5 $2 in / $10 out; Haiku 4.5 $1 in / $5 out.
   const isHaiku = params.model === 'claude-haiku-4-5-20251001';
-  const inputRate = isHaiku ? 0.25 : 3;
-  const outputRate = isHaiku ? 1.25 : 15;
+  const inputRate = isHaiku ? 1 : 2;
+  const outputRate = isHaiku ? 5 : 10;
   const inputCost = (data.usage.input_tokens / 1_000_000) * inputRate;
   const outputCost = (data.usage.output_tokens / 1_000_000) * outputRate;
 

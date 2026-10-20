@@ -1070,7 +1070,7 @@ export function createPaymentMiddleware() {
 
   // Use CDP facilitator for mainnet (Base), default x402.org for testnet
   const facilitatorClient = config.X402_NETWORK === 'base'
-    ? new HTTPFacilitatorClient(facilitator)
+    ? createCdpFacilitatorClient()
     : undefined;
 
   const server = new x402ResourceServer(facilitatorClient)
@@ -1122,6 +1122,22 @@ export function createPaymentMiddleware() {
   }
 
   return paymentMiddlewareFromHTTPServer(httpServer);
+}
+
+/**
+ * Cold-start fetch of the facilitator's /supported list (normally ~200ms) blocks
+ * every paid request on a new instance. The SDK default is 90s per attempt with
+ * 3 attempts, but the Vercel function dies at 60s, so one hung attempt 502s the
+ * request and the retries never run. 10s per attempt keeps all 3 inside the limit.
+ * verify/settle keep the default timeout.
+ */
+export const SUPPORTED_TIMEOUT_MS = 10_000;
+
+export function createCdpFacilitatorClient(): HTTPFacilitatorClient {
+  const client = new HTTPFacilitatorClient(facilitator);
+  const supportedClient = new HTTPFacilitatorClient({ ...facilitator, timeoutMs: SUPPORTED_TIMEOUT_MS });
+  client.getSupported = () => supportedClient.getSupported();
+  return client;
 }
 
 /**
