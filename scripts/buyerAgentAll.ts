@@ -2,7 +2,9 @@
  * Buyer agent — pays every paid endpoint ONCE on Base mainnet so the CDP
  * discovery index re-catalogs each resource with current metadata.
  *
- * Cost: sum of all endpoint prices (~$0.89 USDC at current pricing).
+ * Cost: sum of all endpoint prices (~$1.09 USDC at current pricing), paid
+ * from the test wallet to our own pay-to address. Bazaar drops a resource
+ * after 30 days with no settlement, so run it monthly (npm run keepalive:bazaar).
  *
  * Usage:  npx tsx scripts/buyerAgentAll.ts [--only ping,gas,...]
  */
