@@ -130,6 +130,13 @@ adminRouter.get('/admin/stats', requireAdminToken, wrap(async () => {
   };
 }));
 
+// Live facilitator /supported response, to copy into X402_SUPPORTED_SNAPSHOT.
+adminRouter.get('/admin/facilitator-supported', requireAdminToken, wrap(async () => {
+  const { HTTPFacilitatorClient } = await import('@x402/core/server');
+  const { facilitator } = await import('@coinbase/x402');
+  return new HTTPFacilitatorClient(facilitator).getSupported();
+}));
+
 adminRouter.get('/admin/revenue/daily', requireAdminToken, wrap(async () => ({ daily: await getDailyRevenue(30) })));
 
 adminRouter.get('/admin/recent-calls', requireAdminToken, wrap(async (req) => {

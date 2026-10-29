@@ -17,7 +17,8 @@
     "test:x402": "tsx scripts/testClient.ts",
     "test:buyer-agent": "tsx scripts/buyerAgent.ts",
     "seed:registry": "tsx scripts/seedRegistry.ts",
-    "precompute:docs": "tsx scripts/precomputeDocs.ts"
+    "precompute:docs": "tsx scripts/precomputeDocs.ts",
+    "revenue:onchain": "tsx scripts/onchainRevenue.ts"
   },
   "keywords": [
     "x402",
