@@ -1187,17 +1187,28 @@ export async function getSupportedWithFallback(
   } catch (error) {
     const parsed = parseSupportedSnapshot(snapshot);
     if (!parsed) throw error;
-    console.warn(`facilitator /supported failed (${error}); using X402_SUPPORTED_SNAPSHOT`);
+    // Logged as an error so it shows in Vercel's runtime errors: the instance keeps
+    // this snapshot for its lifetime, so a stale Solana feePayer would fail verify.
+    console.error(`facilitator /supported failed (${error}); using X402_SUPPORTED_SNAPSHOT`);
     return parsed;
   }
 }
 
-/** The snapshot if it is valid JSON with a non-empty kinds array, else undefined. */
-export function parseSupportedSnapshot(snapshot: string | undefined): Supported | undefined {
+/**
+ * The snapshot if it is valid JSON with an `exact` kind for our EVM network, else
+ * undefined. A snapshot without one (say, copied from a testnet deploy) would let
+ * initialize() succeed and then fail every paid request on that instance.
+ */
+export function parseSupportedSnapshot(
+  snapshot: string | undefined,
+  network: string = networkId,
+): Supported | undefined {
   if (!snapshot) return undefined;
   try {
     const parsed = JSON.parse(snapshot) as Supported;
-    return Array.isArray(parsed?.kinds) && parsed.kinds.length > 0 ? parsed : undefined;
+    const kinds = Array.isArray(parsed?.kinds) ? parsed.kinds : [];
+    const ours = kinds.some((k) => typeof k?.x402Version === 'number' && k.scheme === 'exact' && k.network === network);
+    return ours ? parsed : undefined;
   } catch {
     return undefined;
   }
