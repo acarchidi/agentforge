@@ -1164,7 +1164,10 @@ export function createCdpFacilitatorClient(snapshot = config.X402_SUPPORTED_SNAP
 type Supported = Awaited<ReturnType<HTTPFacilitatorClient['getSupported']>>;
 
 /**
- * Live /supported first. When it fails and a snapshot is configured, return the
+ * Live /supported first. The CDP facilitator sometimes answers 401 to a freshly
+ * signed JWT on a cold start (36 times since Sep 20, while other inits and
+ * settlements succeed), and the SDK does not retry a 401, so retry it once with
+ * a new token. When it still fails and a snapshot is configured, return the
  * snapshot so the request is answered now instead of after 3 timed-out attempts
  * (logs show ~70 such timeouts a day, a few ending in a failed paid request).
  * Without a snapshot the error propagates exactly as before.
@@ -1174,7 +1177,13 @@ export async function getSupportedWithFallback(
   snapshot: string | undefined,
 ): Promise<Supported> {
   try {
-    return await live();
+    try {
+      return await live();
+    } catch (error) {
+      if (!String(error).includes('(401)')) throw error;
+      console.warn(`facilitator /supported returned 401; retrying once with a fresh token`);
+      return await live();
+    }
   } catch (error) {
     const parsed = parseSupportedSnapshot(snapshot);
     if (!parsed) throw error;

@@ -25,6 +25,22 @@ describe('facilitator /supported fallback', () => {
     await expect(getSupportedWithFallback(fail, 'not json')).rejects.toThrow('timeout');
   });
 
+  it('retries a 401 once with a fresh call before falling back', async () => {
+    vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const live = { kinds: [{ x402Version: 2, scheme: 'exact', network: 'eip155:8453' }], extensions: [], signers: {} };
+    const fn = vi.fn()
+      .mockRejectedValueOnce(new Error('Facilitator getSupported failed (401): Unauthorized'))
+      .mockResolvedValueOnce(live);
+    await expect(getSupportedWithFallback(fn, undefined)).resolves.toBe(live);
+    expect(fn).toHaveBeenCalledTimes(2);
+  });
+
+  it('does not retry other errors', async () => {
+    const fn = vi.fn().mockRejectedValue(new Error('timeout'));
+    await expect(getSupportedWithFallback(fn, undefined)).rejects.toThrow('timeout');
+    expect(fn).toHaveBeenCalledTimes(1);
+  });
+
   it('parses only snapshots with a non-empty kinds array', () => {
     expect(parseSupportedSnapshot(snapshot)?.kinds).toHaveLength(1);
     expect(parseSupportedSnapshot('{}')).toBeUndefined();
