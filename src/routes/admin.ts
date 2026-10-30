@@ -134,7 +134,9 @@ adminRouter.get('/admin/stats', requireAdminToken, wrap(async () => {
 adminRouter.get('/admin/facilitator-supported', requireAdminToken, wrap(async () => {
   const { HTTPFacilitatorClient } = await import('@x402/core/server');
   const { facilitator } = await import('@coinbase/x402');
-  return new HTTPFacilitatorClient(facilitator).getSupported();
+  const { SUPPORTED_TIMEOUT_MS } = await import('../middleware/x402.js');
+  // Same 10s timeout as the payment path; the SDK default (90s) outlives the 60s function.
+  return new HTTPFacilitatorClient({ ...facilitator, timeoutMs: SUPPORTED_TIMEOUT_MS }).getSupported();
 }));
 
 adminRouter.get('/admin/revenue/daily', requireAdminToken, wrap(async () => ({ daily: await getDailyRevenue(30) })));
