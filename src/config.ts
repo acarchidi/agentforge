@@ -45,6 +45,9 @@ const envSchema = z.object({
   PUBLIC_BASE_URL: z.string().url().default('https://agentforge-taupe.vercel.app'),
   BASE_BUILDER_CODE: z.string().regex(/^[a-z0-9_]{1,32}$/).optional(),
   X402_ENABLE_PERMIT2: z.enum(['true', 'false']).default('true'),
+  // Last-known facilitator /supported response (JSON), used only when the live
+  // fetch fails on a cold start. Copy it from GET /admin/facilitator-supported.
+  X402_SUPPORTED_SNAPSHOT: z.string().optional(),
   // World AgentKit free trial (human-backed agents) — tx-explain only
   AGENTKIT_ENABLED: z.enum(['true', 'false']).default('true'),
   AGENTKIT_FREE_TRIAL_USES: z.coerce.number().int().positive().default(25),

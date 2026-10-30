@@ -1154,11 +1154,53 @@ function resourcePath(url: string | undefined): string {
 
 export const SUPPORTED_TIMEOUT_MS = 10_000;
 
-export function createCdpFacilitatorClient(): HTTPFacilitatorClient {
+export function createCdpFacilitatorClient(snapshot = config.X402_SUPPORTED_SNAPSHOT): HTTPFacilitatorClient {
   const client = new HTTPFacilitatorClient(facilitator);
   const supportedClient = new HTTPFacilitatorClient({ ...facilitator, timeoutMs: SUPPORTED_TIMEOUT_MS });
-  client.getSupported = () => supportedClient.getSupported();
+  client.getSupported = () => getSupportedWithFallback(() => supportedClient.getSupported(), snapshot);
   return client;
+}
+
+type Supported = Awaited<ReturnType<HTTPFacilitatorClient['getSupported']>>;
+
+/**
+ * Live /supported first. The CDP facilitator sometimes answers 401 to a freshly
+ * signed JWT on a cold start (36 times since Sep 20, while other inits and
+ * settlements succeed), and the SDK does not retry a 401, so retry it once with
+ * a new token. When it still fails and a snapshot is configured, return the
+ * snapshot so the request is answered now instead of after 3 timed-out attempts
+ * (logs show ~70 such timeouts a day, a few ending in a failed paid request).
+ * Without a snapshot the error propagates exactly as before.
+ */
+export async function getSupportedWithFallback(
+  live: () => Promise<Supported>,
+  snapshot: string | undefined,
+): Promise<Supported> {
+  try {
+    try {
+      return await live();
+    } catch (error) {
+      if (!String(error).includes('(401)')) throw error;
+      console.warn(`facilitator /supported returned 401; retrying once with a fresh token`);
+      return await live();
+    }
+  } catch (error) {
+    const parsed = parseSupportedSnapshot(snapshot);
+    if (!parsed) throw error;
+    console.warn(`facilitator /supported failed (${error}); using X402_SUPPORTED_SNAPSHOT`);
+    return parsed;
+  }
+}
+
+/** The snapshot if it is valid JSON with a non-empty kinds array, else undefined. */
+export function parseSupportedSnapshot(snapshot: string | undefined): Supported | undefined {
+  if (!snapshot) return undefined;
+  try {
+    const parsed = JSON.parse(snapshot) as Supported;
+    return Array.isArray(parsed?.kinds) && parsed.kinds.length > 0 ? parsed : undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 /**
