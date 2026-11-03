@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.acarchidi/agentforge",
-  "description": "DeFi safety for AI agents: launch feed, address screening, batch rug checks, tx decode. 23 tools.",
+  "description": "DeFi safety for AI agents: tx simulation, launch feed, address screening, rug checks. 25 tools.",
   "repository": {
     "url": "https://github.com/acarchidi/agentforge",
     "source": "github"
   },
-  "version": "1.7.1",
+  "version": "1.8.0",
   "remotes": [
     {
       "type": "streamable-http",

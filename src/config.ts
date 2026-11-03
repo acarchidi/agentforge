@@ -38,6 +38,10 @@ const envSchema = z.object({
   PRICE_ADDRESS_CHECK_PER_EXTRA: z.string().startsWith('$').default('$0.001'),
   // New-launch feed: one DB read per call; ingestion runs on demand.
   PRICE_LAUNCHES: z.string().startsWith('$').default('$0.005'),
+  // EVM pre-sign simulation: 3 public RPC requests, no LLM. Cost ≈ facilitator fee.
+  PRICE_TX_SIMULATE: z.string().startsWith('$').default('$0.005'),
+  // Aave v3 health: one eth_call per chain, no LLM.
+  PRICE_LENDING_HEALTH: z.string().startsWith('$').default('$0.003'),
   ETHERSCAN_API_KEY: z.string().optional(),
   CDP_API_KEY_ID: z.string().optional(),
   CDP_API_KEY_SECRET: z.string().optional(),

@@ -30,6 +30,13 @@ const FEATURED: FeaturedService[] = [
     suggestedInput: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' },
   },
   {
+    endpoint: '/v1/tx-simulate',
+    method: 'POST',
+    job: 'Simulate any EVM transaction before signing: revert reason, assets leaving the wallet, approvals granted, counterparty sanctions/scam screening, proceed/caution/avoid',
+    cadence: 'Call before every transaction you sign',
+    suggestedInput: { chain: 'base', from: '0x…your-wallet', transactions: [{ to: '0x…contract', data: '0x…calldata' }] },
+  },
+  {
     endpoint: '/v1/launches',
     method: 'GET',
     job: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum), each already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern',
@@ -96,6 +103,11 @@ export function gasRelatedServices(chain: string): RelatedService[] {
           suggestedInput: { address: '0x…token', chain },
         }]
       : []),
+    {
+      endpoint: '/v1/tx-simulate',
+      description: `Simulate the transaction you are about to send on ${chain}: reverts, asset changes, risky approvals (${priceOf('/v1/tx-simulate')})`,
+      suggestedInput: { chain, from: '0x…your-wallet', transactions: [{ to: '0x…', data: '0x…' }] },
+    },
     {
       endpoint: '/v1/tx-decode',
       description: `Decode any ${chain} transaction into plain English (${priceOf('/v1/tx-decode')})`,

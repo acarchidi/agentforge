@@ -79,6 +79,34 @@ const SKILLS: Skill[] = [
     method: 'POST',
   },
   {
+    id: 'tx-simulate',
+    name: 'EVM Transaction Simulation',
+    description: 'Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, every asset leaving or entering the wallet, approvals granted, counterparty sanctions/scam screening, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon.',
+    tags: ['security', 'simulation', 'pre-sign', 'transaction-firewall', 'approvals', 'evm'],
+    examples: [
+      'What will this transaction do to my wallet if I sign it?',
+      'Simulate this approve and swap before I send them',
+      'Is this transaction draining my tokens?',
+    ],
+    price: config.PRICE_TX_SIMULATE,
+    endpoint: '/v1/tx-simulate',
+    method: 'POST',
+  },
+  {
+    id: 'lending-health',
+    name: 'Lending Position Health',
+    description: 'How close a wallet is to liquidation on Aave v3 across five chains in one call: collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
+    tags: ['defi', 'aave', 'lending', 'liquidation', 'health-factor', 'risk'],
+    examples: [
+      'How close is this wallet to liquidation on Aave?',
+      'Check my health factor on every chain',
+      'How much can ETH fall before my position is liquidated?',
+    ],
+    price: config.PRICE_LENDING_HEALTH,
+    endpoint: '/v1/lending/health',
+    method: 'GET',
+  },
+  {
     id: 'token-intel',
     name: 'Token Intelligence',
     description: 'Token metadata enrichment with market data and AI risk assessment for any EVM or Solana token.',
@@ -343,9 +371,9 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
   return {
     name: 'AgentForge',
     description:
-      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
+      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.7.1',
+    version: '1.8.0',
 
     provider: {
       organization: 'AgentForge',
