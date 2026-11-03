@@ -164,7 +164,8 @@ describe('discoverability metadata', () => {
     expect(routes['POST /v1/solana/token-risk-scan'].extensions.agentkit).toBeUndefined();
     expect(routes['GET /v1/ping'].extensions.agentkit).toBeUndefined();
     for (const r of Object.values(routes)) {
-      expect(r.serviceName).toBe('AgentForge');
+      // Each route is listed under its own job-first name (see ROUTE_METADATA).
+      expect(Object.values(ROUTE_METADATA).map((m) => m.name)).toContain(r.serviceName);
       expect(r.iconUrl).toContain('/brand/agentforge-icon-512.png');
       expect(r.extensions.bazaar.discoverable).toBe(true);
       expect(Object.keys(ROUTE_METADATA)).toContain(r.extensions.bazaar.tags && Object.keys(ROUTE_METADATA).find((k) => ROUTE_METADATA[k].tags === r.tags));

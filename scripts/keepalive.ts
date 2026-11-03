@@ -9,6 +9,7 @@
  * cost is only fees and the LLM cost of the sample calls.
  *
  * Usage:  npm run keepalive            (pays what's due)
+ *         npm run keepalive -- --all   (pays every endpoint; refreshes index metadata)
  *         npm run keepalive -- --dry-run  (shows the plan, pays nothing)
  */
 import { config } from 'dotenv';
@@ -24,6 +25,8 @@ import { PUBLIC_BASE_URL, priceFor } from '../src/pricing.js';
 
 const USDC_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const dryRun = process.argv.includes('--dry-run');
+// --all: pay every endpoint once, e.g. to make the index re-read changed listing metadata.
+const forceAll = process.argv.includes('--all');
 
 const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 if (!url) {
@@ -32,7 +35,7 @@ if (!url) {
 }
 
 const status = await listingStatus(url);
-const due = status.filter((s) => s.due);
+const due = forceAll ? status : status.filter((s) => s.due);
 console.log('Listing status (days of CDP listing left; "never" = not listed yet):');
 for (const s of status) console.log(`  ${s.due ? 'DUE ' : 'ok  '} ${s.path.padEnd(28)} ${s.daysLeft === null ? 'never listed' : `${s.daysLeft}d left`}`);
 

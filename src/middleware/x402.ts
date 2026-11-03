@@ -36,31 +36,38 @@ export const ICON_URL = `${config.PUBLIC_BASE_URL}/brand/agentforge-icon-512.png
  * already in use across the index, not invented: "Data" (Apify), "security",
  * "Infra", "AI".
  */
-export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }> = {
-  '/v1/token-intel': { category: 'Data', tags: ['token intel', 'token price', 'market data', 'risk score', 'evm', 'solana'] },
-  '/v1/token-research': { category: 'Data', tags: ['token research', 'defi metrics', 'holder analysis', 'prediction markets', 'due diligence'] },
-  '/v1/contract-docs': { category: 'Data', tags: ['contract docs', 'abi', 'proxy resolution', 'smart contract'] },
-  '/v1/contract-monitor': { category: 'security', tags: ['contract monitor', 'admin operations', 'proxy upgrade', 'ownership change', 'pause event'] },
-  '/v1/token-compare': { category: 'Data', tags: ['token compare', 'token comparison', 'market data', 'defi', 'due diligence'] },
-  '/v1/tx-decode': { category: 'Data', tags: ['transaction decode', 'evm', 'calldata', 'plain english', 'token transfers'] },
-  '/v1/approval-scan': { category: 'security', tags: ['approval scan', 'token approvals', 'unlimited approval', 'wallet safety', 'revoke'] },
-  '/v1/sentiment': { category: 'AI', tags: ['sentiment analysis', 'crypto sentiment', 'nlp', 'market sentiment'] },
-  '/v1/summarize': { category: 'AI', tags: ['summarize', 'text summary', 'nlp', 'key points'] },
-  '/v1/translate': { category: 'AI', tags: ['translate', 'translation', 'nlp', 'multilingual'] },
-  '/v1/wallet-safety': { category: 'security', tags: ['wallet safety', 'approval scan', 'pre-transaction check', 'defi risk'] },
-  '/v1/token-risk-metrics': { category: 'security', tags: ['token risk', 'holder concentration', 'rug check', 'evm'] },
-  '/v1/trade-check': { category: 'security', tags: ['pre-trade check', 'rug check', 'token risk', 'buy token', 'gas price', 'bundle'] },
-  '/v1/risk-batch': { category: 'security', tags: ['batch risk score', 'rug check', 'token screening', 'watchlist', 'trading bot', 'bulk'] },
-  '/v1/address-check': { category: 'security', tags: ['address screening', 'sanctions check', 'ofac', 'scam address', 'counterparty risk', 'aml'] },
-  '/v1/launches': { category: 'Data', tags: ['new token launches', 'new pairs', 'sniper feed', 'rug check', 'memecoin', 'base'] },
-  '/v1/tx-simulate': { category: 'security', tags: ['simulate transaction', 'pre-sign check', 'transaction firewall', 'asset changes', 'approval check', 'evm'] },
-  '/v1/lending/health': { category: 'Data', tags: ['aave', 'health factor', 'liquidation risk', 'lending position', 'defi', 'evm'] },
-  '/v1/pool-snapshot': { category: 'Data', tags: ['liquidity pools', 'defi', 'tvl', 'apy', 'pool snapshot'] },
-  '/v1/gas': { category: 'Data', tags: ['gas price', 'gas oracle', 'evm', 'transaction fees'] },
-  '/v1/ping': { category: 'Infra', tags: ['ping', 'x402 test', 'payment check', 'health'] },
-  '/v1/solana/tx-explain': { category: 'Data', tags: ['solana', 'transaction explain', 'decode', 'plain english'] },
-  '/v1/solana/tx-simulate': { category: 'security', tags: ['solana', 'simulate transaction', 'pre-sign check', 'balance changes'] },
-  '/v1/solana/token-risk-scan': { category: 'security', tags: ['solana', 'rug check', 'token risk', 'mint authority', 'freeze authority', 'memecoin'] },
+/**
+ * Per-route Bazaar listing metadata. The CDP discovery search is hybrid
+ * (keyword + semantic) over serviceName, tags, and description, so each route
+ * gets a job-first name (≤32 chars) and up to 5 tags (the SDK drops the rest)
+ * phrased the way agents search: "rug check", "sanctions screening", ...
+ * Measured with scripts/bazaarRank.ts.
+ */
+export const ROUTE_METADATA: Record<string, { name: string; category: string; tags: string[] }> = {
+  '/v1/tx-simulate': { name: 'Pre-Sign Transaction Simulation', category: 'security', tags: ['transaction simulation', 'pre-sign check', 'drainer detection', 'simulate transaction', 'approval check'] },
+  '/v1/address-check': { name: 'Sanctions & Scam Address Check', category: 'security', tags: ['sanctions screening', 'ofac', 'aml', 'scam address check', 'wallet address risk'] },
+  '/v1/trade-check': { name: 'Is This Token Safe to Buy', category: 'security', tags: ['token safety', 'rug check', 'honeypot check', 'token security scan', 'pre-trade check'] },
+  '/v1/token-risk-metrics': { name: 'Token Rug Check Risk Score', category: 'security', tags: ['rug check', 'token risk score', 'holder concentration', 'mint authority', 'token security'] },
+  '/v1/risk-batch': { name: 'Batch Token Risk Scoring', category: 'security', tags: ['batch token risk', 'rug check', 'token screening', 'watchlist', 'bulk risk score'] },
+  '/v1/launches': { name: 'New Token Launches Risk Feed', category: 'Data', tags: ['new token launches', 'memecoin sniper feed', 'honeypot detection', 'new pairs', 'rug check'] },
+  '/v1/lending/health': { name: 'Aave Health Factor & Liquidation', category: 'Data', tags: ['aave health factor', 'liquidation risk', 'lending position', 'defi risk', 'health factor'] },
+  '/v1/approval-scan': { name: 'Token Approval Scanner', category: 'security', tags: ['token approval scanner', 'revoke approvals', 'unlimited approval', 'allowance check', 'wallet security'] },
+  '/v1/wallet-safety': { name: 'Wallet Safety Check', category: 'security', tags: ['wallet safety check', 'wallet risk', 'drainer detection', 'pre-transaction check', 'approvals'] },
+  '/v1/tx-decode': { name: 'Decode Transaction Plain English', category: 'Data', tags: ['decode transaction', 'transaction decoder', 'tx explain', 'calldata', 'evm'] },
+  '/v1/contract-docs': { name: 'Smart Contract Documentation', category: 'Data', tags: ['smart contract documentation', 'contract docs', 'abi', 'proxy resolution', 'contract security'] },
+  '/v1/contract-monitor': { name: 'Contract Admin Activity Monitor', category: 'security', tags: ['contract monitor', 'proxy upgrade alert', 'ownership change', 'admin activity', 'pause event'] },
+  '/v1/token-intel': { name: 'Token Price & AI Risk Score', category: 'Data', tags: ['token intel', 'token price', 'token risk score', 'market data', 'token safety'] },
+  '/v1/token-research': { name: 'Token Due Diligence Research', category: 'Data', tags: ['token due diligence', 'token research', 'defi metrics', 'holder analysis', 'prediction markets'] },
+  '/v1/token-compare': { name: 'Token Comparison Analysis', category: 'Data', tags: ['token comparison', 'compare tokens', 'market data', 'due diligence', 'defi'] },
+  '/v1/pool-snapshot': { name: 'DeFi Liquidity Pool Data', category: 'Data', tags: ['liquidity pools', 'pool tvl apy', 'yield', 'defi pools', 'impermanent loss'] },
+  '/v1/gas': { name: 'Gas Price Oracle', category: 'Data', tags: ['gas price', 'gas oracle', 'gas fees', 'evm', 'transaction fees'] },
+  '/v1/sentiment': { name: 'Crypto Sentiment Analysis', category: 'AI', tags: ['sentiment analysis', 'crypto sentiment', 'market sentiment', 'nlp', 'bullish bearish'] },
+  '/v1/summarize': { name: 'Text Summarization', category: 'AI', tags: ['summarize', 'text summary', 'nlp', 'key points', 'tldr'] },
+  '/v1/translate': { name: 'Translation', category: 'AI', tags: ['translate', 'translation', 'multilingual', 'nlp', 'localization'] },
+  '/v1/ping': { name: 'AgentForge x402 Ping', category: 'Infra', tags: ['ping', 'x402 test', 'payment check', 'health check', 'service catalog'] },
+  '/v1/solana/tx-explain': { name: 'Solana Transaction Explainer', category: 'Data', tags: ['solana transaction', 'decode transaction', 'tx explain', 'plain english', 'solana'] },
+  '/v1/solana/tx-simulate': { name: 'Solana Transaction Simulation', category: 'security', tags: ['solana simulate transaction', 'pre-sign check', 'transaction simulation', 'balance changes', 'solana'] },
+  '/v1/solana/token-risk-scan': { name: 'Solana Rug Check', category: 'security', tags: ['solana rug check', 'rug check', 'mint authority', 'freeze authority', 'memecoin'] },
 };
 
 /**
@@ -646,7 +653,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Rug-check risk score for agents evaluating a token before buying: mint/freeze authority, holder concentration, and liquidity depth rolled into a composite 0-100 score. Pre-computed for top tokens, live for others. Category: data.',
+      description: 'Token rug check and risk score for agents evaluating a token before buying: mint/freeze authority, holder concentration, and liquidity depth rolled into a composite 0-100 score. Pre-computed for top tokens, live for others. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -703,7 +710,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Check a token before you buy it: one call bundling the quantitative rug check (token-risk-metrics), AI risk assessment with market data (token-intel), and current gas — with a proceed/caution/avoid verdict. Priced below the three calls separately. Category: data.',
+      description: 'Is this token safe to buy? Token security scan, rug check, and honeypot signals in one call bundling the quantitative rug check (token-risk-metrics), AI risk assessment with market data (token-intel), and current gas — with a proceed/caution/avoid verdict. Priced below the three calls separately. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -803,7 +810,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: `Counterparty screening before an agent sends, approves, or interacts: OFAC sanctions, known scam/phishing wallets, labeled protocol contracts, and fresh-address detection for 1-100 EVM or Solana addresses. ${PRICING_RULES['/v1/address-check']}. Category: data.`,
+      description: `Sanctions screening and scam address check for crypto wallets (OFAC SDN, AML) before an agent sends, approves, or interacts: OFAC sanctions, known scam/phishing wallets, labeled protocol contracts, and fresh-address detection for 1-100 EVM or Solana addresses. ${PRICING_RULES['/v1/address-check']}. Category: data.`,
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -845,7 +852,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Feed of newly launched tokens on Base, Ethereum, and Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
+      description: 'New token launches feed (memecoin sniper feed with honeypot detection) on Base, Ethereum, and Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -888,7 +895,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Simulate an EVM transaction (or an approve-then-swap sequence of up to 5) before signing: revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of every counterparty, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon. Category: security.',
+      description: 'Transaction simulation before signing (pre-sign safety check and drainer detection): simulate an EVM transaction or an approve-then-swap sequence of up to 5 — revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of every counterparty, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon. Category: security.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -942,7 +949,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'How close a wallet is to liquidation on Aave v3, across Ethereum, Base, Arbitrum, Optimism, and Polygon in one call: collateral, debt, health factor, status (safe/watch/danger/critical/liquidatable), and how far collateral can fall before liquidation. Category: data.',
+      description: 'Aave health factor and liquidation risk: how close a wallet is to liquidation on Aave v3, across Ethereum, Base, Arbitrum, Optimism, and Polygon in one call: collateral, debt, health factor, status (safe/watch/danger/critical/liquidatable), and how far collateral can fall before liquidation. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -1461,7 +1468,7 @@ export function applyDiscoverabilityMetadata(routes: Record<string, RouteConfig>
     if (!meta || seen.has(route)) continue;
     seen.add(route);
 
-    route.serviceName = SERVICE_NAME;
+    route.serviceName = meta.name;
     route.tags = meta.tags;
     route.iconUrl = ICON_URL;
 
