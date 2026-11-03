@@ -21,7 +21,7 @@ interface Skill {
   method: string;
 }
 
-const SKILLS: Skill[] = [
+export const SKILLS: Skill[] = [
   {
     id: 'trade-check',
     name: 'Pre-Trade Token Check',

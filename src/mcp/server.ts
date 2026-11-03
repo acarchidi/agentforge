@@ -17,7 +17,8 @@
  * request after the first on a warm serverless instance.
  */
 
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
+import { McpServer, type ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
+import type { ZodRawShape } from 'zod';
 import { z } from 'zod';
 import { tokenResearchWithCost } from '../services/tokenResearch.js';
 import { contractDocsWithCost } from '../services/contractDocs.js';
@@ -168,6 +169,27 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     version: MCP_SERVER_VERSION,
   });
 
+  // Every tool reads public data and changes nothing, so declare it (MCP tool
+  // annotations), and tell agents about the free daily cap and the paid
+  // fallback up front: directories such as Glama score tools on disclosing
+  // side effects and limits.
+  const register = <S extends ZodRawShape>(name: string, description: string, shape: S, cb: ToolCallback<S>) =>
+    server.tool(
+      name,
+      CAPPED_TOOLS.has(name)
+        ? `${description} Free over MCP for ${MCP_DAILY_CAP} calls per day; beyond that the tool returns the pay-per-call x402 endpoint and its price.`
+        : description,
+      shape,
+      {
+        title: name.split('_').map((w) => w[0].toUpperCase() + w.slice(1)).join(' '),
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+      cb,
+    );
+
   // ── Shared chain enums ────────────────────────────────────────────
 
   const evmChain = z
@@ -245,7 +267,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
 
   // ── Tool registrations ──────────────────────────────────────────────
 
-  server.tool(
+  register(
     'token_intel',
     'Lightweight token lookup: price, market cap, volume, and basic risk assessment for any EVM or Solana token.',
     {
@@ -255,7 +277,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('token_intel', getTokenIntelWithCost, input),
   );
 
-  server.tool(
+  register(
     'token_research',
     'Multi-source token intelligence: market data, DeFi metrics, contract verification, prediction markets, holder analysis, price history, and AI risk assessment. Aggregates CoinGecko, DeFiLlama, Etherscan, and Polymarket.',
     {
@@ -274,7 +296,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('token_research', tokenResearchWithCost, input as any),
   );
 
-  server.tool(
+  register(
     'contract_docs',
     'Generate documentation for any verified EVM smart contract. Returns function descriptions, risk flags, interaction patterns, and security posture.',
     {
@@ -285,7 +307,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('contract_docs', contractDocsWithCost, input),
   );
 
-  server.tool(
+  register(
     'contract_monitor',
     'Monitor recent contract activity for suspicious admin operations, proxy upgrades, ownership changes, and pause events.',
     {
@@ -302,7 +324,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('contract_monitor', contractMonitorWithCost, input),
   );
 
-  server.tool(
+  register(
     'token_compare',
     'Compare a primary token against up to 3 others. Returns full research on primary, abbreviated metrics on comparisons, plus AI comparative analysis.',
     {
@@ -313,7 +335,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('token_compare', tokenCompareWithCost, input),
   );
 
-  server.tool(
+  register(
     'tx_decode',
     'Decode any EVM transaction: function call, parameters, token transfers, and plain-English explanation.',
     {
@@ -323,7 +345,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('tx_decode', decodeTransactionWithCost, input),
   );
 
-  server.tool(
+  register(
     'approval_scan',
     'Scan a wallet for risky token approvals. On EVM chains: identifies unlimited ERC-20 approvals and unverified spenders. On Solana: scans SPL token delegate authorities. Returns risk assessment.',
     {
@@ -337,7 +359,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('approval_scan', scanApprovalsWithCost, input),
   );
 
-  server.tool(
+  register(
     'gas_oracle',
     'Current gas prices (slow/standard/fast) for any supported EVM chain with trend analysis.',
     {
@@ -346,7 +368,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('gas_oracle', getGasPriceWithCost, input),
   );
 
-  server.tool(
+  register(
     'sentiment',
     'Analyze sentiment of text in crypto, finance, social media, or general context. Returns score (-1 to 1), confidence, label (very_bearish to very_bullish), reasoning, and per-entity sentiment.',
     {
@@ -360,7 +382,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('sentiment', analyzeSentimentWithCost, input),
   );
 
-  server.tool(
+  register(
     'summarize',
     'Summarize text with configurable length (brief/standard/detailed), format (prose/bullet_points/structured), and optional topic focus. Returns summary, key points, and compression ratio.',
     {
@@ -380,7 +402,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('summarize', summarizeWithCost, input),
   );
 
-  server.tool(
+  register(
     'translate',
     'Translate text to any language with tone control (formal/casual/technical). Auto-detects source language. Preserves formatting and cultural nuances.',
     {
@@ -396,7 +418,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('translate', translateWithCost, input),
   );
 
-  server.tool(
+  register(
     'wallet_safety',
     'Comprehensive wallet safety check: scans approvals, analyzes recent transaction activity for suspicious patterns, and assesses target contract risk. Returns composite risk score (0-100), risk level, action items, and related service suggestions. Supports EVM chains and Solana.',
     {
@@ -416,7 +438,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('wallet_safety', walletSafetyWithCost, input),
   );
 
-  server.tool(
+  register(
     'pool_snapshot',
     'Get a cached snapshot of top DeFi liquidity pools. Filter by protocol (e.g. "uniswap-v3"), chain (e.g. "ethereum"), or token symbol (e.g. "ETH"). Returns TVL, APY, 24h volume, IL risk, and registry enrichment. Data refreshed every 15 minutes.',
     {
@@ -432,7 +454,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('pool_snapshot', getPoolSnapshotWithCost, input),
   );
 
-  server.tool(
+  register(
     'token_risk_metrics',
     'Quantitative risk metrics for any ERC-20 token: holder concentration (top 10 holder %), contract permissions (can mint/burn/pause/blacklist), liquidity depth vs market cap, deployer history, and weighted composite risk score (0-100). Pre-computed for top tokens, live-computed for others.',
     {
@@ -446,7 +468,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('token_risk_metrics', getTokenRiskMetricsWithCost, input),
   );
 
-  server.tool(
+  register(
     'trade_check',
     'Check a token before you buy it: one call bundling quantitative rug-check metrics (holder concentration, permissions, liquidity), AI risk assessment with market data, and current gas — rolled into a proceed/caution/avoid verdict with reasons. Cheaper than calling the three services separately.',
     {
@@ -460,7 +482,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('trade_check', tradeCheckWithCost, input),
   );
 
-  server.tool(
+  register(
     'risk_batch',
     'Batch rug-check: risk scores (holder concentration, mint/blacklist/pause/upgrade permissions, liquidity depth) for 2-25 EVM tokens in one call. Use it to screen a watchlist or a list of candidate trades at once.',
     {
@@ -477,7 +499,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('risk_batch', riskBatchWithCost, input),
   );
 
-  server.tool(
+  register(
     'address_check',
     'Screen counterparty addresses before sending, approving, or interacting: OFAC sanctions, known scam/phishing wallets, labeled protocol contracts, and brand-new-address detection. 1-100 EVM or Solana addresses per call; returns block / caution / no_known_issues per address.',
     {
@@ -494,7 +516,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('address_check', addressCheckWithCost, input),
   );
 
-  server.tool(
+  register(
     'launch_feed',
     'Newly launched tokens on Base, Ethereum, or Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Poll it: pass the previous nextSince as since to get only new launches.',
     {
@@ -507,7 +529,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('launch_feed', getLaunchesWithCost, input),
   );
 
-  server.tool(
+  register(
     'tx_simulate',
     'Simulate an EVM transaction (or a sequence of up to 5, e.g. approve then swap) before signing: revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of counterparties, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon.',
     {
@@ -525,7 +547,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('tx_simulate', simulateEvmTxWithCost, input),
   );
 
-  server.tool(
+  register(
     'lending_health',
     'How close a wallet is to liquidation on Aave v3 (Ethereum, Base, Arbitrum, Optimism, Polygon in one call): collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
     {
@@ -535,7 +557,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('lending_health', getLendingHealthWithCost, input),
   );
 
-  server.tool(
+  register(
     'registry_lookup',
     'Look up a contract address in the Known Contract Label Registry. Returns protocol name, category, risk level, and tags. Free — no payment required.',
     {
@@ -548,7 +570,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     }), input),
   );
 
-  server.tool(
+  register(
     'solana_program_lookup',
     'Look up a Solana program ID in the program label registry. Returns protocol name, category, risk level. Free — no payment required.',
     {
@@ -560,7 +582,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     }, input),
   );
 
-  server.tool(
+  register(
     'solana_tx_explain',
     'Explain a Solana transaction in plain English: labeled programs, token/SOL movements, success status, and risk flags.',
     {
@@ -569,7 +591,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('solana_tx_explain', explainSolanaTxWithCost, input),
   );
 
-  server.tool(
+  register(
     'solana_tx_simulate',
     'Simulate a Solana transaction before signing it: balance changes, labeled programs, deterministic risk rules, and a proceed/caution/avoid recommendation.',
     {
@@ -578,7 +600,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     async (input) => call('solana_tx_simulate', simulateSolanaTxWithCost, input),
   );
 
-  server.tool(
+  register(
     'solana_token_risk_scan',
     'Solana token rug check: mint/freeze authority, holder concentration, liquidity depth, and a composite 0-100 risk score.',
     {

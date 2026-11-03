@@ -648,3 +648,14 @@ describe('Admin Endpoints', () => {
     expect(res.status).toBe(401);
   });
 });
+
+describe('llms.txt', () => {
+  it('serves a markdown map that lists every agent-card skill', async () => {
+    const res = await request(app).get('/llms.txt');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/markdown/);
+    expect(res.text.startsWith('# AgentForge')).toBe(true);
+    const card = await request(app).get('/.well-known/agent.json');
+    for (const s of card.body.skills) expect(res.text).toContain(s.name);
+  });
+});
