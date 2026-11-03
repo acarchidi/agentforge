@@ -22,6 +22,10 @@ import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.j
 import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
 import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
 import { tradeCheckInput, tradeCheckOutput } from '../schemas/tradeCheck.js';
+import { riskBatchInput, riskBatchOutput } from '../schemas/riskBatch.js';
+import { addressCheckInput, addressCheckOutput } from '../schemas/addressCheck.js';
+import { launchesOutput } from '../schemas/launches.js';
+import { PRICING_RULES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
 import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
@@ -57,9 +61,9 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.6.0',
+      version: '1.7.0',
       description:
-        'Check a token before you buy it, scan a wallet for risky approvals, audit a smart contract, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
+        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, audit a smart contract, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
     },
     servers: [
@@ -529,6 +533,72 @@ export function generateOpenApiSpec(): object {
               description: 'Invalid input',
               content: { 'application/json': { schema: errorSchema } },
             },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/risk-batch': {
+        post: {
+          operationId: 'riskBatch',
+          summary: 'Batch token risk scoring (2-25 tokens)',
+          description:
+            `Rug-check a whole watchlist in one call: holder concentration, permissions, and liquidity risk scores for 2-25 EVM tokens. Price: ${PRICING_RULES['/v1/risk-batch']} (the 402 quote reflects the submitted list).`,
+          tags: ['Security', 'Crypto Intelligence'],
+          'x-x402-price': PRICING_RULES['/v1/risk-batch'],
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'dynamic', price: PRICING_RULES['/v1/risk-batch'], protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(riskBatchInput) } } },
+          responses: {
+            '200': { description: 'Per-token risk results', content: { 'application/json': { schema: schemaOf(riskBatchOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/address-check': {
+        post: {
+          operationId: 'addressCheck',
+          summary: 'Counterparty address screening (1-100 addresses)',
+          description:
+            `Screen addresses before sending, approving, or interacting: OFAC sanctions, scam/phishing wallets, labeled protocols, and brand-new-address detection. EVM and Solana. Price: ${PRICING_RULES['/v1/address-check']}.`,
+          tags: ['Security'],
+          'x-x402-price': PRICING_RULES['/v1/address-check'],
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'dynamic', price: PRICING_RULES['/v1/address-check'], protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(addressCheckInput) } } },
+          responses: {
+            '200': { description: 'Per-address verdicts', content: { 'application/json': { schema: schemaOf(addressCheckOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/launches': {
+        get: {
+          operationId: 'getLaunches',
+          summary: 'New token launch feed (risk-scored)',
+          description:
+            `Newly launched tokens on Base, Ethereum, and Arbitrum, each already risk-scored. Poll with since=<previous nextSince> to get only new launches. Price: ${config.PRICE_LAUNCHES} USDC via x402.`,
+          tags: ['Crypto Intelligence', 'Security'],
+          'x-x402-price': config.PRICE_LAUNCHES,
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_LAUNCHES, protocols: ['x402'] },
+          parameters: [
+            { name: 'chain', in: 'query', schema: { type: 'string', enum: ['base', 'ethereum', 'arbitrum'], default: 'base' } },
+            { name: 'since', in: 'query', schema: { type: 'string', format: 'date-time' }, description: 'Only pools created after this; pass the previous nextSince' },
+            { name: 'minLiquidityUsd', in: 'query', schema: { type: 'number', default: 1000 } },
+            { name: 'maxRiskScore', in: 'query', schema: { type: 'integer', minimum: 0, maximum: 100 } },
+            { name: 'limit', in: 'query', schema: { type: 'integer', minimum: 1, maximum: 100, default: 50 } },
+          ],
+          responses: {
+            '200': { description: 'Risk-scored launches', content: { 'application/json': { schema: schemaOf(launchesOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
             '402': { description: 'Payment required' },
           },
         },

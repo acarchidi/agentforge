@@ -11,7 +11,12 @@ export type DeployerRisk = 'unknown' | 'low' | 'medium' | 'high';
 export type OverallRiskLevel = 'low' | 'medium' | 'high' | 'critical';
 
 export interface CompositeInput {
-  concentrationRisk: ConcentrationRisk;
+  /**
+   * Omit when holder data is unavailable (Etherscan's holder list is an API
+   * Pro endpoint). Scoring "no data" as low concentration made rugs look
+   * safe; instead the remaining weights are renormalized and a flag says so.
+   */
+  concentrationRisk?: ConcentrationRisk;
   liquidityRisk: LiquidityRisk;
   permissionRisk: PermissionRisk;
   deployerRisk: DeployerRisk;
@@ -51,6 +56,10 @@ function scoreToLevel(score: number): OverallRiskLevel {
 /** Generate human-readable risk flags for the most significant issues. */
 function generateFlags(input: CompositeInput): string[] {
   const flags: string[] = [];
+
+  if (input.concentrationRisk === undefined) {
+    flags.push('Holder concentration unavailable — score excludes it; check top holders before sizing a position');
+  }
 
   if (input.concentrationRisk === 'critical' || input.concentrationRisk === 'high') {
     const pct = input.top10HolderPct;
@@ -96,16 +105,15 @@ function generateFlags(input: CompositeInput): string[] {
  * Weights: concentration 30%, liquidity 25%, permissions 30%, deployer 15%.
  */
 export function computeCompositeScore(input: CompositeInput): CompositeResult {
-  const concentrationScore = riskLevelToScore(input.concentrationRisk);
   const liquidityScore = riskLevelToScore(input.liquidityRisk);
   const permissionsScore = riskLevelToScore(input.permissionRisk);
   const deployerScore = riskLevelToScore(input.deployerRisk);
 
+  const weighted = liquidityScore * 0.25 + permissionsScore * 0.30 + deployerScore * 0.15;
   const score = Math.round(
-    concentrationScore * 0.30 +
-    liquidityScore * 0.25 +
-    permissionsScore * 0.30 +
-    deployerScore * 0.15,
+    input.concentrationRisk === undefined
+      ? weighted / 0.70
+      : weighted + riskLevelToScore(input.concentrationRisk) * 0.30,
   );
 
   return {

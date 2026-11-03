@@ -43,9 +43,12 @@ import {
 } from './concentration.js';
 import {
   scoreLiquidityRisk,
+  capLiquidityRiskByDepth,
   computeLiquidityRatio,
 } from './liquidity.js';
 import { computeCompositeScore } from './composite.js';
+import { etherscanSlot, isEtherscanRateLimit } from '../../utils/etherscanPacer.js';
+import { fetchDexScreenerEvmTokens, type DexScreenerEvmMarket } from '../dataSources/dexscreener.js';
 
 // ── Etherscan API helper ───────────────────────────────────────────────
 
@@ -60,7 +63,9 @@ const CHAIN_IDS: Record<string, number> = {
 async function etherscanFetch(
   chainId: number,
   params: Record<string, string>,
+  retried = false,
 ): Promise<unknown> {
+  await etherscanSlot();
   const apiKey = config.ETHERSCAN_API_KEY;
   const searchParams = new URLSearchParams({
     chainid: String(chainId),
@@ -73,6 +78,10 @@ async function etherscanFetch(
   );
   if (!res.ok) throw new Error(`Etherscan API error: ${res.status}`);
   const data = (await res.json()) as { status: string; message: string; result: unknown };
+  if (data.status === '0' && isEtherscanRateLimit(data.result)) {
+    if (!retried) return etherscanFetch(chainId, params, true);
+    throw new Error('Etherscan rate limit reached');
+  }
   if (data.status === '0' && String(data.result).includes('error')) {
     throw new Error(`Etherscan error: ${data.result}`);
   }
@@ -90,10 +99,22 @@ function isCacheStale(computedAt: string): boolean {
 
 // ── Live computation ───────────────────────────────────────────────────
 
+/**
+ * Etherscan's tokenholderlist is an API Pro endpoint; on the free plan it
+ * answers with a "Pro endpoint" notice instead of holders. Remember that per
+ * process so live computations stop spending a rate-limited call on it.
+ */
+let holderListUnavailable = false;
+
+/**
+ * @param market DexScreener market data. `undefined` = fetch it here; `null` =
+ *   caller already looked and found none (batch callers prefetch 30 at a time).
+ */
 async function computeLive(
   address: string,
   chain: string,
   chainId: number,
+  market?: DexScreenerEvmMarket | null,
 ): Promise<Omit<TokenRiskMetricsOutput, 'relatedServices'>> {
   const registry = getRegistry();
   const computedAt = new Date().toISOString();
@@ -102,17 +123,20 @@ async function computeLive(
   let holderData: Array<{ TokenHolderAddress: string; TokenHolderQuantity: string }> = [];
   let totalSupply = 0n;
 
-  try {
-    const holdersRaw = await etherscanFetch(chainId, {
-      module: 'token',
-      action: 'tokenholderlist',
-      contractaddress: address,
-      page: '1',
-      offset: '10',
-    }) as Array<{ TokenHolderAddress: string; TokenHolderQuantity: string }>;
-    if (Array.isArray(holdersRaw)) holderData = holdersRaw;
-  } catch {
-    // Non-fatal: proceed with empty holder data
+  if (!holderListUnavailable) {
+    try {
+      const holdersRaw = await etherscanFetch(chainId, {
+        module: 'token',
+        action: 'tokenholderlist',
+        contractaddress: address,
+        page: '1',
+        offset: '10',
+      }) as Array<{ TokenHolderAddress: string; TokenHolderQuantity: string }> | string;
+      if (Array.isArray(holdersRaw)) holderData = holdersRaw;
+      else if (typeof holdersRaw === 'string' && /api pro/i.test(holdersRaw)) holderListUnavailable = true;
+    } catch {
+      // Non-fatal: proceed with empty holder data
+    }
   }
 
   // 2. Fetch total supply
@@ -182,7 +206,13 @@ async function computeLive(
     .filter((p) => p.address?.toLowerCase() === address.toLowerCase())
     .sort((a, b) => (b.tvlUsd ?? 0) - (a.tvlUsd ?? 0));
 
-  const totalLiquidityUsd = tokenPools.reduce((s, p) => s + (p.tvlUsd ?? 0), 0) || undefined;
+  // Pool snapshots only cover the top 500 pools; fall back to DexScreener,
+  // which also supplies the market cap the liquidity ratio needs.
+  const dex = market === undefined
+    ? (await fetchDexScreenerEvmTokens(chain, [address])).get(address.toLowerCase()) ?? null
+    : market;
+  const totalLiquidityUsd = tokenPools.reduce((s, p) => s + (p.tvlUsd ?? 0), 0) || dex?.totalLiquidityUsd || undefined;
+  const marketCapUsd = dex?.marketCapUsd ?? undefined;
   const topPools = tokenPools.slice(0, 5).map((p) => ({
     dex: p.protocol,
     pair: p.symbol,
@@ -204,10 +234,11 @@ async function computeLive(
     pct: totalSupply > 0n ? computeHolderPct(h.rawBalance, totalSupply) : 0,
   }));
   const concentrationResult = computeConcentrationRisk(holders, totalSupply, registry);
+  const holdersAvailable = holders.length > 0 && totalSupply > 0n;
 
   // Liquidity
-  const liquidityRatio = computeLiquidityRatio(totalLiquidityUsd, undefined);
-  const liquidityRisk = scoreLiquidityRisk(liquidityRatio);
+  const liquidityRatio = computeLiquidityRatio(totalLiquidityUsd, marketCapUsd);
+  const liquidityRisk = capLiquidityRiskByDepth(scoreLiquidityRisk(liquidityRatio), totalLiquidityUsd);
 
   // Deployer
   const deployerEntry = deployerAddress ? registry.lookup(deployerAddress) : null;
@@ -215,7 +246,7 @@ async function computeLive(
 
   // Composite
   const composite = computeCompositeScore({
-    concentrationRisk: concentrationResult.concentrationRisk,
+    concentrationRisk: holdersAvailable ? concentrationResult.concentrationRisk : undefined,
     liquidityRisk,
     permissionRisk,
     deployerRisk: deployerRisk as any,
@@ -233,9 +264,12 @@ async function computeLive(
     source: 'live' as const,
     computedAt,
     stalenessSec: 0,
-    holders: concentrationResult,
+    holders: holdersAvailable
+      ? { ...concentrationResult, dataAvailable: true }
+      : { top10HolderPct: 0, top10Addresses: [], concentrationRisk: 'unknown' as const, dataAvailable: false },
     liquidity: {
       totalLiquidityUsd,
+      marketCapUsd,
       liquidityToMcapRatio: liquidityRatio,
       liquidityRisk,
       topPools: topPools.length > 0 ? topPools : undefined,
@@ -269,7 +303,12 @@ function buildRelatedServices(
     {
       endpoint: '/v1/wallet-safety',
       description: `Check wallet safety before holding this token`,
-      suggestedInput: { walletAddress: address, chain },
+      suggestedInput: { walletAddress: '0x…your-wallet', targetContract: address, chain },
+    },
+    {
+      endpoint: '/v1/risk-batch',
+      description: 'Scoring several tokens? Batch 2-25 in one call at a lower per-token price',
+      suggestedInput: { chain, tokens: [{ address }, { address: '0x…another-token' }] },
     },
     {
       endpoint: '/v1/pool-snapshot',
@@ -288,6 +327,7 @@ export interface TokenRiskMetricsResult {
 
 export async function getTokenRiskMetricsWithCost(
   rawInput: unknown,
+  opts: { market?: DexScreenerEvmMarket | null } = {},
 ): Promise<TokenRiskMetricsResult> {
   const input: TokenRiskMetricsInput = tokenRiskMetricsInput.parse(rawInput);
   const { address, chain } = input;
@@ -309,7 +349,7 @@ export async function getTokenRiskMetricsWithCost(
   }
 
   // LIVE PATH
-  const live = await computeLive(address, chain, chainId);
+  const live = await computeLive(address, chain, chainId, opts.market);
   const output: TokenRiskMetricsOutput = {
     ...live,
     relatedServices: buildRelatedServices(address, chain, live.symbol),

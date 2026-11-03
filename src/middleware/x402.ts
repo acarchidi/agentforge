@@ -8,6 +8,7 @@ import { facilitator } from '@coinbase/x402';
 import { declareDiscoveryExtension } from '@x402/extensions/bazaar';
 import { declareBuilderCodeExtension, builderCodeResourceServerExtension } from '@x402/extensions/builder-code';
 import { config, networkId } from '../config.js';
+import { PRICING_RULES, priceFor } from '../pricing.js';
 import { logEvent } from '../analytics/logger.js';
 import { hashClientId } from '../analytics/clientId.js';
 import {
@@ -50,6 +51,9 @@ export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }
   '/v1/wallet-safety': { category: 'security', tags: ['wallet safety', 'approval scan', 'pre-transaction check', 'defi risk'] },
   '/v1/token-risk-metrics': { category: 'security', tags: ['token risk', 'holder concentration', 'rug check', 'evm'] },
   '/v1/trade-check': { category: 'security', tags: ['pre-trade check', 'rug check', 'token risk', 'buy token', 'gas price', 'bundle'] },
+  '/v1/risk-batch': { category: 'security', tags: ['batch risk score', 'rug check', 'token screening', 'watchlist', 'trading bot', 'bulk'] },
+  '/v1/address-check': { category: 'security', tags: ['address screening', 'sanctions check', 'ofac', 'scam address', 'counterparty risk', 'aml'] },
+  '/v1/launches': { category: 'Data', tags: ['new token launches', 'new pairs', 'sniper feed', 'rug check', 'memecoin', 'base'] },
   '/v1/pool-snapshot': { category: 'Data', tags: ['liquidity pools', 'defi', 'tvl', 'apy', 'pool snapshot'] },
   '/v1/gas': { category: 'Data', tags: ['gas price', 'gas oracle', 'evm', 'transaction fees'] },
   '/v1/ping': { category: 'Infra', tags: ['ping', 'x402 test', 'payment check', 'health'] },
@@ -57,6 +61,15 @@ export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }
   '/v1/solana/tx-simulate': { category: 'security', tags: ['solana', 'simulate transaction', 'pre-sign check', 'balance changes'] },
   '/v1/solana/token-risk-scan': { category: 'security', tags: ['solana', 'rug check', 'token risk', 'mint authority', 'freeze authority', 'memecoin'] },
 };
+
+/**
+ * x402 DynamicPrice for per-item endpoints: the quote is computed from the
+ * request body (express.json runs before this middleware), and the paid retry
+ * must carry the same body for verification to match.
+ */
+function perItemPrice(endpoint: string) {
+  return (ctx: { adapter: { getBody?(): unknown } }) => `$${priceFor(endpoint, ctx.adapter.getBody?.())}`;
+}
 
 export function createPaymentMiddleware() {
   const routeConfig = {
@@ -795,6 +808,138 @@ export function createPaymentMiddleware() {
               degraded: [],
               metadata: { chain: 'ethereum', bundleSavings: '$0.025 vs $0.028 for the three calls separately' },
               relatedServices: [],
+            },
+          },
+        }),
+      },
+    },
+    'POST /v1/risk-batch': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: perItemPrice('/v1/risk-batch'),
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: `Batch rug-check for trading bots screening a watchlist: holder/permission/liquidity risk scores for 2-25 EVM tokens in one call. Priced per token (${PRICING_RULES['/v1/risk-batch']}) — the 402 quote reflects your list. Category: data.`,
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            chain: 'ethereum',
+            tokens: [{ address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9' }, { address: '0x514910771AF9Ca656af840dff83E8264EcF986CA' }],
+          },
+          inputSchema: {
+            type: 'object',
+            required: ['tokens'],
+            properties: {
+              tokens: {
+                type: 'array', minItems: 2, maxItems: 25,
+                items: { type: 'object', required: ['address'], properties: { address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' }, chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] } } },
+              },
+              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'ethereum', description: 'Default chain for tokens without one' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['results', 'summary', 'pricing'],
+              properties: {
+                results: { type: 'array', items: { type: 'object', properties: { address: { type: 'string' }, status: { type: 'string', enum: ['ok', 'error', 'timeout'] }, riskScore: { type: 'number' }, riskLevel: { type: 'string' }, flags: { type: 'array' } } } },
+                summary: { type: 'object' },
+                pricing: { type: 'object' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              results: [{ address: '0x7Fc6…', chain: 'ethereum', status: 'ok', riskScore: 29, riskLevel: 'medium', flags: [] }],
+              summary: { requested: 2, scored: 2, failed: 0, byLevel: { low: 1, medium: 1, high: 0, critical: 0 } },
+              pricing: { perToken: '$0.004', tokensCharged: 2, total: '$0.008' },
+            },
+          },
+        }),
+      },
+    },
+    'POST /v1/address-check': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: perItemPrice('/v1/address-check'),
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: `Counterparty screening before an agent sends, approves, or interacts: OFAC sanctions, known scam/phishing wallets, labeled protocol contracts, and fresh-address detection for 1-100 EVM or Solana addresses. ${PRICING_RULES['/v1/address-check']}. Category: data.`,
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: { chain: 'ethereum', addresses: [{ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }] },
+          inputSchema: {
+            type: 'object',
+            properties: {
+              addresses: {
+                type: 'array', minItems: 1, maxItems: 100,
+                items: { type: 'object', required: ['address'], properties: { address: { type: 'string' }, chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana'] } } },
+              },
+              address: { type: 'string', description: 'Single-address shorthand (instead of addresses)' },
+              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana'], default: 'ethereum' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['results', 'summary'],
+              properties: {
+                results: { type: 'array', items: { type: 'object', properties: { address: { type: 'string' }, verdict: { type: 'string', enum: ['block', 'caution', 'no_known_issues'] }, reasons: { type: 'array' }, sanctioned: { type: 'boolean' }, flaggedScam: { type: 'boolean' } } } },
+                summary: { type: 'object' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              results: [{ address: '0xA0b8…', chain: 'ethereum', verdict: 'no_known_issues', reasons: ['Known entity: USDC (stablecoin)'], sanctioned: false, flaggedScam: false }],
+              summary: { checked: 1, block: 0, caution: 0, noKnownIssues: 1 },
+            },
+          },
+        }),
+      },
+    },
+    'GET /v1/launches': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_LAUNCHES,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'Feed of newly launched tokens on Base, Ethereum, and Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          input: { chain: 'base', minLiquidityUsd: 1000, maxRiskScore: 50 },
+          inputSchema: {
+            type: 'object',
+            properties: {
+              chain: { type: 'string', enum: ['base', 'ethereum', 'arbitrum'], default: 'base' },
+              since: { type: 'string', format: 'date-time', description: 'Only pools created after this; pass the previous nextSince' },
+              minLiquidityUsd: { type: 'number', default: 1000 },
+              maxRiskScore: { type: 'integer', minimum: 0, maximum: 100 },
+              limit: { type: 'integer', minimum: 1, maximum: 100, default: 50 },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['chain', 'launches', 'nextSince'],
+              properties: {
+                chain: { type: 'string' },
+                launches: { type: 'array', items: { type: 'object', properties: { token: { type: 'object' }, pool: { type: 'object' }, ageMinutes: { type: 'number' }, risk: { type: 'object' }, market: { type: 'object' }, contract: { type: 'object' } } } },
+                nextSince: { type: 'string' },
+                freshness: { type: 'object' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              chain: 'base',
+              launches: [{ token: { address: '0x98f7…', symbol: 'XSHAZ' }, ageMinutes: 6, risk: { score: 35, level: 'medium', flags: ['Contract source is not verified'] }, market: { liquidityUsd: 2940 } }],
+              nextSince: '2026-11-03T14:47:33Z',
             },
           },
         }),

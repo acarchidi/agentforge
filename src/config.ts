@@ -31,6 +31,14 @@ const envSchema = z.object({
   // three ($0.028 at current prices) but above token-intel's worst-case LLM cost
   // (~$0.014 at Sonnet 5 list prices) plus the $0.001 CDP facilitator fee.
   PRICE_TRADE_CHECK: z.string().startsWith('$').default('$0.025'),
+  // Per-item batch prices (x402 dynamic pricing: the 402 quotes count × rate).
+  // No LLM in either path; the floor keeps a 1-call batch above the $0.001
+  // facilitator fee.
+  PRICE_RISK_BATCH_PER_TOKEN: z.string().startsWith('$').default('$0.004'),
+  PRICE_ADDRESS_CHECK: z.string().startsWith('$').default('$0.003'),
+  PRICE_ADDRESS_CHECK_PER_EXTRA: z.string().startsWith('$').default('$0.001'),
+  // New-launch feed: one DB read per call; ingestion runs on demand.
+  PRICE_LAUNCHES: z.string().startsWith('$').default('$0.005'),
   ETHERSCAN_API_KEY: z.string().optional(),
   CDP_API_KEY_ID: z.string().optional(),
   CDP_API_KEY_SECRET: z.string().optional(),

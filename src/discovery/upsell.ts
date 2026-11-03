@@ -8,12 +8,14 @@
  * ENDPOINT_PRICES so the pitch can never drift from what is actually charged.
  */
 
-import { ENDPOINT_PRICES, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
+import { ENDPOINT_PRICES, PRICING_RULES, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 import type { RelatedService } from '../schemas/shared.js';
 
 interface FeaturedService {
   endpoint: string;
   method: 'GET' | 'POST';
+  /** Used for the recurring, high-volume services — the ones worth wiring into a loop. */
+  cadence?: string;
   /** The job it does, phrased the way a calling agent would state the task. */
   job: string;
   suggestedInput?: Record<string, unknown>;
@@ -28,10 +30,25 @@ const FEATURED: FeaturedService[] = [
     suggestedInput: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' },
   },
   {
-    endpoint: '/v1/token-risk-metrics',
+    endpoint: '/v1/launches',
+    method: 'GET',
+    job: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum), each already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern',
+    cadence: 'Poll every 1-5 minutes; pass nextSince back as since to get only new launches',
+    suggestedInput: { chain: 'base', minLiquidityUsd: 1000, maxRiskScore: 50 },
+  },
+  {
+    endpoint: '/v1/address-check',
     method: 'POST',
-    job: 'Rug-check any ERC-20: holder concentration, mint/pause/blacklist permissions, liquidity depth, 0-100 risk score',
-    suggestedInput: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' },
+    job: 'Screen counterparties before every transfer or approval: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses (1-100 per call)',
+    cadence: 'Call before each outgoing transaction',
+    suggestedInput: { chain: 'ethereum', addresses: [{ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }] },
+  },
+  {
+    endpoint: '/v1/risk-batch',
+    method: 'POST',
+    job: 'Rug-check a whole watchlist in one call: 2-25 tokens scored for holder, permission, and liquidity risk',
+    cadence: 'Re-screen your watchlist on every rebalance',
+    suggestedInput: { chain: 'ethereum', tokens: [{ address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9' }, { address: '0x514910771AF9Ca656af840dff83E8264EcF986CA' }] },
   },
   {
     endpoint: '/v1/wallet-safety',
@@ -64,6 +81,7 @@ export function pingCatalog(): Record<string, unknown> {
       endpoint: `${s.method} ${PUBLIC_BASE_URL}${s.endpoint}`,
       price: priceOf(s.endpoint),
       job: s.job,
+      ...(s.cadence ? { cadence: s.cadence } : {}),
       ...(s.suggestedInput ? { suggestedInput: s.suggestedInput } : {}),
     })),
     fullCatalog: `${PUBLIC_BASE_URL}/catalog`,
@@ -94,10 +112,15 @@ export function gasRelatedServices(chain: string): RelatedService[] {
       description: `Scan a wallet for risky token approvals before it signs anything (${priceOf('/v1/approval-scan')})`,
       suggestedInput: { address: '0x…wallet', chain },
     },
+    {
+      endpoint: '/v1/address-check',
+      description: `Screen the recipient against sanctions and scam lists before you send (${priceOf('/v1/address-check')})`,
+      suggestedInput: { addresses: [{ address: '0x…recipient', chain }] },
+    },
   ];
 }
 
 function priceOf(endpoint: string): string {
   const p = ENDPOINT_PRICES[endpoint];
-  return p === undefined ? 'free' : formatUsd(p);
+  return PRICING_RULES[endpoint] ?? (p === undefined ? 'free' : formatUsd(p));
 }
