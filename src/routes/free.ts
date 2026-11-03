@@ -116,7 +116,7 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
     name: 'AgentForge',
     version: '1.9.0',
     description:
-      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
+      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
     payment: {
       protocol: 'x402',

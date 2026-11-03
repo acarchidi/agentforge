@@ -59,7 +59,7 @@ machine track matters more: it is where a paying agent actually picks a vendor.
 
 Every security niche in the Bazaar already has 1-3 small sellers with 1-7 payers each: the market is fragmented, so breadth in **one call** is the opening. Priority order:
 
-1. **`/v1/signature-check`** — decode and risk-score EIP-712 / Permit / Permit2 / Seaport / setApprovalForAll / EIP-3009 signatures, including x402 payment requirements (payTo screened, asset is genuine USDC, amount vs the Bazaar-listed price). Signature phishing is the leading drainer vector and is invisible to transaction simulation. No new data costs.
+1. **`/v1/signature-check`** — **SHIPPED 2026-11-03 (v1.9.0, $0.003, PR #24; in agentforge-tools 0.3.0; on x402scan).** decode and risk-score EIP-712 / Permit / Permit2 / Seaport / setApprovalForAll / EIP-3009 signatures, including x402 payment requirements (payTo screened, asset is genuine USDC, amount vs the Bazaar-listed price). Signature phishing is the leading drainer vector and is invisible to transaction simulation. No new data costs.
 2. **On-chain prompt-injection scan** — token names/symbols/metadata, NFT metadata, and memos scanned for instructions aimed at agents before they reach an LLM. Agent-specific; deterministic rules first, Haiku only for ambiguous text.
 3. **`/v1/url-check`** — crypto phishing / drainer-kit domains for agents that browse dApps. Needs a permissively licensed domain list (MetaMask eth-phishing-detect license to verify; ScamSniffer is GPL).
 4. **Address-poisoning check** — lookalike addresses in a wallet's history vs the intended recipient. Ethereum works on free Etherscan; Base needs a keyed provider.
