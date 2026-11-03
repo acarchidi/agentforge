@@ -30,6 +30,18 @@ machine track matters more: it is where a paying agent actually picks a vendor.
 | — | punkpeye/awesome-mcp-servers | Installable servers only; remote ones go to B1 | Skip | — |
 | — | Solana Agent Kit plugin | Repo hasn't merged in months | Skip | — |
 
+## Track D — framework integrations (AgentForge inside the tools developers build with)
+
+| # | Channel | Status | Next action |
+|---|---|---|---|
+| D1 | **agentforge-tools SDK** ([repo](https://github.com/acarchidi/agentforge-tools)) — typed client, x402 paying fetch with spend cap, tools for OpenAI / Vercel AI SDK / LangChain / ElizaOS | **Released v0.2.0 11-03**, installable via `npm install github:acarchidi/agentforge-tools` | Publish to npm **(you: one-time `npm login`)** |
+| D2 | **Coinbase AgentKit** action provider (6 actions, pays from the agent's wallet, policy-enforced spend cap) | **PR open:** [coinbase/agentkit#1619](https://github.com/coinbase/agentkit/pull/1619), GitHub-signed commit, tests/lint/tsc clean | Respond to review |
+| D3 | **ElizaOS** | Shipped as `agentforge-tools/eliza`; ElizaOS's plugin registry has been down since ~May 2026 and core no longer merges third-party plugins. ElizaOS's `plugin-mcp` already reaches all 25 tools via the MCP server | Submit to the registry if it reopens |
+| D4 | **Vercel AI SDK tools registry** (ai-sdk.dev/resources/tools) | Blocked: requires an npm-published package | PR `content/tools-registry/registry.ts` after D1 publishes |
+| D5 | **mcp.so** (2.1k★, issue-based) | **Submitted:** [chatmcp/mcpso#6689](https://github.com/chatmcp/mcpso/issues/6689) | none |
+| D6 | **PulseMCP** | Submissions paused since 2026-09-03; will ingest from the MCP Registry on reopen | none |
+| D7 | GitHub discoverability | **Done 11-03:** README added, topics + description on both repos | none |
+
 ## Track C — needs your accounts (not doable by Claude)
 
 Posting on X / dev.to / Farcaster, and anything behind a sign-up. Ready-to-post copy
