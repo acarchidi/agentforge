@@ -23,6 +23,7 @@ import { addressCheckWithCost } from '../services/addressCheck.js';
 import { getLaunchesWithCost } from '../services/launches.js';
 import { simulateEvmTxWithCost } from '../services/txSimulate.js';
 import { getLendingHealthWithCost } from '../services/lendingHealth.js';
+import { signatureCheckWithCost } from '../services/signatureCheck.js';
 import { logEvent } from '../analytics/logger.js';
 import { paymentContextFromRequest } from '../analytics/clientId.js';
 import { ENDPOINT_PRICES, PUBLIC_BASE_URL, priceFor } from '../pricing.js';
@@ -145,6 +146,7 @@ paidRouter.post('/v1/trade-check', createHandler('/v1/trade-check', tradeCheckWi
 paidRouter.post('/v1/risk-batch', createHandler('/v1/risk-batch', riskBatchWithCost));
 paidRouter.post('/v1/address-check', createHandler('/v1/address-check', addressCheckWithCost));
 paidRouter.post('/v1/tx-simulate', createHandler('/v1/tx-simulate', simulateEvmTxWithCost));
+paidRouter.post('/v1/signature-check', createHandler('/v1/signature-check', signatureCheckWithCost));
 
 // Aave v3 position health — GET, query params
 paidRouter.get('/v1/lending/health', (req: Request, res: Response) =>

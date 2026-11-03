@@ -40,6 +40,7 @@ import { addressCheckWithCost } from '../services/addressCheck.js';
 import { getLaunchesWithCost } from '../services/launches.js';
 import { simulateEvmTxWithCost } from '../services/txSimulate.js';
 import { getLendingHealthWithCost } from '../services/lendingHealth.js';
+import { signatureCheckWithCost } from '../services/signatureCheck.js';
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
@@ -49,7 +50,7 @@ import { logEvent } from '../analytics/logger.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.8.0';
+export const MCP_SERVER_VERSION = '1.9.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -545,6 +546,19 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
         .max(5),
     },
     async (input) => call('tx_simulate', simulateEvmTxWithCost, input),
+  );
+
+  register(
+    'signature_check',
+    'Check a signature request BEFORE signing it: decodes EIP-712 typed data (ERC-20 permit, Permit2, Seaport order, transfer authorization) or an x402 payment request, explains in one sentence what signing would allow, screens spenders and payees for sanctions and scams, and catches signature-drainer patterns. Returns proceed / caution / avoid.',
+    {
+      typedData: z.union([z.record(z.string(), z.unknown()), z.string()]).optional().describe('EIP-712 typed data { domain, types, primaryType, message }, or its JSON string'),
+      paymentRequired: z.record(z.string(), z.unknown()).optional().describe('x402 PaymentRequired object with accepts[] the agent is about to pay'),
+      signer: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe('Wallet that would sign'),
+      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional(),
+      expectedMaxUsd: z.number().positive().optional().describe('x402 only: refuse payment options above this many USD'),
+    },
+    async (input) => call('signature_check', signatureCheckWithCost, input),
   );
 
   register(

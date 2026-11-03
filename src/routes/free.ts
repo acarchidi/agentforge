@@ -21,6 +21,7 @@ import { riskBatchInput, riskBatchOutput } from '../schemas/riskBatch.js';
 import { addressCheckInput, addressCheckOutput } from '../schemas/addressCheck.js';
 import { launchesInput, launchesOutput } from '../schemas/launches.js';
 import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
+import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
 import { lendingHealthInput, lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { PRICING_RULES } from '../pricing.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
@@ -55,7 +56,7 @@ const ALL_PRICES = [
   config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
   config.PRICE_WALLET_SAFETY, config.PRICE_POOL_SNAPSHOT, config.PRICE_TOKEN_RISK_METRICS,
   config.PRICE_TRADE_CHECK, config.PRICE_ADDRESS_CHECK, config.PRICE_LAUNCHES,
-  config.PRICE_TX_SIMULATE, config.PRICE_LENDING_HEALTH,
+  config.PRICE_TX_SIMULATE, config.PRICE_LENDING_HEALTH, config.PRICE_SIGNATURE_CHECK,
   '$0.001',
 ].map((p) => Number(p.replace(/^\$/, '')));
 const minPayment = `$${Math.min(...ALL_PRICES)}`;
@@ -113,7 +114,7 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.8.0',
+    version: '1.9.0',
     description:
       'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
@@ -269,6 +270,15 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         tags: ['security', 'simulation', 'pre-sign', 'approvals', 'evm'],
         inputSchema: schemaOf(txSimulateInput),
         outputSchema: schemaOf(txSimulateOutput),
+      },
+      {
+        endpoint: 'POST /v1/signature-check',
+        operationId: 'signatureCheck',
+        description: 'Check a signature request before signing: EIP-712 permits, Permit2, Seaport orders, transfer authorizations, and x402 payment requests decoded and screened; proceed/caution/avoid.',
+        price: config.PRICE_SIGNATURE_CHECK,
+        tags: ['security', 'signature', 'permit', 'eip-712', 'phishing', 'x402'],
+        inputSchema: schemaOf(signatureCheckInput),
+        outputSchema: schemaOf(signatureCheckOutput),
       },
       {
         endpoint: 'GET /v1/lending/health',
@@ -530,6 +540,7 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'POST /v1/address-check',
       'GET /v1/launches',
       'POST /v1/tx-simulate',
+      'POST /v1/signature-check',
       'GET /v1/lending/health',
       'GET /v1/ping',
       'POST /v1/solana/tx-explain',
@@ -653,7 +664,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.8.0',
+    version: '1.9.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
@@ -809,6 +820,14 @@ freeRouter.get('/about', (req: Request, res: Response) => {
         best_for: 'Pre-sign checks in every agent wallet, drainer detection, verifying a swap does what it claims',
         input_example: { chain: 'base', from: '0x…wallet', transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb…' }] },
       },
+      signature_check: {
+        endpoint: 'POST /v1/signature-check',
+        price: config.PRICE_SIGNATURE_CHECK,
+        description:
+          'Decodes a signature request before an agent signs it and says in one sentence what signing would allow. Handles ERC-20 permits (EIP-2612 and DAI), Permit2 allowances and transfers, Seaport orders, EIP-3009 transfer authorizations, and x402 PaymentRequired objects. Screens every spender and payee for sanctions and scams, and flags drainer patterns: permissions granted to plain wallets, orders that pay the signer nothing, fake "USD Coin" domains, non-USDC x402 assets, and prices above an expected maximum.',
+        best_for: 'Every agent that signs messages: permit phishing defense, Permit2 approvals, NFT listings, and checking x402 payment requests before paying',
+        input_example: { signer: '0x…your-wallet', typedData: { domain: { name: 'USD Coin', version: '2', chainId: 8453, verifyingContract: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' }, primaryType: 'Permit', message: { owner: '0x…', spender: '0x…', value: '1000000', nonce: 0, deadline: 1900000000 } } },
+      },
       lending_health: {
         endpoint: 'GET /v1/lending/health?address=0x…&chain=all',
         price: config.PRICE_LENDING_HEALTH,
@@ -920,7 +939,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
       transport: 'streamable-http',
       description:
         'MCP server exposing all AgentForge tools. Connect from Claude Desktop, Cursor, or any MCP-compatible environment. No payment required — tools call services directly.',
-      tools: ['tx_simulate', 'address_check', 'launch_feed', 'risk_batch', 'trade_check', 'lending_health', 'token_intel', 'token_research', 'contract_docs', 'contract_monitor', 'token_compare', 'tx_decode', 'approval_scan', 'wallet_safety', 'token_risk_metrics', 'pool_snapshot', 'gas_oracle', 'sentiment', 'summarize', 'translate'],
+      tools: ['tx_simulate', 'signature_check', 'address_check', 'launch_feed', 'risk_batch', 'trade_check', 'lending_health', 'token_intel', 'token_research', 'contract_docs', 'contract_monitor', 'token_compare', 'tx_decode', 'approval_scan', 'wallet_safety', 'token_risk_metrics', 'pool_snapshot', 'gas_oracle', 'sentiment', 'summarize', 'translate'],
       configuration_example: {
         mcpServers: {
           agentforge: {

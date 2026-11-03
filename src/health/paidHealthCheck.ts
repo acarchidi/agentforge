@@ -66,6 +66,7 @@ export const PAID_ENDPOINTS_FOR_HEALTH: PaidEndpointSpec[] = [
   { method: 'POST', path: '/v1/address-check' },
   { method: 'GET', path: '/v1/launches' },
   { method: 'POST', path: '/v1/tx-simulate' },
+  { method: 'POST', path: '/v1/signature-check' },
   { method: 'GET', path: '/v1/lending/health' },
   { method: 'GET', path: '/v1/pool-snapshot' },
   { method: 'GET', path: '/v1/gas' },

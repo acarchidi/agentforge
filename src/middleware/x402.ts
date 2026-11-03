@@ -45,6 +45,7 @@ export const ICON_URL = `${config.PUBLIC_BASE_URL}/brand/agentforge-icon-512.png
  */
 export const ROUTE_METADATA: Record<string, { name: string; category: string; tags: string[] }> = {
   '/v1/tx-simulate': { name: 'Pre-Sign Transaction Simulation', category: 'security', tags: ['transaction simulation', 'pre-sign check', 'drainer detection', 'simulate transaction', 'approval check'] },
+  '/v1/signature-check': { name: 'Signature Phishing Check', category: 'security', tags: ['signature check', 'permit phishing', 'eip-712 decoder', 'drainer detection', 'x402 payment check'] },
   '/v1/address-check': { name: 'Sanctions & Scam Address Check', category: 'security', tags: ['sanctions screening', 'ofac', 'aml', 'scam address check', 'wallet address risk'] },
   '/v1/trade-check': { name: 'Is This Token Safe to Buy', category: 'security', tags: ['token safety', 'rug check', 'honeypot check', 'token security scan', 'pre-trade check'] },
   '/v1/token-risk-metrics': { name: 'Token Rug Check Risk Score', category: 'security', tags: ['rug check', 'token risk score', 'holder concentration', 'mint authority', 'token security'] },
@@ -937,6 +938,60 @@ export function createPaymentMiddleware() {
               assetChanges: [],
               approvals: [],
               counterparties: [{ address: '0x0330…', role: 'recipient', verdict: 'block' }],
+            },
+          },
+        }),
+      },
+    },
+    'POST /v1/signature-check': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_SIGNATURE_CHECK,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'Signature phishing check before an agent signs: decodes EIP-712 typed data (ERC-20 permit, Permit2 allowance or transfer, Seaport order, transfer authorization) or an x402 payment request, says in one sentence what signing would allow, screens every spender and payee for sanctions and scams, and catches drainer patterns (permits to plain wallets, sell-for-nothing orders, fake USDC domains, over-priced x402 payments). Verdict proceed/caution/avoid. Category: security.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            signer: '0x8ec901f7e2710163387d70950f680f1ea2269d15',
+            typedData: {
+              domain: { name: 'USD Coin', version: '2', chainId: 8453, verifyingContract: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' },
+              primaryType: 'Permit',
+              message: { owner: '0x8ec901f7e2710163387d70950f680f1ea2269d15', spender: '0x6fF5693b99212Da76ad316178A184AB56D299b43', value: '1000000', nonce: 0, deadline: 1900000000 },
+            },
+          },
+          inputSchema: {
+            type: 'object',
+            properties: {
+              typedData: { type: 'object', description: 'EIP-712 typed data { domain, types, primaryType, message } (or its JSON string)' },
+              paymentRequired: { type: 'object', description: 'x402 PaymentRequired with accepts[] that the agent is about to pay' },
+              signer: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' },
+              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] },
+              expectedMaxUsd: { type: 'number', description: 'x402 only: refuse options above this price' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['kind', 'verdict', 'summary', 'reasons', 'grants', 'counterparties'],
+              properties: {
+                kind: { type: 'string' },
+                verdict: { type: 'string', enum: ['proceed', 'caution', 'avoid'] },
+                summary: { type: 'string' },
+                reasons: { type: 'array', items: { type: 'string' } },
+                grants: { type: 'array' },
+                counterparties: { type: 'array' },
+                paymentOptions: { type: 'array' },
+              },
+            },
+            example: {
+              kind: 'erc20-permit',
+              verdict: 'avoid',
+              summary: 'Lets 0xabab…abab spend an unlimited amount of USDC from this wallet until revoked, without any further approval.',
+              reasons: ['Grants token permissions to a plain wallet, not a contract — the common signature-drainer pattern'],
             },
           },
         }),
