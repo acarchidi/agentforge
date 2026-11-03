@@ -1,0 +1,37 @@
+# Monthly refresh of the OFAC sanctions + scam-wallet lists behind /v1/address-check.
+# Commits to main only when an address list actually changed; Vercel then
+# redeploys automatically. No secrets needed.
+name: Refresh address lists
+
+on:
+  schedule:
+    - cron: '17 6 1 * *' # 06:17 UTC on the 1st of every month
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      # The script only uses Node built-ins, so skip the full npm ci.
+      - name: Rebuild address-reputation.json
+        run: npx --yes tsx@4.21.0 scripts/refreshAddressLists.ts
+
+      - name: Commit if the lists changed
+        run: |
+          if git diff --quiet; then
+            echo "Address lists unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -am "chore: refresh OFAC and scam address lists"
+          git push

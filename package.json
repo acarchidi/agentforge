@@ -1,7 +1,7 @@
 {
   "name": "agentforge",
   "version": "1.5.0",
-  "description": "DeFi Safety Layer for AI agents — production-grade safety checks monetized via x402",
+  "description": "DeFi Safety Layer for AI agents \u2014 production-grade safety checks monetized via x402",
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -19,7 +19,9 @@
     "seed:registry": "tsx scripts/seedRegistry.ts",
     "precompute:docs": "tsx scripts/precomputeDocs.ts",
     "revenue:onchain": "tsx scripts/onchainRevenue.ts",
-    "keepalive:bazaar": "tsx scripts/buyerAgentAll.ts"
+    "keepalive:bazaar": "tsx scripts/buyerAgentAll.ts",
+    "keepalive": "tsx scripts/keepalive.ts",
+    "refresh:address-lists": "tsx scripts/refreshAddressLists.ts"
   },
   "keywords": [
     "x402",

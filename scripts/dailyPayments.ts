@@ -16,6 +16,7 @@ config({ path: '.env.local', quiet: true });
 config({ quiet: true });
 
 import { neon } from '@neondatabase/serverless';
+import { listingStatus } from './lib/listingStatus.js';
 
 const TEST_PAYERS = new Set([
   '0x794241c8b08c4b91ff840a64ecd74ff9bdf7c135', // Base buyer test wallet
@@ -101,6 +102,18 @@ for (const r of rows) {
   outside.push(`${new Date(r.ts).toISOString()} ${r.name} $${r.usd} on ${chain} from ${payer ?? 'unresolved payer'} tx=${r.tx_hash} [${flag}]`);
 }
 
+// Discovery-index listings that lapse within 7 days (or were never listed):
+// the scheduled task turns this into a one-click "npm run keepalive" reminder.
+const listings = await listingStatus(url).catch(() => null);
+const listingLine = (() => {
+  if (!listings) return 'LISTINGS unknown (index or database unreachable)';
+  const due = listings.filter((l) => l.due);
+  if (due.length === 0) return `LISTINGS ok (soonest lapse in ${Math.min(...listings.map((l) => l.daysLeft ?? 99))}d)`;
+  const never = due.filter((l) => l.daysLeft === null).length;
+  const soonest = Math.min(...due.filter((l) => l.daysLeft !== null).map((l) => l.daysLeft as number));
+  return `LISTINGS_DUE ${due.length} (${never} never listed${Number.isFinite(soonest) ? `, soonest lapse in ${soonest}d` : ''}) — fix: npm run keepalive`;
+})();
+
 if (outside.length === 0) {
   console.log(`NO_OUTSIDE_PAYMENTS (last ${hours}h, ${rows.length} test-wallet settlements skipped)`);
 } else {
@@ -108,3 +121,4 @@ if (outside.length === 0) {
   for (const line of outside) console.log(line);
   console.log(`PAYER_SUMMARY repeat=${repeatPayers.size} new=${newPayers.size}`);
 }
+console.log(listingLine);
