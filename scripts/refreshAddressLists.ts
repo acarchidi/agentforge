@@ -13,7 +13,7 @@
  * Usage:  npx tsx scripts/refreshAddressLists.ts
  * Run it periodically (OFAC adds addresses a few times a year) and commit the result.
  */
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
@@ -73,5 +73,20 @@ const out = {
 };
 
 const dest = path.join(path.dirname(fileURLToPath(import.meta.url)), '../src/cache/data/address-reputation.json');
+
+// Only rewrite when the address sets change: generatedAt alone must not
+// produce a commit (and a production deploy) from the scheduled workflow.
+const sameLists = (() => {
+  try {
+    const prev = JSON.parse(readFileSync(dest, 'utf8'));
+    return JSON.stringify([prev.evm, prev.solana]) === JSON.stringify([evm, solana]);
+  } catch {
+    return false;
+  }
+})();
+if (sameLists) {
+  console.log('Address lists unchanged; nothing written.', counts);
+  process.exit(0);
+}
 writeFileSync(dest, `${JSON.stringify(out, null, 1)}\n`);
 console.log(`Wrote ${Object.keys(evm).length} EVM + ${Object.keys(solana).length} Solana addresses to ${dest}`, counts);
