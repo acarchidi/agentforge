@@ -28,7 +28,7 @@ const envSchema = z.object({
   PRICE_POOL_SNAPSHOT: z.string().startsWith('$'),
   PRICE_TOKEN_RISK_METRICS: z.string().startsWith('$'),
   // Bundle of token-risk-metrics + token-intel + gas. Keep below the sum of the
-  // three ($0.028 at current prices) but above token-intel's worst-case LLM cost
+  // three (production: $0.05 + $0.015 + $0.003) but above token-intel's worst-case LLM cost
   // (~$0.014 at Sonnet 5 list prices) plus the $0.001 CDP facilitator fee.
   PRICE_TRADE_CHECK: z.string().startsWith('$').default('$0.025'),
   // Per-item batch prices (x402 dynamic pricing: the 402 quotes count × rate).

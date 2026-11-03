@@ -110,6 +110,7 @@ async function main() {
   const settled = results.filter((r) => r.tx).length;
   console.log(`\nSettled ${settled}/${results.length}`);
   console.log(JSON.stringify(results, null, 1));
+  if (settled < results.length) process.exitCode = 1;
 }
 
 main().catch((e) => { console.error(e); process.exit(1); });

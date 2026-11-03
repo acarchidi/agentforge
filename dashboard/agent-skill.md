@@ -57,21 +57,21 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 | POST | `/v1/address-check` | $0.003 + $0.001/extra address | Counterparty screening for 1-100 EVM or Solana addresses: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses. |
 | POST | `/v1/risk-batch` | $0.004 per token (2-25) | Rug-check a watchlist in one call: holder, permission, and liquidity risk per token. |
 | POST | `/v1/trade-check` | $0.025 | Pre-trade bundle: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately. |
-| POST | `/v1/wallet-safety` | $0.035 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
-| POST | `/v1/token-risk-metrics` | $0.01 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |
+| POST | `/v1/wallet-safety` | $0.10 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
+| POST | `/v1/token-risk-metrics` | $0.05 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |
 | POST | `/v1/approval-scan` | $0.015 | Scans a wallet for risky ERC-20 approvals (unlimited allowances, unverified spenders). |
 | POST | `/v1/contract-monitor` | $0.025 | Recent contract admin activity: ownership transfers, upgrades, pause changes. |
 | POST | `/v1/contract-docs` | $0.05 | Human-readable smart contract documentation with security posture and interaction patterns. |
-| POST | `/v1/tx-decode` | $0.01 | Decode any EVM transaction: function call, params, token transfers, plain-English explanation. |
-| POST | `/v1/token-research` | $0.04 | Multi-source token research: CoinGecko + DeFiLlama + Etherscan + Polymarket in one report. |
+| POST | `/v1/tx-decode` | $0.05 | Decode any EVM transaction: function call, params, token transfers, plain-English explanation. |
+| POST | `/v1/token-research` | $0.03 | Multi-source token research: CoinGecko + DeFiLlama + Etherscan + Polymarket in one report. |
 | POST | `/v1/token-compare` | $0.08 | Compare a token against up to 3 competitors with AI-generated analysis. |
 | POST | `/v1/token-intel` | $0.015 | Quick token lookup: market data + risk score in under 10 seconds. |
 | POST | `/v1/code-review` | $0.10 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
 | GET | `/v1/gas` | $0.003 | Real-time gas prices (slow/standard/fast) with trend analysis, any supported EVM chain. |
-| GET | `/v1/pool-snapshot` | $0.01 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
-| POST | `/v1/sentiment` | $0.008 | Sentiment analysis for crypto/finance/social text. |
-| POST | `/v1/summarize` | $0.01 | Text summarization with configurable length and format. |
-| POST | `/v1/translate` | $0.015 | Translation with tone control, auto-detects source language. |
+| GET | `/v1/pool-snapshot` | $0.005 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
+| POST | `/v1/sentiment` | $0.003 | Sentiment analysis for crypto/finance/social text. |
+| POST | `/v1/summarize` | $0.008 | Text summarization with configurable length and format. |
+| POST | `/v1/translate` | $0.002 | Translation with tone control, auto-detects source language. |
 | GET | `/v1/ping` | $0.001 | Verifies your x402 payment flow works end to end — and returns the full service catalog with prices and example inputs. |
 | POST | `/v1/solana/token-risk-scan` | $0.35 | Solana rug check: mint/freeze authority, holder concentration, liquidity depth, composite 0-100 score. Base or Solana USDC. |
 | POST | `/v1/solana/tx-simulate` | $0.15 | Simulate a Solana transaction before signing: balance changes, labeled programs, proceed/caution/avoid recommendation. Base or Solana USDC. |

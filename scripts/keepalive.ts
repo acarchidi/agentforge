@@ -20,7 +20,7 @@ import { createPublicClient, erc20Abi, http } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base } from 'viem/chains';
 import { listingStatus } from './lib/listingStatus.js';
-import { priceFor } from '../src/pricing.js';
+import { PUBLIC_BASE_URL, priceFor } from '../src/pricing.js';
 
 const USDC_BASE = '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913';
 const dryRun = process.argv.includes('--dry-run');
@@ -41,11 +41,28 @@ if (due.length === 0) {
   process.exit(0);
 }
 
+// Price from the LIVE catalog: production PRICE_* env vars differ from the
+// local .env (e.g. wallet-safety $0.10 live vs $0.035 locally), and budgeting
+// with local prices once left code-review unpaid.
+const livePrices = new Map<string, number>();
+try {
+  const cat = (await (await fetch(`${PUBLIC_BASE_URL}/catalog`, { signal: AbortSignal.timeout(15_000) })).json()) as {
+    services: Array<{ endpoint: string; price: string }>;
+  };
+  for (const s of cat.services) {
+    const m = /^\$([\d.]+)$/.exec(s.price);
+    if (m) livePrices.set(s.endpoint.split(' ')[1], Number(m[1]));
+  }
+} catch {
+  console.log('(Could not read live prices; using local estimates.)');
+}
+const livePrice = (path: string) => livePrices.get(path) ?? priceFor(path);
+
 const solanaDue = due.filter((s) => s.path.startsWith('/v1/solana/'));
 // Cheapest first, so a short balance still renews as many listings as possible.
 const baseDue = due
   .filter((s) => !s.path.startsWith('/v1/solana/'))
-  .map((s) => ({ ...s, price: priceFor(s.path) }))
+  .map((s) => ({ ...s, price: livePrice(s.path) }))
   .sort((a, b) => a.price - b.price);
 
 let baseBalance = 0;
@@ -97,5 +114,11 @@ if (solanaDue.length) {
   }
 }
 
-console.log(failed ? '\nSome payments failed — see above.' : '\nDone. Listings renewed for another 30 days.');
+if (failed) {
+  console.log('\nSome payments failed (see FAIL lines above); those listings were NOT renewed.');
+} else if (skipped.length) {
+  console.log(`\nRenewed what the balance covered. ${skipped.length} still due — top up as shown above, then run again.`);
+} else {
+  console.log('\nDone. Listings renewed for another 30 days.');
+}
 process.exit(failed ? 1 : 0);
