@@ -38,7 +38,7 @@ import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 import { getPoolSnapshotsCache } from '../cache/poolSnapshotsCache.js';
 import { getTokenRiskMetricsCache } from '../cache/tokenRiskMetricsCache.js';
 import { getSolanaTokenRiskScanCache } from '../cache/solanaTokenRiskScanCache.js';
-import { generateAgentCard } from '../discovery/agentCard.js';
+import { generateAgentCard, SKILLS } from '../discovery/agentCard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -579,6 +579,37 @@ freeRouter.get('/.well-known/ai-plugin.json', (req: Request, res: Response) => {
 // robots.txt
 // ────────────────────────────────────────────────────────────────────
 
+// llms.txt (llmstxt.org): a plain-markdown map of the service for LLM crawlers
+// and agents. Built from the agent-card skills so it can't drift from them.
+freeRouter.get('/llms.txt', (req: Request, res: Response) => {
+  const base = getBaseUrl(req);
+  const lines = [
+    '# AgentForge',
+    '',
+    '> Pay-per-call DeFi safety tools for AI agents: simulate a transaction before signing, screen counterparties against sanctions and scam lists, catch new token launches already risk-scored, rug-check tokens, check liquidation risk, decode transactions. x402 payments in USDC on Base or Solana; no API keys or accounts. Every paid endpoint answers an unpaid request with HTTP 402 and its exact price.',
+    '',
+    '## Connect',
+    '',
+    `- [MCP server](${base}/mcp): Streamable HTTP; tools are free up to a daily cap, then point to the paid endpoint`,
+    `- [x402 discovery](${base}/.well-known/x402): every paid resource`,
+    `- [OpenAPI 3.1](${base}/openapi.json): schemas for every endpoint`,
+    `- [Catalog](${base}/catalog): machine-readable services, prices, schemas`,
+    `- [Agent card](${base}/.well-known/agent.json): A2A skills`,
+    `- [Skill guide](${base}/SKILL.md): when to use what, with examples`,
+    '',
+    '## Paid endpoints',
+    '',
+    ...SKILLS.map((k) => `- [${k.name}](${base}${k.endpoint}): ${k.method} ${k.endpoint}, ${k.price}. ${k.description}`),
+    '',
+    '## Free endpoints',
+    '',
+    `- [Contract label registry](${base}/registry/lookup?address=0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48&chain=ethereum): GET, label any known EVM contract`,
+    `- [Solana program lookup](${base}/v1/solana/program-lookup?programId=JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4): GET, label a Solana program`,
+    '',
+  ];
+  res.type('text/markdown').send(lines.join('\n'));
+});
+
 freeRouter.get('/robots.txt', (_req: Request, res: Response) => {
   res.type('text/plain').send(`# AgentForge — AI Agent Services
 # We welcome AI agent crawlers and indexers.
@@ -586,6 +617,7 @@ freeRouter.get('/robots.txt', (_req: Request, res: Response) => {
 User-agent: *
 Allow: /
 Allow: /catalog
+Allow: /llms.txt
 Allow: /openapi.json
 Allow: /.well-known/
 Disallow: /admin
