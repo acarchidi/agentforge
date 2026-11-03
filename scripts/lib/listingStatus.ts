@@ -13,7 +13,9 @@ export const LISTING_WINDOW_DAYS = 30;
 /** Pay again once fewer than this many days of listing remain. */
 export const RENEW_WHEN_DAYS_LEFT = 7;
 
-const INDEX_SEARCH = 'https://api.cdp.coinbase.com/platform/v2/x402/discovery/search?query=agentforge';
+// Search returns at most 20 results, and AgentForge has more listings than
+// that, so endpoints missing from the first search get a targeted follow-up.
+const INDEX_SEARCH = 'https://api.cdp.coinbase.com/platform/v2/x402/discovery/search?query=';
 const OUR_HOST = new URL(process.env.PUBLIC_BASE_URL ?? 'https://agentforge-taupe.vercel.app').host;
 
 export interface ListingStatus {
@@ -43,22 +45,34 @@ export async function listingStatus(databaseUrl: string): Promise<ListingStatus[
   const last = new Map(rows.map((r) => [r.name, new Date(r.last)]));
 
   const listed = new Set<string>();
-  try {
-    const res = await fetch(INDEX_SEARCH, { signal: AbortSignal.timeout(15_000) });
+  const indexLast = new Map<string, Date>();
+  const search = async (query: string) => {
+    const res = await fetch(INDEX_SEARCH + encodeURIComponent(query), { signal: AbortSignal.timeout(15_000) });
     const json = (await res.json()) as { resources?: Array<{ resource?: string; quality?: { lastCalledAt?: string } }> };
     for (const r of json.resources ?? []) {
       if (!r.resource) continue;
       const u = new URL(r.resource);
       if (u.host !== OUR_HOST) continue;
       listed.add(u.pathname);
-      const at = r.quality?.lastCalledAt ? new Date(r.quality.lastCalledAt) : undefined;
-      if (at && (!last.has(u.pathname) || at > (last.get(u.pathname) as Date))) last.set(u.pathname, at);
+      if (r.quality?.lastCalledAt) indexLast.set(u.pathname, new Date(r.quality.lastCalledAt));
     }
-  } catch {
-    // Index unreachable: fall back to Neon alone (errs toward paying early).
-  }
+  };
 
   const paths = await paidPaths(rows.map((r) => r.name));
+  let indexReachable = true;
+  try {
+    await search('agentforge');
+    for (const path of paths.filter((p) => !listed.has(p))) {
+      await search(`agentforge ${path.replace(/^\/v1\//, '').replace(/[/-]/g, ' ')}`);
+    }
+  } catch {
+    indexReachable = false; // fall back to Neon alone (errs toward paying early)
+  }
+  for (const [path, at] of indexLast) {
+    if (!last.has(path) || at > (last.get(path) as Date)) last.set(path, at);
+  }
+  if (!indexReachable) console.warn('(CDP discovery index unreachable; using payment records only)');
+
   return paths
     .map((path) => {
       const at = last.get(path);
