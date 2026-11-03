@@ -677,3 +677,11 @@ describe('x402 crawler hygiene', () => {
     expect(res.headers['content-type']).toMatch(/image\/png/);
   });
 });
+
+describe('docs pages', () => {
+  it('serves the AI SDK integration guide', async () => {
+    const res = await request(app).get('/docs/ai-sdk');
+    expect(res.status).toBe(200);
+    expect(res.text).toContain('agentForgeAiSdkTools');
+  });
+});

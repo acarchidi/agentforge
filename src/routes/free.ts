@@ -81,6 +81,10 @@ freeRouter.get('/dashboard', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../dashboard/index.html'), { dotfiles: 'allow' });
 });
 
+freeRouter.get('/docs/ai-sdk', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../../dashboard/docs-ai-sdk.html'), { dotfiles: 'allow' });
+});
+
 freeRouter.get('/SKILL.md', (_req: Request, res: Response) => {
   res.type('text/markdown');
   res.sendFile(path.join(__dirname, '../../dashboard/agent-skill.md'), { dotfiles: 'allow' });

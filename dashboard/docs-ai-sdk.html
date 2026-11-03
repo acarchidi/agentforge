@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentForge with the Vercel AI SDK</title>
+<meta name="description" content="Use AgentForge DeFi safety tools (transaction simulation, sanctions and scam screening, rug checks, launch feed, liquidation risk) as Vercel AI SDK tools, paid per call over x402.">
+<link rel="icon" href="/favicon.ico">
+<style>
+  :root { --bg: #ffffff; --fg: #1a1a1a; --muted: #5c5c5c; --code-bg: #f4f4f5; --border: #e4e4e7; --accent: #2563eb; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0b0b0c; --fg: #ededed; --muted: #a1a1aa; --code-bg: #18181b; --border: #27272a; --accent: #60a5fa; } }
+  body { background: var(--bg); color: var(--fg); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.8rem; margin-bottom: 4px; } h2 { margin-top: 2em; font-size: 1.25rem; }
+  p.lead { color: var(--muted); margin-top: 0; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 14px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; } th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+<h1>AgentForge with the Vercel AI SDK</h1>
+<p class="lead">DeFi safety tools for AI SDK agents, paid per call in USDC over x402. No API key or account.</p>
+
+<h2>Install</h2>
+<pre><code>npm install agentforge-tools ai</code></pre>
+
+<h2>Use</h2>
+<pre><code>import { generateText, isStepCount } from 'ai';
+import { agentForgeAiSdkTools } from 'agentforge-tools/ai-sdk';
+
+const { text } = await generateText({
+  model: 'anthropic/claude-haiku-5.5',
+  tools: agentForgeAiSdkTools({
+    privateKey: process.env.AGENTFORGE_PRIVATE_KEY as `0x${string}`, // Base wallet holding USDC
+    maxPaymentUsd: 0.1, // refuse any single payment above $0.10
+  }),
+  stopWhen: isStepCount(5),
+  prompt: 'Is 0x71927529167fde40ebd4d2acdabfc88afd340f35 close to liquidation on Aave?',
+});
+
+console.log(text);</code></pre>
+
+<p><code>agentForgeAiSdkTools()</code> returns every tool below as an AI SDK <code>tool()</code> with a JSON Schema input, keyed by name. Pass a subset if you only want some: <code>const { agentforge_simulate_transaction } = agentForgeAiSdkTools(opts)</code>.</p>
+
+<h2>How payment works</h2>
+<p>Each tool calls an AgentForge HTTPS endpoint. The endpoint answers with HTTP 402 and its exact price; the package signs a USDC payment authorization from your wallet (gasless, <a href="https://x402.org">x402</a> exact scheme on Base) and retries. Any single payment above <code>maxPaymentUsd</code> is refused before anything is signed, and calls that fail (4xx/5xx) are never charged. The wallet only needs USDC on Base — no ETH for gas.</p>
+<p>Already have an x402-paying fetch (for example a Coinbase CDP wallet)? Pass it instead of a key: <code>agentForgeAiSdkTools({ fetch: myPayingFetch })</code>.</p>
+
+<h2>Tools</h2>
+<table>
+<tr><th>Tool</th><th>What it does</th><th>Price</th></tr>
+<tr><td><code>agentforge_simulate_transaction</code></td><td>Simulate 1-5 EVM transactions before signing: revert reasons, assets leaving or entering the wallet, approvals granted, counterparty sanctions/scam screening, proceed/caution/avoid</td><td>$0.005</td></tr>
+<tr><td><code>agentforge_check_addresses</code></td><td>Screen 1-100 EVM or Solana addresses against OFAC sanctions, scam wallets, and fresh address-poisoning wallets</td><td>$0.003 + $0.001/extra</td></tr>
+<tr><td><code>agentforge_trade_check</code></td><td>Rug-check metrics, AI risk assessment, and gas for a token, with a verdict</td><td>$0.025</td></tr>
+<tr><td><code>agentforge_new_launches</code></td><td>Newly launched tokens on Base, Ethereum, or Arbitrum, already risk-scored; poll with <code>since</code></td><td>$0.005</td></tr>
+<tr><td><code>agentforge_score_tokens</code></td><td>Risk scores for 2-25 tokens in one call</td><td>$0.004/token</td></tr>
+<tr><td><code>agentforge_lending_health</code></td><td>Aave v3 liquidation risk on five chains</td><td>$0.003</td></tr>
+<tr><td><code>agentforge_approval_scan</code></td><td>Risky ERC-20 approvals held on a wallet</td><td>$0.015</td></tr>
+<tr><td><code>agentforge_decode_transaction</code></td><td>Plain-English decode of an EVM transaction</td><td>$0.05</td></tr>
+</table>
+
+<h2>No wallet yet?</h2>
+<p>Every tool is also available free (up to a daily cap) over MCP at <code>https://agentforge-taupe.vercel.app/mcp</code>, which the AI SDK can consume with its MCP client.</p>
+
+<h2>Links</h2>
+<p><a href="https://www.npmjs.com/package/agentforge-tools">npm</a> · <a href="https://github.com/acarchidi/agentforge-tools">GitHub</a> · <a href="/catalog">Catalog</a> · <a href="/openapi.json">OpenAPI</a> · <a href="/llms.txt">llms.txt</a></p>
+</main>
+</body>
+</html>
