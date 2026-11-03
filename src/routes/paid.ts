@@ -18,9 +18,11 @@ import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
+import { tradeCheckWithCost } from '../services/tradeCheck.js';
 import { logEvent } from '../analytics/logger.js';
 import { paymentContextFromRequest } from '../analytics/clientId.js';
-import { ENDPOINT_PRICES } from '../pricing.js';
+import { ENDPOINT_PRICES, PUBLIC_BASE_URL } from '../pricing.js';
+import { pingCatalog } from '../discovery/upsell.js';
 
 export const paidRouter = Router();
 
@@ -90,10 +92,14 @@ async function handlePaid(
     await logEvent({ ...base, success: false, latencyMs, errorClass });
 
     if (error instanceof z.ZodError) {
+      // A failed first call is where most would-be customers are lost; give
+      // the caller what it needs to retry instead of a dead end.
       res.status(400).json({
         error: 'VALIDATION_ERROR',
         message: 'Invalid input',
         details: error.issues.map((e) => ({ path: e.path.join('.'), message: e.message })),
+        docs: `${PUBLIC_BASE_URL}/openapi.json`,
+        hint: `Input and output schemas for every endpoint, with examples: ${PUBLIC_BASE_URL}/catalog`,
       });
       return;
     }
@@ -132,6 +138,7 @@ paidRouter.post('/v1/summarize', createHandler('/v1/summarize', summarizeWithCos
 paidRouter.post('/v1/translate', createHandler('/v1/translate', translateWithCost));
 paidRouter.post('/v1/wallet-safety', createHandler('/v1/wallet-safety', walletSafetyWithCost));
 paidRouter.post('/v1/token-risk-metrics', createHandler('/v1/token-risk-metrics', getTokenRiskMetricsWithCost));
+paidRouter.post('/v1/trade-check', createHandler('/v1/trade-check', tradeCheckWithCost));
 paidRouter.post('/v1/solana/tx-explain', createHandler('/v1/solana/tx-explain', explainSolanaTxWithCost));
 paidRouter.post('/v1/solana/tx-simulate', createHandler('/v1/solana/tx-simulate', simulateSolanaTxWithCost));
 paidRouter.post('/v1/solana/token-risk-scan', createHandler('/v1/solana/token-risk-scan', scanSolanaTokenRiskWithCost));
@@ -144,13 +151,15 @@ paidRouter.get('/v1/gas', (req: Request, res: Response) =>
 paidRouter.get('/v1/pool-snapshot', (req: Request, res: Response) =>
   handlePaid(req, res, '/v1/pool-snapshot', getPoolSnapshotWithCost, req.query));
 
-// Ping — minimal paid endpoint to verify x402 flow
+// Ping — paid x402 smoke test. Every first-time payer lands here, so the pong
+// carries the service catalog (static strings only; still zero marginal cost).
 paidRouter.get('/v1/ping', (req: Request, res: Response) =>
   handlePaid(req, res, '/v1/ping', async () => ({
     output: {
       status: 'ok',
       timestamp: new Date().toISOString(),
       message: 'Payment verified. AgentForge is operational.',
+      ...pingCatalog(),
     },
     estimatedCostUsd: 0,
   }), undefined));

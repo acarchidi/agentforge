@@ -49,6 +49,7 @@ export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }
   '/v1/translate': { category: 'AI', tags: ['translate', 'translation', 'nlp', 'multilingual'] },
   '/v1/wallet-safety': { category: 'security', tags: ['wallet safety', 'approval scan', 'pre-transaction check', 'defi risk'] },
   '/v1/token-risk-metrics': { category: 'security', tags: ['token risk', 'holder concentration', 'rug check', 'evm'] },
+  '/v1/trade-check': { category: 'security', tags: ['pre-trade check', 'rug check', 'token risk', 'buy token', 'gas price', 'bundle'] },
   '/v1/pool-snapshot': { category: 'Data', tags: ['liquidity pools', 'defi', 'tvl', 'apy', 'pool snapshot'] },
   '/v1/gas': { category: 'Data', tags: ['gas price', 'gas oracle', 'evm', 'transaction fees'] },
   '/v1/ping': { category: 'Infra', tags: ['ping', 'x402 test', 'payment check', 'health'] },
@@ -746,6 +747,59 @@ export function createPaymentMiddleware() {
         }),
       },
     },
+    'POST /v1/trade-check': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_TRADE_CHECK,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'Check a token before you buy it: one call bundling the quantitative rug check (token-risk-metrics), AI risk assessment with market data (token-intel), and current gas — with a proceed/caution/avoid verdict. Priced below the three calls separately. Category: data.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+            chain: 'ethereum',
+          },
+          inputSchema: {
+            type: 'object',
+            required: ['address'],
+            properties: {
+              address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Token contract address' },
+              chain: { type: 'string', enum: ['ethereum', 'base', 'polygon', 'arbitrum'], default: 'ethereum' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['verdict', 'verdictReasons', 'riskMetrics', 'intel', 'gas', 'degraded', 'metadata'],
+              properties: {
+                verdict: { type: 'string', enum: ['proceed', 'caution', 'avoid'] },
+                verdictReasons: { type: 'array', items: { type: 'string' } },
+                riskMetrics: { type: 'object', description: 'Full token-risk-metrics output' },
+                intel: { type: 'object', nullable: true, description: 'Full token-intel output, null if degraded' },
+                gas: { type: 'object', nullable: true, description: 'Full gas oracle output, null if degraded' },
+                degraded: { type: 'array', items: { type: 'string', enum: ['intel', 'gas'] } },
+                metadata: { type: 'object' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              verdict: 'proceed',
+              verdictReasons: ['Composite risk score 10/100 (low)', 'AI risk score 15/100'],
+              riskMetrics: { overallRisk: { score: 10, level: 'low' } },
+              intel: { risk: { score: 15 } },
+              gas: { currentPrices: { standard: { gwei: 0.01 } } },
+              degraded: [],
+              metadata: { chain: 'ethereum', bundleSavings: '$0.025 vs $0.028 for the three calls separately' },
+              relatedServices: [],
+            },
+          },
+        }),
+      },
+    },
     'GET /v1/pool-snapshot': {
       accepts: [{
         scheme: 'exact' as const,
@@ -841,7 +895,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Payment flow verification for agents integrating x402: confirms your wallet and payment channel work before you spend on a real endpoint. Category: infra.',
+      description: 'Payment flow verification for agents integrating x402: confirms your wallet and payment channel work before you spend on a real endpoint, and returns the full service catalog with prices and example inputs. Category: infra.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -852,12 +906,19 @@ export function createPaymentMiddleware() {
                 status: { type: 'string' },
                 timestamp: { type: 'string', format: 'date-time' },
                 message: { type: 'string' },
+                hint: { type: 'string' },
+                featured: { type: 'array', description: 'Top services with price, job description, and a copy-paste suggestedInput' },
+                fullCatalog: { type: 'string' },
+                openapi: { type: 'string' },
+                agentCard: { type: 'string' },
+                mcp: { type: 'string' },
               },
             },
             example: {
               status: 'ok',
               timestamp: '2026-07-07T00:00:00.000Z',
               message: 'pong',
+              featured: [{ endpoint: 'POST /v1/trade-check', price: '$0.025', job: 'Check a token before you buy it' }],
             },
           },
         }),

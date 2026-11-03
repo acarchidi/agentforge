@@ -62,19 +62,43 @@ async function payerOf(network: string, tx: string): Promise<string | undefined>
 
 const sql = neon(url);
 const rows = await sql`
-  SELECT ts, name, payment_network, amount_usd::float AS usd, tx_hash
+  SELECT ts, name, payment_network, amount_usd::float AS usd, tx_hash, client_hash
   FROM events
   WHERE kind = 'settled' AND ts > now() - (${hours} || ' hours')::interval
   ORDER BY ts`;
 
+// Lifetime history per payer (client_hash is the salted payer hash the store
+// keeps), so each payment line can say NEW vs REPEAT — the signal that tells
+// us whether anything we ship actually converts one-time testers.
+const history = await sql`
+  SELECT client_hash,
+         COUNT(*)::int AS lifetime_payments,
+         ROUND(SUM(amount_usd), 4)::float AS lifetime_usd,
+         MIN(ts) AS first_seen,
+         COUNT(DISTINCT name)::int AS endpoints_used
+  FROM events WHERE kind = 'settled' AND client_hash IS NOT NULL
+  GROUP BY client_hash`;
+const byHash = new Map(history.map((h) => [h.client_hash as string, h]));
+
 const outside: string[] = [];
 let total = 0;
+const repeatPayers = new Set<string>();
+const newPayers = new Set<string>();
 for (const r of rows) {
   const payer = await payerOf(r.payment_network, r.tx_hash).catch(() => undefined);
   if (payer && (TEST_PAYERS.has(payer) || TEST_PAYERS.has(payer.toLowerCase()))) continue;
   total += r.usd;
   const chain = r.payment_network.startsWith('eip155:') ? 'Base' : 'Solana';
-  outside.push(`${new Date(r.ts).toISOString()} ${r.name} $${r.usd} on ${chain} from ${payer ?? 'unresolved payer'} tx=${r.tx_hash}`);
+  const h = r.client_hash ? byHash.get(r.client_hash) : undefined;
+  const windowStart = Date.now() - hours * 3600_000;
+  const isRepeat = h && new Date(h.first_seen).getTime() < windowStart;
+  if (r.client_hash) (isRepeat ? repeatPayers : newPayers).add(r.client_hash);
+  const flag = !h
+    ? 'UNKNOWN'
+    : isRepeat
+      ? `REPEAT (${h.lifetime_payments} payments, $${h.lifetime_usd} lifetime, ${h.endpoints_used} endpoints, since ${new Date(h.first_seen).toISOString().slice(0, 10)})`
+      : 'NEW';
+  outside.push(`${new Date(r.ts).toISOString()} ${r.name} $${r.usd} on ${chain} from ${payer ?? 'unresolved payer'} tx=${r.tx_hash} [${flag}]`);
 }
 
 if (outside.length === 0) {
@@ -82,4 +106,5 @@ if (outside.length === 0) {
 } else {
   console.log(`OUTSIDE_PAYMENTS ${outside.length} $${total.toFixed(4)} (last ${hours}h)`);
   for (const line of outside) console.log(line);
+  console.log(`PAYER_SUMMARY repeat=${repeatPayers.size} new=${newPayers.size}`);
 }

@@ -17,6 +17,7 @@ import { translateInput, translateOutput } from '../schemas/translate.js';
 import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.js';
 import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
 import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
+import { tradeCheckInput, tradeCheckOutput } from '../schemas/tradeCheck.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
 import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
 import { solanaTokenRiskScanInput, solanaTokenRiskScanOutput } from '../schemas/solanaTokenRiskScan.js';
@@ -48,6 +49,7 @@ const ALL_PRICES = [
   config.PRICE_TX_DECODE, config.PRICE_APPROVAL_SCAN, config.PRICE_GAS,
   config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
   config.PRICE_WALLET_SAFETY, config.PRICE_POOL_SNAPSHOT, config.PRICE_TOKEN_RISK_METRICS,
+  config.PRICE_TRADE_CHECK,
   '$0.001',
 ].map((p) => Number(p.replace(/^\$/, '')));
 const minPayment = `$${Math.min(...ALL_PRICES)}`;
@@ -101,9 +103,9 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.5.0',
+    version: '1.6.0',
     description:
-      'Production-grade AI services for autonomous agents. Pay per request via x402 protocol with USDC on Base. All service responses include relatedServices suggestions for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
+      'Check a token before you buy it, scan a wallet for risky approvals, audit a smart contract, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
     payment: {
       protocol: 'x402',
@@ -250,9 +252,18 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         outputSchema: schemaOf(tokenRiskMetricsOutput),
       },
       {
+        endpoint: 'POST /v1/trade-check',
+        operationId: 'tradeCheck',
+        description: 'Check a token before you buy it: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately.',
+        price: config.PRICE_TRADE_CHECK,
+        tags: ['crypto', 'token', 'risk', 'pre-trade', 'bundle', 'security'],
+        inputSchema: schemaOf(tradeCheckInput),
+        outputSchema: schemaOf(tradeCheckOutput),
+      },
+      {
         endpoint: 'GET /v1/ping',
         operationId: 'ping',
-        description: 'Liveness check with x402 payment verification',
+        description: 'Liveness check with x402 payment verification; response includes the service catalog with prices and example inputs',
         price: '$0.001',
         tags: ['system', 'health', 'testing'],
         inputSchema: null,
@@ -469,6 +480,7 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'GET /v1/gas',
       'GET /v1/pool-snapshot',
       'POST /v1/token-risk-metrics',
+      'POST /v1/trade-check',
       'GET /v1/ping',
       'POST /v1/solana/tx-explain',
       'POST /v1/solana/tx-simulate',
@@ -553,7 +565,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.5.0',
+    version: '1.6.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
@@ -701,11 +713,19 @@ freeRouter.get('/about', (req: Request, res: Response) => {
           'Returns current gas prices across three tiers (slow/standard/fast) with estimated wait times, base fee, and trend analysis (rising/falling/stable). Cached for 15 seconds.',
         best_for: 'Gas estimation before transactions, monitoring gas trends, optimizing transaction timing',
       },
+      trade_check: {
+        endpoint: 'POST /v1/trade-check',
+        price: config.PRICE_TRADE_CHECK,
+        description:
+          'Check a token before you buy it: one call bundling token-risk-metrics (quantitative rug check), token-intel (market data + AI risk assessment), and the gas oracle, rolled into a proceed/caution/avoid verdict with reasons. Priced below the three calls made separately.',
+        best_for: 'Pre-trade screening in trading bots, "should I buy this?" checks, one-call token due diligence',
+        input_example: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chain: 'ethereum' },
+      },
       ping: {
         endpoint: 'GET /v1/ping',
         price: '$0.001',
         description:
-          'Minimal liveness check with x402 payment verification. Use this to test that your wallet setup and payment flow work correctly before making more expensive calls.',
+          'Minimal liveness check with x402 payment verification. Use this to test that your wallet setup and payment flow work correctly before making more expensive calls. The response includes the full service catalog with prices and example inputs, so one $0.001 call tells you everything this host sells.',
         best_for: 'Integration testing, wallet verification, service availability checking',
       },
     },

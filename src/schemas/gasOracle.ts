@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { relatedServicesField } from './shared.js';
 
 // ── Input ──────────────────────────────────────────────────────────
 
@@ -31,6 +32,7 @@ export const gasOracleOutput = z.object({
     source: z.literal('etherscan'),
     processingTimeMs: z.number(),
   }),
+  relatedServices: relatedServicesField,
 });
 
 export type GasOracleOutput = z.infer<typeof gasOracleOutput>;

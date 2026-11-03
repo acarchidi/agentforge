@@ -22,6 +22,20 @@ interface Skill {
 
 const SKILLS: Skill[] = [
   {
+    id: 'trade-check',
+    name: 'Pre-Trade Token Check',
+    description: 'Check a token before you buy it: quantitative rug check, AI risk assessment with market data, and current gas in one call with a proceed/caution/avoid verdict. Cheaper than the three calls separately.',
+    tags: ['crypto', 'token', 'risk', 'rug-check', 'pre-trade', 'bundle', 'defi'],
+    examples: [
+      'Should I buy this token right now?',
+      'Run a full pre-trade check on 0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9',
+      'Is this token safe to trade, and what will gas cost me?',
+    ],
+    price: config.PRICE_TRADE_CHECK,
+    endpoint: '/v1/trade-check',
+    method: 'POST',
+  },
+  {
     id: 'token-intel',
     name: 'Token Intelligence',
     description: 'Token metadata enrichment with market data and AI risk assessment for any EVM or Solana token.',
@@ -238,7 +252,7 @@ const SKILLS: Skill[] = [
   {
     id: 'ping',
     name: 'Payment Verification',
-    description: 'Liveness check with x402 payment verification. Test that wallet and payment flow work correctly.',
+    description: 'Liveness check with x402 payment verification. Test that wallet and payment flow work correctly; the response includes the full service catalog with prices and example inputs.',
     tags: ['system', 'health', 'testing'],
     examples: [
       'Verify my payment setup works',
@@ -300,9 +314,9 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
   return {
     name: 'AgentForge',
     description:
-      'Production-grade AI services for autonomous agents. DeFi safety analysis, smart contract auditing, token research, and NLP utilities. Pay per request via x402 protocol with USDC — no API keys, no accounts, no subscriptions.',
+      'Check a token before you buy it, scan a wallet for risky approvals before it signs, audit a smart contract before you deploy, decode what a transaction actually did. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.5.0',
+    version: '1.6.0',
 
     provider: {
       organization: 'AgentForge',
