@@ -42,6 +42,29 @@ machine track matters more: it is where a paying agent actually picks a vendor.
 | D6 | **PulseMCP** | Submissions paused since 2026-09-03; will ingest from the MCP Registry on reopen | none |
 | D7 | GitHub discoverability | **Done 11-03:** README added, topics + description on both repos | none |
 
+## Track E — rank where agents search (CDP Bazaar)
+
+- **Baseline 2026-11-03** (`npx tsx scripts/bazaarRank.ts`, 26 realistic agent queries): AgentForge appeared in **8/26**, top 3 in **3** (#1 for "token approval scanner" and "smart contract documentation"). Every route was named "AgentForge"; competitors name each endpoint after its job.
+- **Shipped (PR #22):** job-first per-route names (e.g. "Pre-Sign Transaction Simulation", "Sanctions & Scam Address Check"), 5 query-phrased tags per route, query-first descriptions.
+- **Takes effect** when each endpoint next settles (the index re-reads metadata on settlement): `npm run keepalive -- --all` **(you: needs ~$0.55 more USDC on Base)**. Re-measure afterwards.
+
+## Track F — tools for x402 builders
+
+| Item | Status |
+|---|---|
+| **x402-sanctions-guard** (Express/Hono middleware: screens each payer for OFAC/scam before settlement; [repo](https://github.com/acarchidi/x402-sanctions-guard)) | Released v0.1.0, live-tested (OFAC payer → 403, normal payer → 200). npm publish **(you: approve)**. Listed: [gold-402#455](https://github.com/Haustorium12/gold-402/pull/455) |
+| GOAT SDK plugin | **Skipped:** no merged PR since 2025-08, `@goat-sdk/core` unpublished since 2025-05 |
+
+## Track G — security services to add (researched 2026-11-03)
+
+Every security niche in the Bazaar already has 1-3 small sellers with 1-7 payers each: the market is fragmented, so breadth in **one call** is the opening. Priority order:
+
+1. **`/v1/signature-check`** — decode and risk-score EIP-712 / Permit / Permit2 / Seaport / setApprovalForAll / EIP-3009 signatures, including x402 payment requirements (payTo screened, asset is genuine USDC, amount vs the Bazaar-listed price). Signature phishing is the leading drainer vector and is invisible to transaction simulation. No new data costs.
+2. **On-chain prompt-injection scan** — token names/symbols/metadata, NFT metadata, and memos scanned for instructions aimed at agents before they reach an LLM. Agent-specific; deterministic rules first, Haiku only for ambiguous text.
+3. **`/v1/url-check`** — crypto phishing / drainer-kit domains for agents that browse dApps. Needs a permissively licensed domain list (MetaMask eth-phishing-detect license to verify; ScamSniffer is GPL).
+4. **Address-poisoning check** — lookalike addresses in a wallet's history vs the intended recipient. Ethereum works on free Etherscan; Base needs a keyed provider.
+5. **`/v1/preflight` bundle** — one "is this action safe?" call routing a tx, signature, URL, or recipient through all of the above with a single verdict.
+
 ## Track C — needs your accounts (not doable by Claude)
 
 Posting on X / dev.to / Farcaster, and anything behind a sign-up. Ready-to-post copy
