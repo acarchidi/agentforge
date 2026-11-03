@@ -1,9 +1,9 @@
 ---
 name: agentforge
-description: Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists before sending, rug-check a whole watchlist in one call, decode or simulate a transaction, audit a contract — free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
+description: Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists before sending, rug-check a whole watchlist in one call, decode or simulate a transaction, document a contract — free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
 metadata:
   author: agentforge
-  version: "1.7.0"
+  version: "1.7.1"
 ---
 
 # AgentForge
@@ -11,21 +11,21 @@ metadata:
 AgentForge is a DeFi safety layer on Base and Solana mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
-2. **Paid** — 23 deeper analysis endpoints (new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
+2. **Paid** — 22 deeper analysis endpoints (new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
 - `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 384-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
-- `GET /catalog` — full machine-readable catalog of all 23 paid endpoints with current prices and JSON schemas.
+- `GET /catalog` — full machine-readable catalog of all 22 paid endpoints with current prices and JSON schemas.
 - `GET /about` — service overview, every endpoint with description and `input_example` payload.
 - `GET /.well-known/x402` — x402 discovery document (accepted networks, assets, payTo address).
 - `POST /feedback` — report a bad response or suggest an improvement.
 
 ## MCP server — free, no wallet needed
 
-All 24 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
+All 23 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
 
 - Lookups (`registry_lookup`, `solana_program_lookup`) and cheap data (`gas_oracle`, `pool_snapshot`) are unlimited.
 - Every analysis tool is free for 10 calls per tool per client per day. Past that, the tool returns the matching paid x402 endpoint and its exact price.
@@ -66,7 +66,6 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 | POST | `/v1/token-research` | $0.03 | Multi-source token research: CoinGecko + DeFiLlama + Etherscan + Polymarket in one report. |
 | POST | `/v1/token-compare` | $0.08 | Compare a token against up to 3 competitors with AI-generated analysis. |
 | POST | `/v1/token-intel` | $0.015 | Quick token lookup: market data + risk score in under 10 seconds. |
-| POST | `/v1/code-review` | $0.10 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
 | GET | `/v1/gas` | $0.003 | Real-time gas prices (slow/standard/fast) with trend analysis, any supported EVM chain. |
 | GET | `/v1/pool-snapshot` | $0.005 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
 | POST | `/v1/sentiment` | $0.003 | Sentiment analysis for crypto/finance/social text. |

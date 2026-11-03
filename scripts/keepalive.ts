@@ -43,7 +43,7 @@ if (due.length === 0) {
 
 // Price from the LIVE catalog: production PRICE_* env vars differ from the
 // local .env (e.g. wallet-safety $0.10 live vs $0.035 locally), and budgeting
-// with local prices once left code-review unpaid.
+// with local prices once left an endpoint unpaid.
 const livePrices = new Map<string, number>();
 try {
   const cat = (await (await fetch(`${PUBLIC_BASE_URL}/catalog`, { signal: AbortSignal.timeout(15_000) })).json()) as {

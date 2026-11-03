@@ -7,7 +7,7 @@
  *
  * NEW endpoints this script covers (10):
  *   gas, tx-decode, token-intel, approval-scan, wallet-safety,
- *   code-review, token-compare, sentiment, summarize, translate
+ *   token-compare, sentiment, summarize, translate
  *
  * Total cost for new endpoints: ~$0.241 USDC on Base mainnet.
  *
@@ -171,31 +171,6 @@ async function main() {
     }),
   );
 
-  // ── 7. Code Review ────────────────────────────────────────────────
-
-  await step('Code Review', 'POST /v1/code-review', '$0.10', () =>
-    paidPost<{ overallRisk: string; issues: unknown[] }>(`${BASE_URL}/v1/code-review`, {
-      code: `// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.0;
-
-contract SimpleVault {
-    mapping(address => uint256) public balances;
-
-    function deposit() external payable {
-        balances[msg.sender] += msg.value;
-    }
-
-    function withdraw(uint256 amount) external {
-        require(balances[msg.sender] >= amount, "Insufficient");
-        (bool ok, ) = msg.sender.call{value: amount}("");
-        require(ok, "Transfer failed");
-        balances[msg.sender] -= amount;
-    }
-}`,
-      language: 'solidity',
-      focus: 'security',
-    }),
-  );
 
   // ── 8. Token Compare ──────────────────────────────────────────────
 

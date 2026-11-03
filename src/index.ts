@@ -107,7 +107,7 @@ const server = app.listen(config.PORT, () => {
   console.log(`Network: ${config.X402_NETWORK}`);
   console.log(`Receiving wallet: ${config.PAY_TO_ADDRESS}`);
   console.log(
-    'Endpoints: /v1/launches, /v1/address-check, /v1/risk-batch, /v1/trade-check, /v1/token-intel, /v1/code-review, /v1/token-research, /v1/contract-docs, /v1/contract-monitor, /v1/token-compare, /v1/tx-decode, /v1/approval-scan, /v1/gas, /v1/ping',
+    'Endpoints: /v1/launches, /v1/address-check, /v1/risk-batch, /v1/trade-check, /v1/token-intel, /v1/token-research, /v1/contract-docs, /v1/contract-monitor, /v1/token-compare, /v1/tx-decode, /v1/approval-scan, /v1/gas, /v1/ping',
   );
   console.log('MCP server: POST /mcp (Streamable HTTP)');
 });

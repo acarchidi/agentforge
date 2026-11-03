@@ -340,13 +340,6 @@ export async function contractDocsWithCost(
       suggestedInput: { address: validated.address, chain: validated.chain },
     },
   ];
-  if (source.sourceCode) {
-    related.push({
-      endpoint: '/v1/code-review',
-      description: 'Security audit of this contract source code',
-      suggestedInput: { code: source.sourceCode.slice(0, 10000), language: 'solidity' },
-    });
-  }
 
   const output = contractDocsOutput.parse({
     contract: {

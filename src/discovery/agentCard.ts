@@ -93,20 +93,6 @@ const SKILLS: Skill[] = [
     method: 'POST',
   },
   {
-    id: 'code-review',
-    name: 'Smart Contract Code Review',
-    description: 'Security analysis with gas optimization and diff review mode. Supports Solidity, Rust, Move, TypeScript.',
-    tags: ['security', 'audit', 'smart-contract', 'solidity', 'gas-optimization'],
-    examples: [
-      'Audit this Solidity contract for reentrancy vulnerabilities',
-      'Review gas optimization opportunities in this contract',
-      'Compare this contract upgrade with the previous version',
-    ],
-    price: config.PRICE_CODE_REVIEW,
-    endpoint: '/v1/code-review',
-    method: 'POST',
-  },
-  {
     id: 'token-research',
     name: 'Multi-Source Token Research',
     description: 'Aggregates CoinGecko, DeFiLlama, Etherscan, Polymarket data with AI risk assessment.',
@@ -357,9 +343,9 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
   return {
     name: 'AgentForge',
     description:
-      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, rug-check a whole watchlist in one call, audit a contract, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
+      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.7.0',
+    version: '1.7.1',
 
     provider: {
       organization: 'AgentForge',

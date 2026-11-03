@@ -50,7 +50,6 @@ async function testPaidEndpointWithout402() {
     { path: '/v1/sentiment', body: { text: 'Bitcoin to the moon!' } },
     { path: '/v1/summarize', body: { text: 'This is a test document.' } },
     { path: '/v1/token-intel', body: { address: '0xabc' } },
-    { path: '/v1/code-review', body: { code: 'pragma solidity ^0.8.0;' } },
     {
       path: '/v1/translate',
       body: { text: 'Hello', targetLanguage: 'Spanish' },

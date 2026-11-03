@@ -19,7 +19,6 @@ export const ADDRESS_CHECK_PER_EXTRA = parsePrice(config.PRICE_ADDRESS_CHECK_PER
  */
 export const ENDPOINT_PRICES: Record<string, number> = {
   '/v1/token-intel': parsePrice(config.PRICE_TOKEN_INTEL),
-  '/v1/code-review': parsePrice(config.PRICE_CODE_REVIEW),
   '/v1/token-research': parsePrice(config.PRICE_TOKEN_RESEARCH),
   '/v1/contract-docs': parsePrice(config.PRICE_CONTRACT_DOCS),
   '/v1/contract-monitor': parsePrice(config.PRICE_CONTRACT_MONITOR),
@@ -48,7 +47,6 @@ export const ENDPOINT_PRICES: Record<string, number> = {
 export const TOOL_TO_ENDPOINT: Record<string, string> = {
   token_intel: '/v1/token-intel',
   token_research: '/v1/token-research',
-  code_review: '/v1/code-review',
   contract_docs: '/v1/contract-docs',
   contract_monitor: '/v1/contract-monitor',
   token_compare: '/v1/token-compare',

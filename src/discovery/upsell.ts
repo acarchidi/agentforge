@@ -62,12 +62,6 @@ const FEATURED: FeaturedService[] = [
     job: 'Explain what an EVM transaction actually did, in plain English',
     suggestedInput: { txHash: '0x' + '0'.repeat(64), chain: 'ethereum' },
   },
-  {
-    endpoint: '/v1/code-review',
-    method: 'POST',
-    job: 'Audit a smart contract for vulnerabilities and gas optimizations (Solidity, Rust, Move, TypeScript)',
-    suggestedInput: { code: 'contract Example { ... }', language: 'solidity' },
-  },
 ];
 
 /**

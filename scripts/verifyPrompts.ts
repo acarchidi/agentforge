@@ -12,7 +12,6 @@ dotenv.config();
 
 import { analyzeSentiment } from '../src/services/sentiment.js';
 import { summarize } from '../src/services/summarize.js';
-import { reviewCode } from '../src/services/codeReview.js';
 import { translate } from '../src/services/translate.js';
 
 interface TestCase {
@@ -75,25 +74,6 @@ const tests: TestCase[] = [
       }),
   },
 
-  // Code review
-  {
-    name: 'Code review: Solidity reentrancy',
-    fn: () =>
-      reviewCode({
-        code: `pragma solidity ^0.8.0;
-contract Vault {
-  mapping(address => uint) balances;
-  function withdraw(uint amount) public {
-    require(balances[msg.sender] >= amount);
-    (bool success, ) = msg.sender.call{value: amount}("");
-    require(success);
-    balances[msg.sender] -= amount;
-  }
-}`,
-        language: 'solidity',
-        focus: 'security',
-      }),
-  },
 
   // Translate
   {
