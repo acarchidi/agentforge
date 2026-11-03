@@ -19,9 +19,12 @@ import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
 import { tradeCheckWithCost } from '../services/tradeCheck.js';
+import { riskBatchWithCost } from '../services/riskBatch.js';
+import { addressCheckWithCost } from '../services/addressCheck.js';
+import { getLaunchesWithCost } from '../services/launches.js';
 import { logEvent } from '../analytics/logger.js';
 import { paymentContextFromRequest } from '../analytics/clientId.js';
-import { ENDPOINT_PRICES, PUBLIC_BASE_URL } from '../pricing.js';
+import { ENDPOINT_PRICES, PUBLIC_BASE_URL, priceFor } from '../pricing.js';
 import { pingCatalog } from '../discovery/upsell.js';
 
 export const paidRouter = Router();
@@ -82,7 +85,7 @@ async function handlePaid(
       latencyMs,
       inputSize: input === undefined ? undefined : JSON.stringify(input).length,
       outputSize: JSON.stringify(result.output).length,
-      amountUsd: viaAgentkitTrial ? 0 : (ENDPOINT_PRICES[endpoint] ?? 0),
+      amountUsd: viaAgentkitTrial ? 0 : priceFor(endpoint, input),
       estimatedCostUsd: result.estimatedCostUsd,
     });
     res.json(result.output);
@@ -139,6 +142,12 @@ paidRouter.post('/v1/translate', createHandler('/v1/translate', translateWithCos
 paidRouter.post('/v1/wallet-safety', createHandler('/v1/wallet-safety', walletSafetyWithCost));
 paidRouter.post('/v1/token-risk-metrics', createHandler('/v1/token-risk-metrics', getTokenRiskMetricsWithCost));
 paidRouter.post('/v1/trade-check', createHandler('/v1/trade-check', tradeCheckWithCost));
+paidRouter.post('/v1/risk-batch', createHandler('/v1/risk-batch', riskBatchWithCost));
+paidRouter.post('/v1/address-check', createHandler('/v1/address-check', addressCheckWithCost));
+
+// New-launch feed — GET, query params
+paidRouter.get('/v1/launches', (req: Request, res: Response) =>
+  handlePaid(req, res, '/v1/launches', getLaunchesWithCost, req.query));
 paidRouter.post('/v1/solana/tx-explain', createHandler('/v1/solana/tx-explain', explainSolanaTxWithCost));
 paidRouter.post('/v1/solana/tx-simulate', createHandler('/v1/solana/tx-simulate', simulateSolanaTxWithCost));
 paidRouter.post('/v1/solana/token-risk-scan', createHandler('/v1/solana/token-risk-scan', scanSolanaTokenRiskWithCost));

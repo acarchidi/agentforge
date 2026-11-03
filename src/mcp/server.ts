@@ -35,6 +35,9 @@ import { walletSafetyWithCost } from '../services/walletSafety/index.js';
 import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
 import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
 import { tradeCheckWithCost } from '../services/tradeCheck.js';
+import { riskBatchWithCost } from '../services/riskBatch.js';
+import { addressCheckWithCost } from '../services/addressCheck.js';
+import { getLaunchesWithCost } from '../services/launches.js';
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
@@ -42,9 +45,9 @@ import { getRegistry } from '../registry/lookup.js';
 import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
 import { logEvent } from '../analytics/logger.js';
 import { getStore } from '../analytics/store.js';
-import { ENDPOINT_PRICES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
+import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.6.0';
+export const MCP_SERVER_VERSION = '1.7.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -76,8 +79,12 @@ function endpointUrl(path: string): string {
 
 function priceOf(path: string): string {
   const p = ENDPOINT_PRICES[path];
-  return p === undefined ? 'free' : formatUsd(p);
+  // Per-item endpoints quote a rule ("$0.004 per token, …"), not one number.
+  return PRICING_RULES[path] ?? (p === undefined ? 'free' : formatUsd(p));
 }
+
+/** Paid GET endpoints; everything else is POST. */
+const GET_ENDPOINTS = new Set(['/v1/gas', '/v1/pool-snapshot', '/v1/launches', '/v1/ping']);
 
 /**
  * Paid x402 endpoints related to a tool: its own paid endpoint first, then any
@@ -139,7 +146,7 @@ function capHitResponse(toolName: string, used: number) {
       endpoint: url,
       price,
       network: 'USDC on Base (eip155:8453) or Solana mainnet',
-      instruction: `POST ${url} with an x402 payment of ${price} USDC (Base or Solana) — no signup, no key; any x402 client (e.g. @x402/fetch) handles the 402 automatically.`,
+      instruction: `${GET_ENDPOINTS.has(path) ? 'GET' : 'POST'} ${url} with an x402 payment of ${price} USDC (Base or Solana) — no signup, no key; any x402 client (e.g. @x402/fetch) handles the 402 automatically.`,
       docs: `${PUBLIC_BASE_URL}/SKILL.md`,
     },
     relatedServices: relatedServicesFor(toolName, null),
@@ -470,6 +477,53 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
         .describe('Blockchain network'),
     },
     async (input) => call('trade_check', tradeCheckWithCost, input),
+  );
+
+  server.tool(
+    'risk_batch',
+    'Batch rug-check: risk scores (holder concentration, mint/blacklist/pause/upgrade permissions, liquidity depth) for 2-25 EVM tokens in one call. Use it to screen a watchlist or a list of candidate trades at once.',
+    {
+      tokens: z
+        .array(z.object({
+          address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Token contract address'),
+          chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().describe('Chain for this token (defaults to `chain`)'),
+        }))
+        .min(2)
+        .max(25)
+        .describe('Tokens to score'),
+      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().default('ethereum').describe('Default chain'),
+    },
+    async (input) => call('risk_batch', riskBatchWithCost, input),
+  );
+
+  server.tool(
+    'address_check',
+    'Screen counterparty addresses before sending, approving, or interacting: OFAC sanctions, known scam/phishing wallets, labeled protocol contracts, and brand-new-address detection. 1-100 EVM or Solana addresses per call; returns block / caution / no_known_issues per address.',
+    {
+      addresses: z
+        .array(z.object({
+          address: z.string().describe('EVM (0x…) or Solana address'),
+          chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana']).optional(),
+        }))
+        .min(1)
+        .max(100)
+        .describe('Addresses to screen'),
+      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana']).optional().default('ethereum').describe('Default chain'),
+    },
+    async (input) => call('address_check', addressCheckWithCost, input),
+  );
+
+  server.tool(
+    'launch_feed',
+    'Newly launched tokens on Base, Ethereum, or Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Poll it: pass the previous nextSince as since to get only new launches.',
+    {
+      chain: z.enum(['base', 'ethereum', 'arbitrum']).optional().default('base'),
+      since: z.string().optional().describe('ISO timestamp; only pools created after it'),
+      minLiquidityUsd: z.number().min(0).optional().default(1000),
+      maxRiskScore: z.number().int().min(0).max(100).optional().describe('Only launches scoring at or below this'),
+      limit: z.number().int().min(1).max(100).optional().default(50),
+    },
+    async (input) => call('launch_feed', getLaunchesWithCost, input),
   );
 
   server.tool(

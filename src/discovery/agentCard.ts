@@ -8,6 +8,7 @@
  */
 
 import { config, networkId } from '../config.js';
+import { PRICING_RULES } from '../pricing.js';
 
 interface Skill {
   id: string;
@@ -33,6 +34,48 @@ const SKILLS: Skill[] = [
     ],
     price: config.PRICE_TRADE_CHECK,
     endpoint: '/v1/trade-check',
+    method: 'POST',
+  },
+  {
+    id: 'launches',
+    name: 'New Launch Feed',
+    description: 'Newly launched tokens on Base, Ethereum, and Arbitrum, each already risk-scored: verification, owner mint/blacklist/tax powers, upgradeable proxy, supply held off-pool, thin liquidity, honeypot trading pattern. Poll it with nextSince to get only new launches.',
+    tags: ['crypto', 'new-tokens', 'launches', 'sniper', 'rug-check', 'memecoin', 'feed'],
+    examples: [
+      'What tokens launched on Base in the last 10 minutes?',
+      'Show new launches with at least $5k liquidity and a low risk score',
+      'Give me only launches newer than my last poll',
+    ],
+    price: config.PRICE_LAUNCHES,
+    endpoint: '/v1/launches',
+    method: 'GET',
+  },
+  {
+    id: 'address-check',
+    name: 'Address Reputation Check',
+    description: 'Screen counterparties before sending, approving, or interacting: OFAC sanctions, known scam/phishing wallets, labeled protocol contracts, and brand-new-address detection. 1-100 EVM or Solana addresses per call.',
+    tags: ['security', 'sanctions', 'ofac', 'aml', 'counterparty', 'scam', 'address-poisoning'],
+    examples: [
+      'Is it safe to send USDC to this address?',
+      'Screen these 20 recipient addresses against sanctions lists',
+      'Is this address a known scammer or a fresh address-poisoning wallet?',
+    ],
+    price: PRICING_RULES['/v1/address-check'],
+    endpoint: '/v1/address-check',
+    method: 'POST',
+  },
+  {
+    id: 'risk-batch',
+    name: 'Batch Token Risk Scoring',
+    description: 'Rug-check a whole watchlist in one call: holder concentration, mint/blacklist/pause/upgrade permissions, and liquidity depth risk scores for 2-25 EVM tokens. Priced per token, well below single calls.',
+    tags: ['crypto', 'token', 'risk', 'rug-check', 'batch', 'watchlist', 'trading-bot'],
+    examples: [
+      'Score these 20 tokens for rug risk',
+      'Which tokens in my watchlist can still be minted by their owner?',
+      'Screen this list of candidate trades and rank them by risk',
+    ],
+    price: PRICING_RULES['/v1/risk-batch'],
+    endpoint: '/v1/risk-batch',
     method: 'POST',
   },
   {
@@ -314,9 +357,9 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
   return {
     name: 'AgentForge',
     description:
-      'Check a token before you buy it, scan a wallet for risky approvals before it signs, audit a smart contract before you deploy, decode what a transaction actually did. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; every response suggests the logical next call with a ready-to-send input.',
+      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, rug-check a whole watchlist in one call, audit a contract, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.6.0',
+    version: '1.7.0',
 
     provider: {
       organization: 'AgentForge',

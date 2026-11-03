@@ -1,9 +1,9 @@
 ---
 name: agentforge
-description: Check a token before you buy it, scan a wallet before it signs, decode or simulate a transaction, audit a contract — free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
+description: Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists before sending, rug-check a whole watchlist in one call, decode or simulate a transaction, audit a contract — free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
 metadata:
   author: agentforge
-  version: "1.6.0"
+  version: "1.7.0"
 ---
 
 # AgentForge
@@ -11,21 +11,21 @@ metadata:
 AgentForge is a DeFi safety layer on Base and Solana mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
-2. **Paid** — 20 deeper analysis endpoints (pre-trade token checks, wallet safety, rug checks, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
+2. **Paid** — 23 deeper analysis endpoints (new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
 - `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 384-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
-- `GET /catalog` — full machine-readable catalog of all 20 paid endpoints with current prices and JSON schemas.
+- `GET /catalog` — full machine-readable catalog of all 23 paid endpoints with current prices and JSON schemas.
 - `GET /about` — service overview, every endpoint with description and `input_example` payload.
 - `GET /.well-known/x402` — x402 discovery document (accepted networks, assets, payTo address).
 - `POST /feedback` — report a bad response or suggest an improvement.
 
 ## MCP server — free, no wallet needed
 
-All 21 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
+All 24 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
 
 - Lookups (`registry_lookup`, `solana_program_lookup`) and cheap data (`gas_oracle`, `pool_snapshot`) are unlimited.
 - Every analysis tool is free for 10 calls per tool per client per day. Past that, the tool returns the matching paid x402 endpoint and its exact price.
@@ -40,6 +40,8 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 ## When to use the paid endpoints
 
+- In a trading loop: poll `launches` every 1-5 minutes (pass `nextSince` back as `since`) for newly listed tokens that are already risk-scored, then re-screen your watchlist with `risk-batch` (2-25 tokens per call, priced per token).
+- Before every outgoing transfer or approval: `address-check` screens the counterparty against OFAC sanctions and scam-wallet lists and flags brand-new address-poisoning wallets (1-100 addresses per call).
 - Before buying a token: `trade-check` runs the rug check, the AI risk assessment, and the gas oracle in one call and returns a proceed/caution/avoid verdict — cheaper than the three calls separately.
 - Before executing a DeFi transaction: check `wallet-safety` or `approval-scan` (EVM) — or `solana/tx-simulate` (Solana).
 - Before touching a new token: run `token-risk-metrics` (EVM) or `solana/token-risk-scan` (Solana) — rug check: mint/freeze authority, holder concentration, liquidity.
@@ -51,6 +53,9 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 | Method | Path | Price (USDC) | What it does |
 |---|---|---|---|
+| GET | `/v1/launches` | $0.005 | New-launch feed (Base, Ethereum, Arbitrum), each launch already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern. Poll with `since=<nextSince>`. |
+| POST | `/v1/address-check` | $0.003 + $0.001/extra address | Counterparty screening for 1-100 EVM or Solana addresses: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses. |
+| POST | `/v1/risk-batch` | $0.004 per token (2-25) | Rug-check a watchlist in one call: holder, permission, and liquidity risk per token. |
 | POST | `/v1/trade-check` | $0.025 | Pre-trade bundle: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately. |
 | POST | `/v1/wallet-safety` | $0.035 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
 | POST | `/v1/token-risk-metrics` | $0.01 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |

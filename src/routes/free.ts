@@ -18,6 +18,10 @@ import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.j
 import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
 import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
 import { tradeCheckInput, tradeCheckOutput } from '../schemas/tradeCheck.js';
+import { riskBatchInput, riskBatchOutput } from '../schemas/riskBatch.js';
+import { addressCheckInput, addressCheckOutput } from '../schemas/addressCheck.js';
+import { launchesInput, launchesOutput } from '../schemas/launches.js';
+import { PRICING_RULES } from '../pricing.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
 import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
 import { solanaTokenRiskScanInput, solanaTokenRiskScanOutput } from '../schemas/solanaTokenRiskScan.js';
@@ -49,7 +53,7 @@ const ALL_PRICES = [
   config.PRICE_TX_DECODE, config.PRICE_APPROVAL_SCAN, config.PRICE_GAS,
   config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
   config.PRICE_WALLET_SAFETY, config.PRICE_POOL_SNAPSHOT, config.PRICE_TOKEN_RISK_METRICS,
-  config.PRICE_TRADE_CHECK,
+  config.PRICE_TRADE_CHECK, config.PRICE_ADDRESS_CHECK, config.PRICE_LAUNCHES,
   '$0.001',
 ].map((p) => Number(p.replace(/^\$/, '')));
 const minPayment = `$${Math.min(...ALL_PRICES)}`;
@@ -103,9 +107,9 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.6.0',
+    version: '1.7.0',
     description:
-      'Check a token before you buy it, scan a wallet for risky approvals, audit a smart contract, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
+      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, audit a smart contract, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
     payment: {
       protocol: 'x402',
@@ -259,6 +263,33 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         tags: ['crypto', 'token', 'risk', 'pre-trade', 'bundle', 'security'],
         inputSchema: schemaOf(tradeCheckInput),
         outputSchema: schemaOf(tradeCheckOutput),
+      },
+      {
+        endpoint: 'GET /v1/launches',
+        operationId: 'getLaunches',
+        description: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum), each already risk-scored. Poll with since=<previous nextSince> to get only new launches.',
+        price: config.PRICE_LAUNCHES,
+        tags: ['crypto', 'new-tokens', 'launches', 'rug-check', 'feed'],
+        inputSchema: schemaOf(launchesInput),
+        outputSchema: schemaOf(launchesOutput),
+      },
+      {
+        endpoint: 'POST /v1/address-check',
+        operationId: 'addressCheck',
+        description: 'Counterparty screening for 1-100 EVM or Solana addresses: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses.',
+        price: PRICING_RULES['/v1/address-check'],
+        tags: ['security', 'sanctions', 'ofac', 'counterparty', 'scam'],
+        inputSchema: schemaOf(addressCheckInput),
+        outputSchema: schemaOf(addressCheckOutput),
+      },
+      {
+        endpoint: 'POST /v1/risk-batch',
+        operationId: 'riskBatch',
+        description: 'Rug-check 2-25 EVM tokens in one call: holder, permission, and liquidity risk scores per token.',
+        price: PRICING_RULES['/v1/risk-batch'],
+        tags: ['crypto', 'token', 'risk', 'batch', 'watchlist'],
+        inputSchema: schemaOf(riskBatchInput),
+        outputSchema: schemaOf(riskBatchOutput),
       },
       {
         endpoint: 'GET /v1/ping',
@@ -481,6 +512,9 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'GET /v1/pool-snapshot',
       'POST /v1/token-risk-metrics',
       'POST /v1/trade-check',
+      'POST /v1/risk-batch',
+      'POST /v1/address-check',
+      'GET /v1/launches',
       'GET /v1/ping',
       'POST /v1/solana/tx-explain',
       'POST /v1/solana/tx-simulate',
@@ -565,7 +599,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.6.0',
+    version: '1.7.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
@@ -720,6 +754,30 @@ freeRouter.get('/about', (req: Request, res: Response) => {
           'Check a token before you buy it: one call bundling token-risk-metrics (quantitative rug check), token-intel (market data + AI risk assessment), and the gas oracle, rolled into a proceed/caution/avoid verdict with reasons. Priced below the three calls made separately.',
         best_for: 'Pre-trade screening in trading bots, "should I buy this?" checks, one-call token due diligence',
         input_example: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chain: 'ethereum' },
+      },
+      launches: {
+        endpoint: 'GET /v1/launches?chain=base',
+        price: config.PRICE_LAUNCHES,
+        description:
+          'Feed of newly launched tokens on Base, Ethereum, and Arbitrum. Each launch is scored once at discovery from on-chain checks (source verification, owner mint/blacklist/tax/pause powers via bytecode scan, upgradeable proxy, share of supply held off-pool) and re-scored every few minutes for 24h as trading activity accrues (thin liquidity, buys-without-sells honeypot pattern). Poll it: pass the previous nextSince as since to get only new launches.',
+        best_for: 'Sniper and launch-trading bots, new-listing alerts, filtering out rugs before they reach a buy decision',
+        input_example: { chain: 'base', minLiquidityUsd: 1000, maxRiskScore: 50 },
+      },
+      address_check: {
+        endpoint: 'POST /v1/address-check',
+        price: PRICING_RULES['/v1/address-check'],
+        description:
+          'Screens 1-100 EVM or Solana addresses before an agent sends, approves, or interacts: OFAC SDN sanctions, known scam/phishing wallets, the labeled contract registry, and (EVM) contract-vs-wallet plus outgoing transaction count to catch brand-new address-poisoning wallets. Verdict per address: block / caution / no_known_issues.',
+        best_for: 'Pre-transfer checks in payment and treasury agents, payout list screening, address-poisoning defense',
+        input_example: { chain: 'ethereum', addresses: [{ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }, { address: '0x…recipient', chain: 'base' }] },
+      },
+      risk_batch: {
+        endpoint: 'POST /v1/risk-batch',
+        price: PRICING_RULES['/v1/risk-batch'],
+        description:
+          'Runs token-risk-metrics over 2-25 EVM tokens in one call and returns a compact score, level, flags, and permission summary per token plus a riskiest-first summary. One payment covers the list, so the per-token price is well below the single-token endpoint.',
+        best_for: 'Watchlist screening, ranking candidate trades, periodic portfolio re-checks',
+        input_example: { chain: 'ethereum', tokens: [{ address: '0x7Fc66500c84A76Ad7e9c93437bFc5Ac33E2DDaE9' }, { address: '0x514910771AF9Ca656af840dff83E8264EcF986CA', chain: 'ethereum' }] },
       },
       ping: {
         endpoint: 'GET /v1/ping',

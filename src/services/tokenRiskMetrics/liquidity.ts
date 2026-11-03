@@ -13,6 +13,19 @@ export type LiquidityRisk = 'low' | 'medium' | 'high' | 'critical';
  * 0.05–0.15 = medium (moderate)
  * > 0.15  = low (deep)
  */
+/**
+ * Liquidity-to-market-cap is the right lens for small caps but punishes large
+ * ones (WETH's on-chain liquidity is a tiny fraction of its market cap yet
+ * absorbs any agent-sized trade). Absolute depth caps the risk level.
+ */
+export function capLiquidityRiskByDepth(risk: LiquidityRisk, totalLiquidityUsd: number | undefined): LiquidityRisk {
+  if (!totalLiquidityUsd) return risk;
+  const order: LiquidityRisk[] = ['low', 'medium', 'high', 'critical'];
+  const ceiling: LiquidityRisk | null = totalLiquidityUsd >= 1_000_000 ? 'low' : totalLiquidityUsd >= 250_000 ? 'medium' : null;
+  if (!ceiling) return risk;
+  return order.indexOf(risk) > order.indexOf(ceiling) ? ceiling : risk;
+}
+
 export function scoreLiquidityRisk(ratio: number | undefined): LiquidityRisk {
   if (ratio === undefined || ratio === null) return 'high'; // unknown → treat as high
   if (ratio > 0.15) return 'low';

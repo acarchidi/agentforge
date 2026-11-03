@@ -5,6 +5,7 @@
 
 import { config } from '../../config.js';
 import { SimpleCache } from '../../utils/cache.js';
+import { etherscanSlot, isEtherscanRateLimit } from '../../utils/etherscanPacer.js';
 
 const sourceCache = new SimpleCache<EtherscanSource>(3600); // 1 hour
 const creationCache = new SimpleCache<EtherscanCreation>(3600); // 1 hour
@@ -39,7 +40,9 @@ async function etherscanFetch(
   module: string,
   action: string,
   params: Record<string, string>,
+  retried = false,
 ): Promise<unknown> {
+  await etherscanSlot();
   const apiKey = config.ETHERSCAN_API_KEY;
   const searchParams = new URLSearchParams({
     chainid: String(chainId),
@@ -57,6 +60,7 @@ async function etherscanFetch(
   const data = (await res.json()) as { status: string; message: string; result: unknown };
 
   if (data.status === '0' && data.message === 'NOTOK') {
+    if (!retried && isEtherscanRateLimit(data.result)) return etherscanFetch(chainId, module, action, params, true);
     throw new Error(`Etherscan error: ${data.result}`);
   }
 

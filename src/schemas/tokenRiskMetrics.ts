@@ -49,7 +49,10 @@ export const tokenRiskMetricsOutput = z.object({
         }),
       )
       .max(10),
-    concentrationRisk: concentrationRiskLevel,
+    /** 'unknown' when holder data is unavailable (see dataAvailable). */
+    concentrationRisk: z.union([concentrationRiskLevel, z.literal('unknown')]),
+    /** false when the holder list could not be fetched; top10 fields are then empty. */
+    dataAvailable: z.boolean().optional(),
   }),
 
   // === LIQUIDITY DEPTH ===
