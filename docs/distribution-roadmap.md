@@ -11,7 +11,7 @@ machine track matters more: it is where a paying agent actually picks a vendor.
 
 | # | Channel | How it lists you | Status | Next action |
 |---|---|---|---|---|
-| A1 | **CDP x402 Bazaar** (discovery index, ~107k resources) | Any endpoint with a settled payment in the last 30 days | Listed, 22 + 2 new pending first payment | `npm run keepalive` **(you, one click)** to list tx-simulate and lending-health; daily check reminds before lapses |
+| A1 | **CDP x402 Bazaar** (discovery index, ~107k resources) | Any endpoint with a settled payment in the last 30 days | **All 24 settled 11-03** (tx-simulate and lending-health first-paid via keepalive) | none; the daily check reminds before any listing lapses |
 | A2 | **Official MCP Registry** | `server.json` published via GitHub OIDC | Live v1.8.0, auto-publishes on every `server.json` change | none |
 | A3 | **Glama connectors** (feeds awesome-remote-mcp-servers, scores tool quality) | Auto-ingests from the MCP Registry | Listed. **Done 11-03:** tool annotations + limit disclosure shipped (PR #14). Endpoint answers `initialize` in ~0.2s; the 61% health history includes earlier outages | Re-check the score after Glama re-crawls |
 | A4 | **x402scan** | Register the `/.well-known/x402` URL | **Registered 11-03: 24/24 resources**, 14 stale ones retired. Favicon + free-endpoint marking shipped | Optional **(you)**: add a public contact email to `openapi.json` `info.contact` (x402scan uses it to verify ownership) |
