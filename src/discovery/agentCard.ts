@@ -93,6 +93,20 @@ export const SKILLS: Skill[] = [
     method: 'POST',
   },
   {
+    id: 'signature-check',
+    name: 'Signature Phishing Check',
+    description: 'Check a signature request before signing: decodes EIP-712 permits, Permit2, Seaport orders, transfer authorizations, and x402 payment requests; explains what signing would allow, screens spenders and payees, and catches signature-drainer patterns. Proceed/caution/avoid.',
+    tags: ['security', 'signature', 'permit', 'eip-712', 'phishing', 'drainer', 'x402'],
+    examples: [
+      'Is it safe to sign this permit?',
+      'What does this EIP-712 message let them do with my tokens?',
+      'Check this x402 payment request before I pay it',
+    ],
+    price: config.PRICE_SIGNATURE_CHECK,
+    endpoint: '/v1/signature-check',
+    method: 'POST',
+  },
+  {
     id: 'lending-health',
     name: 'Lending Position Health',
     description: 'How close a wallet is to liquidation on Aave v3 across five chains in one call: collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
@@ -371,9 +385,9 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
   return {
     name: 'AgentForge',
     description:
-      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
+      'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check any signature request for phishing, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.8.0',
+    version: '1.9.0',
 
     provider: {
       organization: 'AgentForge',

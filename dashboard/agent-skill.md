@@ -1,9 +1,9 @@
 ---
 name: agentforge
-description: Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists before sending, rug-check a whole watchlist in one call, decode or simulate a transaction, document a contract — free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
+description: Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists before sending, rug-check a whole watchlist in one call, decode or simulate a transaction, document a contract — free DeFi lookups (402-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
 metadata:
   author: agentforge
-  version: "1.8.0"
+  version: "1.9.0"
 ---
 
 # AgentForge
@@ -11,21 +11,21 @@ metadata:
 AgentForge is a DeFi safety layer on Base and Solana mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
-2. **Paid** — 24 deeper analysis endpoints (transaction simulation, liquidation risk, new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
+2. **Paid** — 25 deeper analysis endpoints (signature phishing checks, transaction simulation, liquidation risk, new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
-- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 384-contract label registry (protocol name, category, risk level).
+- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 402-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
-- `GET /catalog` — full machine-readable catalog of all 24 paid endpoints with current prices and JSON schemas.
+- `GET /catalog` — full machine-readable catalog of all 25 paid endpoints with current prices and JSON schemas.
 - `GET /about` — service overview, every endpoint with description and `input_example` payload.
 - `GET /.well-known/x402` — x402 discovery document (accepted networks, assets, payTo address).
 - `POST /feedback` — report a bad response or suggest an improvement.
 
 ## MCP server — free, no wallet needed
 
-All 25 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
+All 26 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
 
 - Lookups (`registry_lookup`, `solana_program_lookup`) and cheap data (`gas_oracle`, `pool_snapshot`) are unlimited.
 - Every analysis tool is free for 10 calls per tool per client per day. Past that, the tool returns the matching paid x402 endpoint and its exact price.
@@ -41,6 +41,7 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 ## When to use the paid endpoints
 
 - In a trading loop: poll `launches` every 1-5 minutes (pass `nextSince` back as `since`) for newly listed tokens that are already risk-scored, then re-screen your watchlist with `risk-batch` (2-25 tokens per call, priced per token).
+- Before signing any message or permit: `signature-check` explains what the signature allows and catches permit phishing, sell-for-nothing NFT orders, and over-priced or fake x402 payment requests.
 - Before signing any EVM transaction: `tx-simulate` shows exactly what leaves the wallet, which approvals are granted, and whether any counterparty is sanctioned or a known scammer.
 - Managing a leveraged position: `lending/health` reports the Aave v3 health factor on every chain and how far collateral can fall before liquidation.
 - Before every outgoing transfer or approval: `address-check` screens the counterparty against OFAC sanctions and scam-wallet lists and flags brand-new address-poisoning wallets (1-100 addresses per call).
@@ -55,6 +56,7 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 | Method | Path | Price (USDC) | What it does |
 |---|---|---|---|
+| POST | `/v1/signature-check` | $0.003 | Check a signature request before signing: EIP-712 permits, Permit2, Seaport orders, transfer authorizations, and x402 payment requests decoded, spenders and payees screened, drainer patterns caught. |
 | POST | `/v1/tx-simulate` | $0.005 | Simulate 1-5 EVM transactions before signing: revert reason, asset changes, approvals, counterparty sanctions/scam screening, proceed/caution/avoid. Ethereum, Base, Arbitrum, Optimism, Polygon. |
 | GET | `/v1/lending/health` | $0.003 | Aave v3 liquidation risk across five chains: collateral, debt, health factor, status, collateral drop to liquidation. |
 | GET | `/v1/launches` | $0.005 | New-launch feed (Base, Ethereum, Arbitrum), each launch already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern. Poll with `since=<nextSince>`. |

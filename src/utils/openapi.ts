@@ -26,6 +26,7 @@ import { addressCheckInput, addressCheckOutput } from '../schemas/addressCheck.j
 import { launchesOutput } from '../schemas/launches.js';
 import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { lendingHealthOutput } from '../schemas/lendingHealth.js';
+import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
 import { PRICING_RULES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
@@ -62,7 +63,7 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.8.0',
+      version: '1.9.0',
       description:
         'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
@@ -564,6 +565,26 @@ export function generateOpenApiSpec(): object {
           requestBody: { required: true, content: { 'application/json': { schema: schemaOf(txSimulateInput) } } },
           responses: {
             '200': { description: 'Simulation result', content: { 'application/json': { schema: schemaOf(txSimulateOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/signature-check': {
+        post: {
+          operationId: 'signatureCheck',
+          summary: 'Signature phishing check (EIP-712, Permit2, Seaport, x402)',
+          description:
+            `Decode a signature request before signing and screen its spenders and payees. Price: ${config.PRICE_SIGNATURE_CHECK} USDC via x402.`,
+          tags: ['Security'],
+          'x-x402-price': config.PRICE_SIGNATURE_CHECK,
+          'x-agentic-market-category': 'security',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_SIGNATURE_CHECK, protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(signatureCheckInput) } } },
+          responses: {
+            '200': { description: 'Decoded signature with verdict', content: { 'application/json': { schema: schemaOf(signatureCheckOutput) } } },
             '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
             '402': { description: 'Payment required' },
           },

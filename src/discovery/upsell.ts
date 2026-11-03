@@ -37,6 +37,13 @@ const FEATURED: FeaturedService[] = [
     suggestedInput: { chain: 'base', from: '0x…your-wallet', transactions: [{ to: '0x…contract', data: '0x…calldata' }] },
   },
   {
+    endpoint: '/v1/signature-check',
+    method: 'POST',
+    job: 'Check a signature request before signing: permits, Permit2, Seaport orders, and x402 payment requests decoded, spenders screened, drainer patterns caught',
+    cadence: 'Call before every signature you produce',
+    suggestedInput: { signer: '0x…your-wallet', typedData: { domain: {}, primaryType: 'Permit', message: {} } },
+  },
+  {
     endpoint: '/v1/launches',
     method: 'GET',
     job: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum), each already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern',
