@@ -399,6 +399,12 @@
       </div>
       <div class="catalog-grid flagship">
         <div class="service-card featured">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/tx-simulate</div>
+          <div class="desc">Simulate any EVM transaction before signing — revert reason, every asset leaving the wallet, approvals granted, counterparty sanctions/scam screening, and a proceed/caution/avoid verdict.</div>
+          <div class="price">$0.005<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card featured">
           <div class="method">GET</div>
           <div class="endpoint">/v1/launches</div>
           <div class="desc">New-launch feed for Base, Ethereum, and Arbitrum — every new token already risk-scored (owner powers, proxy, supply held off-pool, honeypot pattern). Poll it with nextSince.</div>
@@ -500,6 +506,12 @@
           <div class="method">GET</div>
           <div class="endpoint">/v1/gas</div>
           <div class="desc">Real-time gas prices across tiers (slow / standard / fast / instant) for all supported chains.</div>
+          <div class="price">$0.003<span class="price-unit">USDC</span></div>
+        </div>
+        <div class="service-card">
+          <div class="method">GET</div>
+          <div class="endpoint">/v1/lending/health</div>
+          <div class="desc">How close a wallet is to liquidation on Aave v3 — collateral, debt, health factor, and collateral drop to liquidation across five chains in one call.</div>
           <div class="price">$0.003<span class="price-unit">USDC</span></div>
         </div>
         <div class="service-card">
@@ -635,7 +647,7 @@
   }
 }
 
-<span class="c">// 23 tools available after connecting:</span>
+<span class="c">// 25 tools available after connecting:</span>
 <span class="c">//   wallet_safety, approval_scan, token_risk_metrics,</span>
 <span class="c">//   contract_monitor, contract_docs, tx_decode,</span>
 <span class="c">//   token_research, token_compare, token_intel, pool_snapshot,</span>

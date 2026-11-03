@@ -37,6 +37,8 @@ import { tradeCheckWithCost } from '../services/tradeCheck.js';
 import { riskBatchWithCost } from '../services/riskBatch.js';
 import { addressCheckWithCost } from '../services/addressCheck.js';
 import { getLaunchesWithCost } from '../services/launches.js';
+import { simulateEvmTxWithCost } from '../services/txSimulate.js';
+import { getLendingHealthWithCost } from '../services/lendingHealth.js';
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
@@ -46,7 +48,7 @@ import { logEvent } from '../analytics/logger.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.7.1';
+export const MCP_SERVER_VERSION = '1.8.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -83,7 +85,7 @@ function priceOf(path: string): string {
 }
 
 /** Paid GET endpoints; everything else is POST. */
-const GET_ENDPOINTS = new Set(['/v1/gas', '/v1/pool-snapshot', '/v1/launches', '/v1/ping']);
+const GET_ENDPOINTS = new Set(['/v1/gas', '/v1/pool-snapshot', '/v1/launches', '/v1/lending/health', '/v1/ping']);
 
 /**
  * Paid x402 endpoints related to a tool: its own paid endpoint first, then any
@@ -503,6 +505,34 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
       limit: z.number().int().min(1).max(100).optional().default(50),
     },
     async (input) => call('launch_feed', getLaunchesWithCost, input),
+  );
+
+  server.tool(
+    'tx_simulate',
+    'Simulate an EVM transaction (or a sequence of up to 5, e.g. approve then swap) before signing: revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of counterparties, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon.',
+    {
+      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().default('base'),
+      from: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Wallet that will sign'),
+      transactions: z
+        .array(z.object({
+          to: z.string().regex(/^0x[a-fA-F0-9]{40}$/),
+          data: z.string().optional().default('0x').describe('Calldata (0x-hex)'),
+          value: z.string().optional().default('0x0').describe('Wei, hex or decimal'),
+        }))
+        .min(1)
+        .max(5),
+    },
+    async (input) => call('tx_simulate', simulateEvmTxWithCost, input),
+  );
+
+  server.tool(
+    'lending_health',
+    'How close a wallet is to liquidation on Aave v3 (Ethereum, Base, Arbitrum, Optimism, Polygon in one call): collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
+    {
+      address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Wallet address'),
+      chain: z.enum(['all', 'ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().default('all'),
+    },
+    async (input) => call('lending_health', getLendingHealthWithCost, input),
   );
 
   server.tool(

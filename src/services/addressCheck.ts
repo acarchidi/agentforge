@@ -53,12 +53,11 @@ export function decideVerdict(item: Omit<AddressCheckItem, 'verdict'>): AddressC
   return 'no_known_issues';
 }
 
-export async function addressCheckWithCost(
-  input: unknown,
-): Promise<{ output: AddressCheckOutput; estimatedCostUsd: number }> {
-  const validated = addressCheckInput.parse(input);
-  const entries = validated.addresses ?? [{ address: validated.address as string, chain: undefined }];
-  const items = entries.map((e) => ({ address: e.address.trim(), chain: e.chain ?? validated.chain }));
+/**
+ * Screen addresses against sanctions/scam lists, the label registry, and (EVM)
+ * on-chain context. Shared by /v1/address-check and /v1/tx-simulate.
+ */
+export async function screenAddresses(items: Array<{ address: string; chain: string }>): Promise<AddressCheckItem[]> {
 
   // On-chain context: one batched RPC request per EVM chain (code + nonce per address).
   const evmByChain = new Map<EvmChain, number[]>();
@@ -90,7 +89,7 @@ export async function addressCheckWithCost(
   const registry = getRegistry();
   const solRegistry = getSolanaProgramRegistry();
 
-  const results: AddressCheckItem[] = items.map((it, i) => {
+  return items.map((it, i) => {
     const isSolana = it.chain === 'solana';
     const valid = isSolana ? SOLANA_RE.test(it.address) : EVM_RE.test(it.address);
     const hits = valid ? (isSolana ? SOLANA_LISTS[it.address] : EVM_LISTS[it.address.toLowerCase()]) ?? [] : [];
@@ -130,6 +129,16 @@ export async function addressCheckWithCost(
     return { ...base, verdict: decideVerdict(base) };
   });
 
+}
+
+export async function addressCheckWithCost(
+  input: unknown,
+): Promise<{ output: AddressCheckOutput; estimatedCostUsd: number }> {
+  const validated = addressCheckInput.parse(input);
+  const entries = validated.addresses ?? [{ address: validated.address as string, chain: undefined }];
+  const items = entries.map((e) => ({ address: e.address.trim(), chain: e.chain ?? validated.chain }));
+  const results = await screenAddresses(items);
+
   const count = (v: AddressCheckItem['verdict']) => results.filter((r) => r.verdict === v).length;
   const firstEvm = results.find((r) => r.valid && r.chain !== 'solana');
 
@@ -145,6 +154,11 @@ export async function addressCheckWithCost(
               endpoint: '/v1/wallet-safety',
               description: 'Full safety check on your own wallet before the interaction: approvals, activity patterns, target contract risk',
               suggestedInput: { walletAddress: '0x…your-wallet', targetContract: firstEvm.address, chain: firstEvm.chain },
+            },
+            {
+              endpoint: '/v1/tx-simulate',
+              description: 'Simulate the transfer or approval to this address before signing it',
+              suggestedInput: { chain: firstEvm.chain, from: '0x…your-wallet', transactions: [{ to: '0x…token-or-contract', data: '0x…' }] },
             },
             {
               endpoint: '/v1/approval-scan',

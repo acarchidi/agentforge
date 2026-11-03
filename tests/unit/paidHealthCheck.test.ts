@@ -14,8 +14,8 @@ function check(overrides: Partial<PaidEndpointCheckResult> = {}): PaidEndpointCh
 }
 
 describe('PAID_ENDPOINTS_FOR_HEALTH', () => {
-  it('covers all 22 paid endpoints', () => {
-    expect(PAID_ENDPOINTS_FOR_HEALTH).toHaveLength(22);
+  it('covers all 24 paid endpoints', () => {
+    expect(PAID_ENDPOINTS_FOR_HEALTH).toHaveLength(24);
   });
 
   it('has no duplicate paths', () => {
@@ -63,9 +63,9 @@ describe('aggregatePaidHealth', () => {
   });
 
   it('reports total endpoint count matching input', () => {
-    const checks = Array.from({ length: 22 }, (_, i) => check({ path: `/v1/e${i}` }));
+    const checks = Array.from({ length: 24 }, (_, i) => check({ path: `/v1/e${i}` }));
     const result = aggregatePaidHealth(checks);
-    expect(result.totalEndpoints).toBe(22);
+    expect(result.totalEndpoints).toBe(24);
   });
 
   it('includes an ISO checkedAt timestamp', () => {
@@ -79,7 +79,7 @@ describe('aggregatePaidHealth', () => {
     );
     const result = aggregatePaidHealth(checks);
     expect(result.status).toBe('degraded');
-    expect(result.unhealthyCount).toBe(22);
+    expect(result.unhealthyCount).toBe(24);
   });
 });
 

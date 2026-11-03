@@ -5,12 +5,12 @@ describe('MCP Server', () => {
   it('has correct server name and version', () => {
     const info = (mcpServer as any).server._serverInfo;
     expect(info.name).toBe('agentforge');
-    expect(info.version).toBe('1.7.1');
+    expect(info.version).toBe('1.8.0');
   });
 
-  it('registers all 23 tools (19 EVM + 4 Solana)', () => {
+  it('registers all 25 tools (21 EVM + 4 Solana)', () => {
     const tools = Object.keys((mcpServer as any)._registeredTools);
-    expect(tools).toHaveLength(23);
+    expect(tools).toHaveLength(25);
     expect(tools).toContain('token_intel');
     expect(tools).toContain('token_research');
     expect(tools).toContain('contract_docs');
@@ -52,6 +52,6 @@ describe('MCP Server', () => {
     expect(CAPPED_TOOLS.has('solana_program_lookup')).toBe(false);
     expect(CAPPED_TOOLS.has('gas_oracle')).toBe(false);
     expect(CAPPED_TOOLS.has('pool_snapshot')).toBe(false);
-    expect(CAPPED_TOOLS.size).toBe(19);
+    expect(CAPPED_TOOLS.size).toBe(21);
   });
 });

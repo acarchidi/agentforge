@@ -24,6 +24,8 @@ import { tradeCheckInput, tradeCheckOutput } from '../schemas/tradeCheck.js';
 import { riskBatchInput, riskBatchOutput } from '../schemas/riskBatch.js';
 import { addressCheckInput, addressCheckOutput } from '../schemas/addressCheck.js';
 import { launchesOutput } from '../schemas/launches.js';
+import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
+import { lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { PRICING_RULES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
@@ -60,9 +62,9 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.7.1',
+      version: '1.8.0',
       description:
-        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
+        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
     },
     servers: [
@@ -542,6 +544,49 @@ export function generateOpenApiSpec(): object {
           requestBody: { required: true, content: { 'application/json': { schema: schemaOf(addressCheckInput) } } },
           responses: {
             '200': { description: 'Per-address verdicts', content: { 'application/json': { schema: schemaOf(addressCheckOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/tx-simulate': {
+        post: {
+          operationId: 'simulateEvmTx',
+          summary: 'EVM pre-sign transaction simulation',
+          description:
+            `Simulate 1-5 EVM transactions before signing: revert reason, asset changes, approvals, counterparty sanctions/scam screening, and a proceed/caution/avoid verdict. Price: ${config.PRICE_TX_SIMULATE} USDC via x402.`,
+          tags: ['Security'],
+          'x-x402-price': config.PRICE_TX_SIMULATE,
+          'x-agentic-market-category': 'security',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_TX_SIMULATE, protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(txSimulateInput) } } },
+          responses: {
+            '200': { description: 'Simulation result', content: { 'application/json': { schema: schemaOf(txSimulateOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/lending/health': {
+        get: {
+          operationId: 'getLendingHealth',
+          summary: 'Aave v3 liquidation risk',
+          description:
+            `Aave v3 position health for a wallet on Ethereum, Base, Arbitrum, Optimism, and Polygon. Price: ${config.PRICE_LENDING_HEALTH} USDC via x402.`,
+          tags: ['DeFi'],
+          'x-x402-price': config.PRICE_LENDING_HEALTH,
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_LENDING_HEALTH, protocols: ['x402'] },
+          parameters: [
+            { name: 'address', in: 'query', required: true, schema: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' } },
+            { name: 'chain', in: 'query', schema: { type: 'string', enum: ['all', 'ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'all' } },
+          ],
+          responses: {
+            '200': { description: 'Positions by chain', content: { 'application/json': { schema: schemaOf(lendingHealthOutput) } } },
             '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
             '402': { description: 'Payment required' },
           },

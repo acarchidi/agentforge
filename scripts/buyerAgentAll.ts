@@ -54,6 +54,8 @@ const CALLS: Call[] = [
   { name: 'risk-batch', method: 'POST', path: '/v1/risk-batch', body: { chain: 'ethereum', tokens: [{ address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2' }, { address: '0x514910771AF9Ca656af840dff83E8264EcF986CA' }] } },
   { name: 'address-check', method: 'POST', path: '/v1/address-check', body: { chain: 'ethereum', addresses: [{ address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' }] } },
   { name: 'launches', method: 'GET', path: '/v1/launches?chain=base' },
+  { name: 'tx-simulate', method: 'POST', path: '/v1/tx-simulate', body: { chain: 'base', from: '0x8ec901f7e2710163387d70950f680f1ea2269d15', transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb000000000000000000000000abababababababababababababababababababab00000000000000000000000000000000000000000000000000000000000f4240' }] } },
+  { name: 'lending/health', method: 'GET', path: '/v1/lending/health?address=0x71927529167fde40ebd4d2acdabfc88afd340f35&chain=all' },
   { name: 'sentiment', method: 'POST', path: '/v1/sentiment', body: { text: 'ETH ETF inflows hit a record this week.', context: 'crypto' } },
   { name: 'summarize', method: 'POST', path: '/v1/summarize', body: { text: 'AgentForge is a DeFi safety layer for AI agents. It exposes paid x402 endpoints for wallet safety, token risk, and Solana transaction simulation.', maxLength: 'brief' } },
   { name: 'translate', method: 'POST', path: '/v1/translate', body: { text: 'Check the token before you trade.', targetLanguage: 'Spanish' } },

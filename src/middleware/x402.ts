@@ -53,6 +53,8 @@ export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }
   '/v1/risk-batch': { category: 'security', tags: ['batch risk score', 'rug check', 'token screening', 'watchlist', 'trading bot', 'bulk'] },
   '/v1/address-check': { category: 'security', tags: ['address screening', 'sanctions check', 'ofac', 'scam address', 'counterparty risk', 'aml'] },
   '/v1/launches': { category: 'Data', tags: ['new token launches', 'new pairs', 'sniper feed', 'rug check', 'memecoin', 'base'] },
+  '/v1/tx-simulate': { category: 'security', tags: ['simulate transaction', 'pre-sign check', 'transaction firewall', 'asset changes', 'approval check', 'evm'] },
+  '/v1/lending/health': { category: 'Data', tags: ['aave', 'health factor', 'liquidation risk', 'lending position', 'defi', 'evm'] },
   '/v1/pool-snapshot': { category: 'Data', tags: ['liquidity pools', 'defi', 'tvl', 'apy', 'pool snapshot'] },
   '/v1/gas': { category: 'Data', tags: ['gas price', 'gas oracle', 'evm', 'transaction fees'] },
   '/v1/ping': { category: 'Infra', tags: ['ping', 'x402 test', 'payment check', 'health'] },
@@ -879,6 +881,99 @@ export function createPaymentMiddleware() {
         }),
       },
     },
+    'POST /v1/tx-simulate': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_TX_SIMULATE,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'Simulate an EVM transaction (or an approve-then-swap sequence of up to 5) before signing: revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of every counterparty, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon. Category: security.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: {
+            chain: 'base',
+            from: '0x8ec901f7e2710163387d70950f680f1ea2269d15',
+            transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb000000000000000000000000abababababababababababababababababababab00000000000000000000000000000000000000000000000000000000000f4240' }],
+          },
+          inputSchema: {
+            type: 'object',
+            required: ['from', 'transactions'],
+            properties: {
+              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'base' },
+              from: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Wallet that will sign' },
+              transactions: {
+                type: 'array', minItems: 1, maxItems: 5,
+                items: { type: 'object', required: ['to'], properties: { to: { type: 'string' }, data: { type: 'string', default: '0x' }, value: { type: 'string', description: 'Wei, hex or decimal', default: '0x0' }, gas: { type: 'string' } } },
+              },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['verdict', 'reasons', 'calls', 'assetChanges', 'approvals', 'counterparties'],
+              properties: {
+                verdict: { type: 'string', enum: ['proceed', 'caution', 'avoid'] },
+                reasons: { type: 'array', items: { type: 'string' } },
+                calls: { type: 'array' },
+                assetChanges: { type: 'array' },
+                approvals: { type: 'array' },
+                counterparties: { type: 'array' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              verdict: 'avoid',
+              reasons: ['Transaction 1 reverts: Blacklistable: account is blacklisted', 'recipient 0x0330… is on a sanctions or scam list'],
+              assetChanges: [],
+              approvals: [],
+              counterparties: [{ address: '0x0330…', role: 'recipient', verdict: 'block' }],
+            },
+          },
+        }),
+      },
+    },
+    'GET /v1/lending/health': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: config.PRICE_LENDING_HEALTH,
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: 'How close a wallet is to liquidation on Aave v3, across Ethereum, Base, Arbitrum, Optimism, and Polygon in one call: collateral, debt, health factor, status (safe/watch/danger/critical/liquidatable), and how far collateral can fall before liquidation. Category: data.',
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          input: { address: '0x71927529167fde40ebd4d2acdabfc88afd340f35', chain: 'all' },
+          inputSchema: {
+            type: 'object',
+            required: ['address'],
+            properties: {
+              address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' },
+              chain: { type: 'string', enum: ['all', 'ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'all' },
+            },
+          },
+          output: {
+            schema: {
+              type: 'object',
+              required: ['address', 'positions', 'worst'],
+              properties: {
+                address: { type: 'string' },
+                positions: { type: 'array', items: { type: 'object', properties: { chain: { type: 'string' }, healthFactor: { type: 'number' }, status: { type: 'string' }, collateralUsd: { type: 'number' }, debtUsd: { type: 'number' } } } },
+                worst: { type: 'object' },
+                relatedServices: { type: 'array' },
+              },
+            },
+            example: {
+              address: '0x7192…',
+              positions: [{ protocol: 'aave-v3', chain: 'ethereum', collateralUsd: 1803.93, debtUsd: 502.93, healthFactor: 3.021, status: 'safe', collateralDropToLiquidationPct: 66.9 }],
+            },
+          },
+        }),
+      },
+    },
     'GET /v1/pool-snapshot': {
       accepts: [{
         scheme: 'exact' as const,
@@ -1078,7 +1173,7 @@ export function createPaymentMiddleware() {
           payTo: config.SOLANA_PAY_TO_ADDRESS,
         },
       ],
-      description: 'Simulate a Solana transaction for agents about to sign it: balance changes, labeled programs, deterministic risk rules, and a proceed/caution/avoid recommendation. Accepts USDC on Base or Solana. Category: data.',
+      description: 'Simulate a Solana transaction for agents about to sign it: balance changes, labeled programs, deterministic risk rules, and a proceed/caution/avoid recommendation. Accepts USDC on Base or Solana. EVM version: /v1/tx-simulate. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
