@@ -659,3 +659,21 @@ describe('llms.txt', () => {
     for (const s of card.body.skills) expect(res.text).toContain(s.name);
   });
 });
+
+describe('x402 crawler hygiene', () => {
+  it('marks every unpriced OpenAPI operation as free (security: [])', async () => {
+    const res = await request(app).get('/openapi.json');
+    for (const ops of Object.values<Record<string, any>>(res.body.paths)) {
+      for (const op of Object.values<any>(ops)) {
+        if (op['x-x402-price']) expect(op.security).toBeUndefined();
+        else expect(op.security).toEqual([]);
+      }
+    }
+  });
+
+  it('serves /favicon.ico', async () => {
+    const res = await request(app).get('/favicon.ico');
+    expect(res.status).toBe(200);
+    expect(res.headers['content-type']).toMatch(/image\/png/);
+  });
+});

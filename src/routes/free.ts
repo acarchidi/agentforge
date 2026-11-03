@@ -610,6 +610,12 @@ freeRouter.get('/llms.txt', (req: Request, res: Response) => {
   res.type('text/markdown').send(lines.join('\n'));
 });
 
+// Browsers and directories (x402scan) look for /favicon.ico at the root.
+freeRouter.get('/favicon.ico', (_req: Request, res: Response) => {
+  res.type('image/png').set('Cache-Control', 'public, max-age=604800, immutable');
+  res.sendFile(path.join(__dirname, '../../public/brand/agentforge-icon-512.png'), { dotfiles: 'allow' });
+});
+
 freeRouter.get('/robots.txt', (_req: Request, res: Response) => {
   res.type('text/plain').send(`# AgentForge — AI Agent Services
 # We welcome AI agent crawlers and indexers.

@@ -13,19 +13,19 @@ machine track matters more: it is where a paying agent actually picks a vendor.
 |---|---|---|---|---|
 | A1 | **CDP x402 Bazaar** (discovery index, ~107k resources) | Any endpoint with a settled payment in the last 30 days | Listed, 22 + 2 new pending first payment | `npm run keepalive` **(you, one click)** to list tx-simulate and lending-health; daily check reminds before lapses |
 | A2 | **Official MCP Registry** | `server.json` published via GitHub OIDC | Live v1.8.0, auto-publishes on every `server.json` change | none |
-| A3 | **Glama connectors** (feeds awesome-remote-mcp-servers, scores tool quality) | Auto-ingests from the MCP Registry | Listed; snapshot predates 1.8.0 | Raise tool-definition score: add MCP tool annotations (read-only, open-world); investigate health-check failures (2,169 / 3,560 checks healthy) |
-| A4 | **x402scan** | Register the `/.well-known/x402` URL | Tracks AgentForge, unclaimed | Submit the registration form |
-| A5 | **llms.txt** | Crawlers and agents read `/llms.txt` at the site root | Missing | Serve `/llms.txt` with the job-first catalog |
+| A3 | **Glama connectors** (feeds awesome-remote-mcp-servers, scores tool quality) | Auto-ingests from the MCP Registry | Listed. **Done 11-03:** tool annotations + limit disclosure shipped (PR #14). Endpoint answers `initialize` in ~0.2s; the 61% health history includes earlier outages | Re-check the score after Glama re-crawls |
+| A4 | **x402scan** | Register the `/.well-known/x402` URL | **Registered 11-03: 24/24 resources**, 14 stale ones retired. Favicon + free-endpoint marking shipped | Optional **(you)**: add a public contact email to `openapi.json` `info.contact` (x402scan uses it to verify ownership) |
+| A5 | **llms.txt** | Crawlers and agents read `/llms.txt` at the site root | **Live 11-03** (generated from the agent card) | none |
 | A6 | PulseMCP, mcp.so, other MCP directories | Most mirror the MCP Registry | Unverified | Re-check in a week; submit only where mirroring didn't happen and no account is required |
 
 ## Track B — curated lists (where developers look)
 
 | # | List | Fit | Status | Next action |
 |---|---|---|---|---|
-| B1 | **punkpeye/awesome-remote-mcp-servers** (2.5k★, merges daily) | Finance section is full of x402 crypto tools; requires a Glama badge (have it) | Not listed | PR |
-| B2 | **xpaysh/awesome-x402** (301★) | Tools & Utilities → Security & Analysis | Not listed; branch prepared in July with stale numbers | Refresh entry, PR |
-| B3 | **Haustorium12/gold-402** (active, daily merges, strict format) | Crypto & DeFi Data | Not listed; branch prepared | Refresh entry, PR |
-| B4 | **wong2/awesome-mcp-servers** (4.4k★) | Community Servers accepts remote servers | Not listed | PR |
+| B1 | **punkpeye/awesome-remote-mcp-servers** (2.5k★, merges daily) | Finance section is full of x402 crypto tools; requires a Glama badge (have it) | **PR open:** [#3754](https://github.com/punkpeye/awesome-remote-mcp-servers/pull/3754) | Respond to CI/review |
+| B2 | **xpaysh/awesome-x402** (301★; last merge 2026-07-28) | Tools & Utilities → Security & Analysis | **PR open:** [#2113](https://github.com/xpaysh/awesome-x402/pull/2113) | May sit; maintainers slow |
+| B3 | **Haustorium12/gold-402** (active, daily merges, strict format) | Crypto & DeFi Data | **PR open:** [#454](https://github.com/Haustorium12/gold-402/pull/454) (their bot probes the 402) | Respond to probe results |
+| — | wong2/awesome-mcp-servers (4.4k★) | Remote servers fit, but the repo has never merged a PR (maintainer commits directly) | Skip | — |
 | — | Merit-Systems/awesome-agentic-commerce | Lists protocol infrastructure, not individual APIs | Skip | — |
 | — | punkpeye/awesome-mcp-servers | Installable servers only; remote ones go to B1 | Skip | — |
 | — | Solana Agent Kit plugin | Repo hasn't merged in months | Skip | — |

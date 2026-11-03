@@ -58,7 +58,7 @@ const errorSchema = {
 };
 
 export function generateOpenApiSpec(): object {
-  return {
+  return markFreeOperations({
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
@@ -866,5 +866,18 @@ export function generateOpenApiSpec(): object {
         },
       },
     },
-  };
+  });
+}
+
+/**
+ * Operations without an x402 price are free. Mark them `security: []` so x402
+ * crawlers (x402scan, Bazaar) skip them instead of reporting "no 402 challenge".
+ */
+function markFreeOperations<T extends { paths: Record<string, Record<string, Record<string, unknown>>> }>(spec: T): T {
+  for (const ops of Object.values(spec.paths)) {
+    for (const op of Object.values(ops)) {
+      if (op && typeof op === 'object' && !('x-x402-price' in op)) op.security = [];
+    }
+  }
+  return spec;
 }
