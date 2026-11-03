@@ -141,7 +141,6 @@ process.env.X402_FACILITATOR_URL = 'https://x402.org/facilitator';
 process.env.ANTHROPIC_API_KEY = 'sk-ant-test-key';
 process.env.ADMIN_TOKEN = 'test-admin-token-1234567890';
 process.env.PRICE_TOKEN_INTEL = '$0.015';
-process.env.PRICE_CODE_REVIEW = '$0.05';
 process.env.PRICE_TOKEN_RESEARCH = '$0.04';
 process.env.PRICE_CONTRACT_DOCS = '$0.02';
 process.env.PRICE_CONTRACT_MONITOR = '$0.025';

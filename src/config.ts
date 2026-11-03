@@ -13,7 +13,6 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   ADMIN_TOKEN: z.string().min(16),
   PRICE_TOKEN_INTEL: z.string().startsWith('$'),
-  PRICE_CODE_REVIEW: z.string().startsWith('$'),
   PRICE_TOKEN_RESEARCH: z.string().startsWith('$'),
   PRICE_CONTRACT_DOCS: z.string().startsWith('$'),
   PRICE_CONTRACT_MONITOR: z.string().startsWith('$'),

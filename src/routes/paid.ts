@@ -1,7 +1,6 @@
 import { Router, type Request, type Response } from 'express';
 import { z } from 'zod';
 import { getTokenIntelWithCost } from '../services/tokenIntel.js';
-import { reviewCodeWithCost } from '../services/codeReview.js';
 import { tokenResearchWithCost } from '../services/tokenResearch.js';
 import { contractDocsWithCost } from '../services/contractDocs.js';
 import { contractMonitorWithCost } from '../services/contractMonitor.js';
@@ -129,7 +128,6 @@ function createHandler(endpoint: string, serviceFn: ServiceFn) {
 
 // Paid endpoints
 paidRouter.post('/v1/token-intel', createHandler('/v1/token-intel', getTokenIntelWithCost));
-paidRouter.post('/v1/code-review', createHandler('/v1/code-review', reviewCodeWithCost));
 paidRouter.post('/v1/token-research', createHandler('/v1/token-research', tokenResearchWithCost));
 paidRouter.post('/v1/contract-docs', createHandler('/v1/contract-docs', contractDocsWithCost));
 paidRouter.post('/v1/contract-monitor', createHandler('/v1/contract-monitor', contractMonitorWithCost));

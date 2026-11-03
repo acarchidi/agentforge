@@ -28,7 +28,6 @@ import { contractDocsOutput }   from '../src/schemas/contractDocs.js';
 import { contractMonitorOutput} from '../src/schemas/contractMonitor.js';
 import { walletSafetyOutput }   from '../src/schemas/walletSafety.js';
 import { tokenResearchOutput }  from '../src/schemas/tokenResearch.js';
-import { codeReviewOutput }     from '../src/schemas/codeReview.js';
 import { tokenCompareOutput }   from '../src/schemas/tokenCompare.js';
 import { sentimentOutput }      from '../src/schemas/sentiment.js';
 import { summarizeOutput }      from '../src/schemas/summarize.js';
@@ -236,14 +235,6 @@ async function main() {
     tokenResearchOutput,
     (d) => `${d.token?.name ?? '?'} (${d.token?.symbol ?? '?'})`);
 
-  // ── 10. POST /v1/code-review ─────────────────────────────────────
-  await runTest('/v1/code-review', 0.10, 'POST',
-    {
-      code: 'pragma solidity ^0.8.0;\ncontract Simple {\n    uint256 public value;\n    function setValue(uint256 _value) public {\n        value = _value;\n    }\n}',
-      language: 'solidity',
-    },
-    codeReviewOutput,
-    (d) => `findings=${d.findings?.length ?? 0} risk=${d.summary?.riskLevel ?? '?'}`);
 
   // ── 11. POST /v1/token-compare ───────────────────────────────────
   await runTest('/v1/token-compare', 0.08, 'POST',

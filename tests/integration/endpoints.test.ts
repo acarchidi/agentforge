@@ -12,7 +12,6 @@ process.env.X402_FACILITATOR_URL = 'https://x402.org/facilitator';
 process.env.ANTHROPIC_API_KEY = 'sk-ant-test-key';
 process.env.ADMIN_TOKEN = 'test-admin-token-1234567890';
 process.env.PRICE_TOKEN_INTEL = '$0.015';
-process.env.PRICE_CODE_REVIEW = '$0.05';
 process.env.PRICE_TOKEN_RESEARCH = '$0.04';
 process.env.PRICE_CONTRACT_DOCS = '$0.02';
 process.env.PRICE_CONTRACT_MONITOR = '$0.025';
@@ -64,13 +63,13 @@ describe('Free Endpoints', () => {
     expect(res.body.timestamp).toBeDefined();
   });
 
-  it('GET /catalog returns service list with 23 services (20 EVM + 3 Solana)', async () => {
+  it('GET /catalog returns service list with 22 services (19 EVM + 3 Solana)', async () => {
     const res = await request(app).get('/catalog');
     expect(res.status).toBe(200);
     expect(res.body.services).toBeInstanceOf(Array);
-    expect(res.body.services.length).toBe(23);
+    expect(res.body.services.length).toBe(22);
     expect(res.body.payment.protocol).toBe('x402');
-    expect(res.body.version).toBe('1.7.0');
+    expect(res.body.version).toBe('1.7.1');
   });
 
   it('GET /catalog services have endpoint and price', async () => {
@@ -163,11 +162,6 @@ describe('Validation (no LLM calls)', () => {
     expect(res.body.error).toBe('VALIDATION_ERROR');
   });
 
-  it('POST /v1/code-review returns 400 for missing code', async () => {
-    const res = await request(app).post('/v1/code-review').send({});
-    expect(res.status).toBe(400);
-    expect(res.body.error).toBe('VALIDATION_ERROR');
-  });
 
   it('POST /v1/token-research returns 400 for missing query', async () => {
     const res = await request(app).post('/v1/token-research').send({});
@@ -317,11 +311,10 @@ describe('Discovery Layer', () => {
     expect(res.status).toBe(200);
     expect(res.body.openapi).toBe('3.1.0');
     expect(res.body.info.title).toBe('AgentForge API');
-    expect(res.body.info.version).toBe('1.7.0');
+    expect(res.body.info.version).toBe('1.7.1');
     const paths = Object.keys(res.body.paths);
     // Must contain all current service paths
     expect(paths).toContain('/v1/token-intel');
-    expect(paths).toContain('/v1/code-review');
     expect(paths).toContain('/v1/token-research');
     expect(paths).toContain('/v1/contract-docs');
     expect(paths).toContain('/v1/contract-monitor');
@@ -379,11 +372,10 @@ describe('Discovery Layer', () => {
     const res = await request(app).get('/about');
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('AgentForge');
-    expect(res.body.version).toBe('1.7.0');
+    expect(res.body.version).toBe('1.7.1');
     expect(res.body.services).toBeDefined();
     // Current services
     expect(res.body.services.token_intelligence).toBeDefined();
-    expect(res.body.services.code_review).toBeDefined();
     expect(res.body.services.token_research).toBeDefined();
     expect(res.body.services.contract_docs).toBeDefined();
     expect(res.body.services.contract_monitor).toBeDefined();
@@ -408,7 +400,7 @@ describe('Discovery Layer', () => {
     expect(res.body.discovery.mcp).toContain('/mcp');
     // MCP section
     expect(res.body.mcp).toBeDefined();
-    expect(res.body.mcp.tools).toHaveLength(13);
+    expect(res.body.mcp.tools).toHaveLength(12);
     expect(res.body.mcp.transport).toBe('streamable-http');
     // Composability section
     expect(res.body.composability).toBeDefined();
@@ -420,7 +412,7 @@ describe('Discovery Layer', () => {
     const res = await request(app).get('/.well-known/agent.json');
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('AgentForge');
-    expect(res.body.version).toBe('1.7.0');
+    expect(res.body.version).toBe('1.7.1');
     expect(res.body.description).toBeDefined();
     expect(res.body.provider).toBeDefined();
     expect(res.body.provider.organization).toBe('AgentForge');
@@ -435,7 +427,7 @@ describe('Discovery Layer', () => {
     expect(x402.asset).toBe('USDC');
     // Skills
     expect(res.body.skills).toBeInstanceOf(Array);
-    expect(res.body.skills.length).toBe(23);
+    expect(res.body.skills.length).toBe(22);
     const skillIds = res.body.skills.map((s: { id: string }) => s.id);
     expect(skillIds).toContain('wallet-safety');
     expect(skillIds).toContain('token-research');
@@ -518,7 +510,6 @@ describe('x402 Discovery', () => {
     expect(res.body.resources).toBeInstanceOf(Array);
     // Current endpoints
     expect(res.body.resources).toContain('POST /v1/token-intel');
-    expect(res.body.resources).toContain('POST /v1/code-review');
     expect(res.body.resources).toContain('POST /v1/token-research');
     expect(res.body.resources).toContain('POST /v1/contract-docs');
     expect(res.body.resources).toContain('POST /v1/contract-monitor');
@@ -541,7 +532,7 @@ describe('x402 Discovery', () => {
   it('OpenAPI spec has x-payment-info on all paid endpoints', async () => {
     const res = await request(app).get('/openapi.json');
     const paidPaths = [
-      '/v1/token-intel', '/v1/code-review', '/v1/token-research',
+      '/v1/token-intel', '/v1/token-research',
       '/v1/contract-docs', '/v1/contract-monitor', '/v1/token-compare',
       '/v1/tx-decode', '/v1/approval-scan', '/v1/wallet-safety', '/v1/gas',
       '/v1/sentiment', '/v1/summarize', '/v1/translate',

@@ -3,7 +3,6 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { z } from 'zod';
 import { tokenIntelInput, tokenIntelOutput } from '../schemas/tokenIntel.js';
-import { codeReviewInput, codeReviewOutput } from '../schemas/codeReview.js';
 import { tokenResearchInput, tokenResearchOutput } from '../schemas/tokenResearch.js';
 import { contractDocsInput, contractDocsOutput } from '../schemas/contractDocs.js';
 import { contractMonitorInput, contractMonitorOutput } from '../schemas/contractMonitor.js';
@@ -48,7 +47,7 @@ const facilitatorUrl = config.X402_FACILITATOR_URL;
 // Derived from config.PRICE_* (plus ping, which has no env var) so this can't
 // drift from actual charged amounts the way a hardcoded literal would.
 const ALL_PRICES = [
-  config.PRICE_TOKEN_INTEL, config.PRICE_CODE_REVIEW, config.PRICE_TOKEN_RESEARCH,
+  config.PRICE_TOKEN_INTEL, config.PRICE_TOKEN_RESEARCH,
   config.PRICE_CONTRACT_DOCS, config.PRICE_CONTRACT_MONITOR, config.PRICE_TOKEN_COMPARE,
   config.PRICE_TX_DECODE, config.PRICE_APPROVAL_SCAN, config.PRICE_GAS,
   config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
@@ -107,9 +106,9 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.7.0',
+    version: '1.7.1',
     description:
-      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, audit a smart contract, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
+      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
     payment: {
       protocol: 'x402',
@@ -128,15 +127,6 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         tags: ['crypto', 'token', 'risk', 'market-data', 'defi'],
         inputSchema: schemaOf(tokenIntelInput),
         outputSchema: schemaOf(tokenIntelOutput),
-      },
-      {
-        endpoint: 'POST /v1/code-review',
-        operationId: 'reviewCode',
-        description: 'Smart contract security analysis with gas optimization and diff review mode',
-        price: config.PRICE_CODE_REVIEW,
-        tags: ['security', 'audit', 'smart-contract', 'solidity', 'rust', 'gas-optimization'],
-        inputSchema: schemaOf(codeReviewInput),
-        outputSchema: schemaOf(codeReviewOutput),
       },
       {
         endpoint: 'POST /v1/token-research',
@@ -497,7 +487,6 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
   res.json({
     resources: [
       'POST /v1/token-intel',
-      'POST /v1/code-review',
       'POST /v1/token-research',
       'POST /v1/contract-docs',
       'POST /v1/contract-monitor',
@@ -548,7 +537,7 @@ freeRouter.get('/.well-known/ai-plugin.json', (req: Request, res: Response) => {
     name_for_human: 'AgentForge',
     name_for_model: 'agentforge',
     description_for_human:
-      'AI-powered DeFi safety and analysis services on Ethereum, Base, and Solana: wallet safety checks, token risk / rug-check scoring, transaction decode and simulate, smart contract auditing, multi-source token research, and more. Pay per request with USDC.',
+      'AI-powered DeFi safety and analysis services on Ethereum, Base, and Solana: wallet safety checks, token risk / rug-check scoring, transaction decode and simulate, contract documentation, multi-source token research, and more. Pay per request with USDC.',
     description_for_model:
       'AgentForge provides production-grade AI analysis services accessible via x402 micropayments in USDC on Base or Solana. Available tools: (1) token metadata enrichment with risk scoring, (2) smart contract security auditing with gas optimization, (3) multi-source token research, (4) smart contract documentation generation, (5) contract admin activity monitoring, (6) multi-token comparative analysis, (7) transaction decoding with plain-English explanations, (8) wallet approval risk scanning, (9) comprehensive wallet safety check with pattern detection and risk scoring, (10) gas price oracle with trend analysis, (11) sentiment analysis for crypto/finance/social media text, (12) text summarization with configurable length and format, (13) translation with tone control and auto-detection, (14) DeFi liquidity pool snapshots with TVL/APY/IL-risk for top 500 pools, (15) quantitative token risk metrics with holder concentration, permissions, and composite score, (16) Solana transaction explanation with labeled programs and risk flags, (17) Solana transaction simulation with balance deltas and a proceed/caution/avoid recommendation, (18) Solana token rug-check risk scoring with mint/freeze authority and holder concentration. All endpoints accept JSON requests and return structured JSON. Payment is handled automatically via x402 protocol — no API keys or accounts needed.',
     auth: { type: 'none' },
@@ -599,7 +588,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.7.0',
+    version: '1.7.1',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
@@ -635,14 +624,6 @@ freeRouter.get('/about', (req: Request, res: Response) => {
           'Returns enriched metadata, live market data (price, market cap, volume, 24h change), and an AI-generated risk assessment (0-100 score with specific flags) for any token on Ethereum, Base, Solana, Polygon, or Arbitrum.',
         best_for: 'Due diligence, portfolio analysis, token screening, risk assessment before trades',
         input_example: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chain: 'ethereum' },
-      },
-      code_review: {
-        endpoint: 'POST /v1/code-review',
-        price: config.PRICE_CODE_REVIEW,
-        description:
-          'Analyzes smart contract code for security vulnerabilities (reentrancy, overflow, access control), gas optimization opportunities, and best practice violations. Supports Solidity, Rust, Move, and TypeScript. Returns severity-ranked issues with line numbers and fix suggestions. Supports diff review mode by providing previousCode.',
-        best_for: 'Pre-deployment security checks, audit preparation, code quality assessment, gas optimization',
-        input_example: { code: 'pragma solidity ^0.8.0; ...', language: 'solidity', focus: 'all' },
       },
       token_research: {
         endpoint: 'POST /v1/token-research',
@@ -844,9 +825,8 @@ freeRouter.get('/about', (req: Request, res: Response) => {
       chains: {
         'token-intel': ['token-research', 'contract-docs', 'contract-monitor'],
         'token-research': ['contract-docs', 'contract-monitor', 'token-compare'],
-        'contract-docs': ['contract-monitor', 'token-intel', 'code-review'],
+        'contract-docs': ['contract-monitor', 'token-intel'],
         'contract-monitor': ['contract-docs', 'token-intel'],
-        'code-review': ['contract-docs'],
         'token-compare': ['token-research (per comparison token)'],
         'tx-decode': ['contract-docs', 'contract-monitor'],
         'approval-scan': ['contract-docs (per risky spender)', 'wallet-safety'],
@@ -859,7 +839,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
       transport: 'streamable-http',
       description:
         'MCP server exposing all AgentForge tools. Connect from Claude Desktop, Cursor, or any MCP-compatible environment. No payment required — tools call services directly.',
-      tools: ['token_intel', 'token_research', 'code_review', 'contract_docs', 'contract_monitor', 'token_compare', 'tx_decode', 'approval_scan', 'wallet_safety', 'gas_oracle', 'sentiment', 'summarize', 'translate'],
+      tools: ['token_intel', 'token_research', 'contract_docs', 'contract_monitor', 'token_compare', 'tx_decode', 'approval_scan', 'wallet_safety', 'gas_oracle', 'sentiment', 'summarize', 'translate'],
       configuration_example: {
         mcpServers: {
           agentforge: {

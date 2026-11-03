@@ -38,7 +38,6 @@ export const ICON_URL = `${config.PUBLIC_BASE_URL}/brand/agentforge-icon-512.png
  */
 export const ROUTE_METADATA: Record<string, { category: string; tags: string[] }> = {
   '/v1/token-intel': { category: 'Data', tags: ['token intel', 'token price', 'market data', 'risk score', 'evm', 'solana'] },
-  '/v1/code-review': { category: 'security', tags: ['code review', 'smart contract audit', 'solidity', 'vulnerability scan', 'gas optimization'] },
   '/v1/token-research': { category: 'Data', tags: ['token research', 'defi metrics', 'holder analysis', 'prediction markets', 'due diligence'] },
   '/v1/contract-docs': { category: 'Data', tags: ['contract docs', 'abi', 'proxy resolution', 'smart contract'] },
   '/v1/contract-monitor': { category: 'security', tags: ['contract monitor', 'admin operations', 'proxy upgrade', 'ownership change', 'pause event'] },
@@ -139,71 +138,6 @@ export function createPaymentMiddleware() {
               market: { priceUsd: 3500.12, marketCap: 12000000000, volume24h: 500000000, priceChange24h: 2.3 },
               risk: { score: 5, flags: [], assessment: 'Low risk — canonical wrapped ETH contract.' },
               metadata: { sources: ['coingecko'], processingTimeMs: 120 },
-            },
-          },
-        }),
-      },
-    },
-    'POST /v1/code-review': {
-      accepts: [{
-        scheme: 'exact' as const,
-        price: config.PRICE_CODE_REVIEW,
-        network: networkId,
-        payTo: config.PAY_TO_ADDRESS,
-      }],
-      description: 'Smart contract security audit for developers and auditors: finds vulnerabilities, gas optimizations, and best-practice violations in Solidity, Rust, Move, or TypeScript code, with a diff review mode for proposed changes. Category: inference.',
-      mimeType: 'application/json',
-      extensions: {
-        ...declareDiscoveryExtension({
-          bodyType: 'json' as const,
-          input: {
-            code: 'pragma solidity ^0.8.0;\ncontract Example {\n  function withdraw() public {\n    payable(msg.sender).transfer(address(this).balance);\n  }\n}',
-            language: 'solidity',
-            focus: 'security',
-          },
-          inputSchema: {
-            type: 'object',
-            required: ['code'],
-            properties: {
-              code: { type: 'string', minLength: 1, maxLength: 50000, description: 'Source code to review' },
-              previousCode: { type: 'string', maxLength: 50000, description: 'Previous version of code for diff review mode' },
-              language: { type: 'string', enum: ['solidity', 'rust', 'move', 'typescript'], default: 'solidity' },
-              focus: { type: 'string', enum: ['security', 'gas_optimization', 'best_practices', 'all'], default: 'all' },
-            },
-          },
-          output: {
-            schema: {
-              type: 'object',
-              required: ['overallRisk', 'issues', 'summary', 'metadata'],
-              properties: {
-                overallRisk: { type: 'string', enum: ['low', 'medium', 'high', 'critical'] },
-                issues: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    properties: {
-                      severity: { type: 'string', enum: ['info', 'low', 'medium', 'high', 'critical'] },
-                      category: { type: 'string' }, description: { type: 'string' },
-                      line: { type: 'number' }, suggestion: { type: 'string' },
-                    },
-                  },
-                },
-                gasOptimization: { type: 'object', description: 'Gas optimization report (when focus includes gas)' },
-                summary: { type: 'string' },
-                metadata: {
-                  type: 'object',
-                  properties: {
-                    model: { type: 'string' }, processingTimeMs: { type: 'number' },
-                    linesAnalyzed: { type: 'number' },
-                  },
-                },
-              },
-            },
-            example: {
-              overallRisk: 'high',
-              issues: [{ severity: 'high', category: 'access-control', description: 'withdraw() has no access control modifier', line: 3, suggestion: 'Add an onlyOwner modifier or equivalent check' }],
-              summary: '1 high severity issue found: missing access control on withdraw().',
-              metadata: { model: 'claude-sonnet-5', processingTimeMs: 850, linesAnalyzed: 5 },
             },
           },
         }),

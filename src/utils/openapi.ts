@@ -7,7 +7,6 @@
 
 import { z } from 'zod';
 import { tokenIntelInput, tokenIntelOutput } from '../schemas/tokenIntel.js';
-import { codeReviewInput, codeReviewOutput } from '../schemas/codeReview.js';
 import { tokenResearchInput, tokenResearchOutput } from '../schemas/tokenResearch.js';
 import { contractDocsInput, contractDocsOutput } from '../schemas/contractDocs.js';
 import { contractMonitorInput, contractMonitorOutput } from '../schemas/contractMonitor.js';
@@ -61,9 +60,9 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.7.0',
+      version: '1.7.1',
       description:
-        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, audit a smart contract, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
+        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
     },
     servers: [
@@ -93,35 +92,6 @@ export function generateOpenApiSpec(): object {
             '200': {
               description: 'Token intelligence result',
               content: { 'application/json': { schema: schemaOf(tokenIntelOutput) } },
-            },
-            '400': {
-              description: 'Invalid input',
-              content: { 'application/json': { schema: errorSchema } },
-            },
-            '402': { description: 'Payment required' },
-          },
-        },
-      },
-      '/v1/code-review': {
-        post: {
-          operationId: 'reviewCode',
-          summary: 'Smart contract security analysis with gas optimization',
-          description:
-            `Analyze smart contract code for security vulnerabilities, gas optimization, and best practice violations. Supports diff review mode. Price: ${config.PRICE_CODE_REVIEW} USDC via x402.`,
-          tags: ['Security'],
-          'x-x402-price': config.PRICE_CODE_REVIEW,
-          'x-agentic-market-category': 'inference',
-          'x-x402-network': x402Network,
-          'x-agentcash-auth': { mode: 'paid' },
-          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_CODE_REVIEW, protocols: ['x402'] },
-          requestBody: {
-            required: true,
-            content: { 'application/json': { schema: schemaOf(codeReviewInput) } },
-          },
-          responses: {
-            '200': {
-              description: 'Code review result',
-              content: { 'application/json': { schema: schemaOf(codeReviewOutput) } },
             },
             '400': {
               description: 'Invalid input',

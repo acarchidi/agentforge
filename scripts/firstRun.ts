@@ -61,7 +61,6 @@ async function main() {
     '/v1/sentiment',
     '/v1/summarize',
     '/v1/token-intel',
-    '/v1/code-review',
     '/v1/translate',
   ]) {
     await check(`x402 gating: ${endpoint}`, async () => {

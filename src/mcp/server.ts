@@ -20,7 +20,6 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
 import { tokenResearchWithCost } from '../services/tokenResearch.js';
-import { reviewCodeWithCost } from '../services/codeReview.js';
 import { contractDocsWithCost } from '../services/contractDocs.js';
 import { getTokenIntelWithCost } from '../services/tokenIntel.js';
 import { contractMonitorWithCost } from '../services/contractMonitor.js';
@@ -47,7 +46,7 @@ import { logEvent } from '../analytics/logger.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.7.0';
+export const MCP_SERVER_VERSION = '1.7.1';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -271,26 +270,6 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
         .describe('Data modules to include (default: market_data, defi_metrics, contract_info, risk_assessment)'),
     },
     async (input) => call('token_research', tokenResearchWithCost, input as any),
-  );
-
-  server.tool(
-    'code_review',
-    'Smart contract security analysis. Finds vulnerabilities, suggests gas optimizations, flags best practice violations. Supports Solidity, Rust, Move, TypeScript.',
-    {
-      code: z.string().describe('Smart contract source code'),
-      language: z
-        .enum(['solidity', 'rust', 'move', 'typescript'])
-        .optional()
-        .default('solidity')
-        .describe('Programming language'),
-      focus: z
-        .enum(['security', 'gas_optimization', 'best_practices', 'all'])
-        .optional()
-        .default('all')
-        .describe('Analysis focus area'),
-      previousCode: z.string().optional().describe('Previous version for diff review'),
-    },
-    async (input) => call('code_review', reviewCodeWithCost, input),
   );
 
   server.tool(

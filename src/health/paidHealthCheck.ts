@@ -50,7 +50,6 @@ export interface PaidHealthResult {
 
 export const PAID_ENDPOINTS_FOR_HEALTH: PaidEndpointSpec[] = [
   { method: 'POST', path: '/v1/token-intel' },
-  { method: 'POST', path: '/v1/code-review' },
   { method: 'POST', path: '/v1/token-research' },
   { method: 'POST', path: '/v1/contract-docs' },
   { method: 'POST', path: '/v1/contract-monitor' },
