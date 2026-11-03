@@ -4,7 +4,7 @@
 
 - Live: https://agentforge-taupe.vercel.app
 - MCP server: `https://agentforge-taupe.vercel.app/mcp` (free up to a daily cap) — official MCP Registry: `io.github.acarchidi/agentforge`
-- SDK + framework tools: [agentforge-tools](https://github.com/acarchidi/agentforge-tools) (OpenAI, Vercel AI SDK, LangChain, ElizaOS)
+- SDK + framework tools: [`agentforge-tools` on npm](https://www.npmjs.com/package/agentforge-tools) (OpenAI, [Vercel AI SDK](https://agentforge-taupe.vercel.app/docs/ai-sdk), LangChain, ElizaOS)
 - Discovery: [x402 manifest](https://agentforge-taupe.vercel.app/.well-known/x402) · [OpenAPI](https://agentforge-taupe.vercel.app/openapi.json) · [catalog](https://agentforge-taupe.vercel.app/catalog) · [llms.txt](https://agentforge-taupe.vercel.app/llms.txt) · [agent card](https://agentforge-taupe.vercel.app/.well-known/agent.json)
 
 ## Use it in 30 seconds
@@ -20,7 +20,7 @@ Cursor, Windsurf, Claude Desktop, ElizaOS: add an HTTP MCP server with the same 
 **From code, paying per call:**
 
 ```bash
-npm install github:acarchidi/agentforge-tools
+npm install agentforge-tools
 ```
 
 ```ts
