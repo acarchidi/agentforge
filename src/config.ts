@@ -27,6 +27,10 @@ const envSchema = z.object({
   PRICE_WALLET_SAFETY: z.string().startsWith('$'),
   PRICE_POOL_SNAPSHOT: z.string().startsWith('$'),
   PRICE_TOKEN_RISK_METRICS: z.string().startsWith('$'),
+  // Bundle of token-risk-metrics + token-intel + gas. Keep below the sum of the
+  // three ($0.028 at current prices) but above token-intel's worst-case LLM cost
+  // (~$0.014 at Sonnet 5 list prices) plus the $0.001 CDP facilitator fee.
+  PRICE_TRADE_CHECK: z.string().startsWith('$').default('$0.025'),
   ETHERSCAN_API_KEY: z.string().optional(),
   CDP_API_KEY_ID: z.string().optional(),
   CDP_API_KEY_SECRET: z.string().optional(),

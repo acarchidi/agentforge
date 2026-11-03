@@ -34,6 +34,7 @@ import { translateWithCost } from '../services/translate.js';
 import { walletSafetyWithCost } from '../services/walletSafety/index.js';
 import { getPoolSnapshotWithCost } from '../services/poolSnapshots.js';
 import { getTokenRiskMetricsWithCost } from '../services/tokenRiskMetrics/index.js';
+import { tradeCheckWithCost } from '../services/tradeCheck.js';
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
@@ -43,7 +44,7 @@ import { logEvent } from '../analytics/logger.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.5.0';
+export const MCP_SERVER_VERSION = '1.6.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -455,6 +456,20 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
         .describe('Blockchain network'),
     },
     async (input) => call('token_risk_metrics', getTokenRiskMetricsWithCost, input),
+  );
+
+  server.tool(
+    'trade_check',
+    'Check a token before you buy it: one call bundling quantitative rug-check metrics (holder concentration, permissions, liquidity), AI risk assessment with market data, and current gas — rolled into a proceed/caution/avoid verdict with reasons. Cheaper than calling the three services separately.',
+    {
+      address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Token contract address (0x-prefixed)'),
+      chain: z
+        .enum(['ethereum', 'base', 'polygon', 'arbitrum'])
+        .optional()
+        .default('ethereum')
+        .describe('Blockchain network'),
+    },
+    async (input) => call('trade_check', tradeCheckWithCost, input),
   );
 
   server.tool(

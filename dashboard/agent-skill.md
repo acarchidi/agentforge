@@ -1,9 +1,9 @@
 ---
 name: agentforge
-description: Free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus optional pay-per-call x402 APIs for wallet safety, token risk / rug check scoring, transaction decode and simulate, and smart contract docs — on Ethereum, Base, and Solana. Use when an agent needs to check wallet safety, scan token risk, decode or simulate a transaction, or get contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
+description: Check a token before you buy it, scan a wallet before it signs, decode or simulate a transaction, audit a contract — free DeFi lookups (384-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
 metadata:
   author: agentforge
-  version: "1.5.0"
+  version: "1.6.0"
 ---
 
 # AgentForge
@@ -11,21 +11,21 @@ metadata:
 AgentForge is a DeFi safety layer on Base and Solana mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
-2. **Paid** — 19 deeper analysis endpoints (wallet safety, rug checks, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden or bundled.
+2. **Paid** — 20 deeper analysis endpoints (pre-trade token checks, wallet safety, rug checks, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
 - `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 384-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
-- `GET /catalog` — full machine-readable catalog of all 19 paid endpoints with current prices and JSON schemas.
+- `GET /catalog` — full machine-readable catalog of all 20 paid endpoints with current prices and JSON schemas.
 - `GET /about` — service overview, every endpoint with description and `input_example` payload.
 - `GET /.well-known/x402` — x402 discovery document (accepted networks, assets, payTo address).
 - `POST /feedback` — report a bad response or suggest an improvement.
 
 ## MCP server — free, no wallet needed
 
-All 20 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
+All 21 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
 
 - Lookups (`registry_lookup`, `solana_program_lookup`) and cheap data (`gas_oracle`, `pool_snapshot`) are unlimited.
 - Every analysis tool is free for 10 calls per tool per client per day. Past that, the tool returns the matching paid x402 endpoint and its exact price.
@@ -40,6 +40,7 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 ## When to use the paid endpoints
 
+- Before buying a token: `trade-check` runs the rug check, the AI risk assessment, and the gas oracle in one call and returns a proceed/caution/avoid verdict — cheaper than the three calls separately.
 - Before executing a DeFi transaction: check `wallet-safety` or `approval-scan` (EVM) — or `solana/tx-simulate` (Solana).
 - Before touching a new token: run `token-risk-metrics` (EVM) or `solana/token-risk-scan` (Solana) — rug check: mint/freeze authority, holder concentration, liquidity.
 - To understand a transaction: `tx-decode` (EVM) or `solana/tx-explain` (Solana) turn raw transaction data into a plain-English explanation.
@@ -50,22 +51,23 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 | Method | Path | Price (USDC) | What it does |
 |---|---|---|---|
-| POST | `/v1/wallet-safety` | $0.10 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
-| POST | `/v1/token-risk-metrics` | $0.05 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |
+| POST | `/v1/trade-check` | $0.025 | Pre-trade bundle: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately. |
+| POST | `/v1/wallet-safety` | $0.035 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
+| POST | `/v1/token-risk-metrics` | $0.01 | Rug check / token risk score: mint authority, freeze authority, holder concentration, liquidity depth, deployer history, composite 0-100 score. |
 | POST | `/v1/approval-scan` | $0.015 | Scans a wallet for risky ERC-20 approvals (unlimited allowances, unverified spenders). |
 | POST | `/v1/contract-monitor` | $0.025 | Recent contract admin activity: ownership transfers, upgrades, pause changes. |
 | POST | `/v1/contract-docs` | $0.05 | Human-readable smart contract documentation with security posture and interaction patterns. |
-| POST | `/v1/tx-decode` | $0.05 | Decode any EVM transaction: function call, params, token transfers, plain-English explanation. |
+| POST | `/v1/tx-decode` | $0.01 | Decode any EVM transaction: function call, params, token transfers, plain-English explanation. |
 | POST | `/v1/token-research` | $0.04 | Multi-source token research: CoinGecko + DeFiLlama + Etherscan + Polymarket in one report. |
 | POST | `/v1/token-compare` | $0.08 | Compare a token against up to 3 competitors with AI-generated analysis. |
 | POST | `/v1/token-intel` | $0.015 | Quick token lookup: market data + risk score in under 10 seconds. |
 | POST | `/v1/code-review` | $0.10 | Smart contract security audit with severity-ranked issues and gas optimization notes. |
 | GET | `/v1/gas` | $0.003 | Real-time gas prices (slow/standard/fast) with trend analysis, any supported EVM chain. |
-| GET | `/v1/pool-snapshot` | $0.005 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
+| GET | `/v1/pool-snapshot` | $0.01 | Top 500 DeFi liquidity pools by TVL, filterable by protocol/chain/token, refreshed every 15 min. |
 | POST | `/v1/sentiment` | $0.008 | Sentiment analysis for crypto/finance/social text. |
 | POST | `/v1/summarize` | $0.01 | Text summarization with configurable length and format. |
 | POST | `/v1/translate` | $0.015 | Translation with tone control, auto-detects source language. |
-| GET | `/v1/ping` | $0.001 | Verifies your x402 payment flow works end to end. |
+| GET | `/v1/ping` | $0.001 | Verifies your x402 payment flow works end to end — and returns the full service catalog with prices and example inputs. |
 | POST | `/v1/solana/token-risk-scan` | $0.35 | Solana rug check: mint/freeze authority, holder concentration, liquidity depth, composite 0-100 score. Base or Solana USDC. |
 | POST | `/v1/solana/tx-simulate` | $0.15 | Simulate a Solana transaction before signing: balance changes, labeled programs, proceed/caution/avoid recommendation. Base or Solana USDC. |
 | POST | `/v1/solana/tx-explain` | $0.05 | Explain a Solana transaction: labeled programs, token/SOL movements, plain-English summary. Base or Solana USDC. |

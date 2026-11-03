@@ -48,6 +48,7 @@ const CALLS: Call[] = [
   { name: 'approval-scan', method: 'POST', path: '/v1/approval-scan', body: { address: SAMPLE_WALLET, chain: 'ethereum' } },
   { name: 'wallet-safety', method: 'POST', path: '/v1/wallet-safety', body: { walletAddress: SAMPLE_WALLET, chain: 'ethereum', depth: 'quick' } },
   { name: 'token-risk-metrics', method: 'POST', path: '/v1/token-risk-metrics', body: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' } },
+  { name: 'trade-check', method: 'POST', path: '/v1/trade-check', body: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' } },
   { name: 'code-review', method: 'POST', path: '/v1/code-review', body: { code: 'pragma solidity ^0.8.0; contract A { function f() external payable {} }', language: 'solidity', focus: 'security' } },
   { name: 'sentiment', method: 'POST', path: '/v1/sentiment', body: { text: 'ETH ETF inflows hit a record this week.', context: 'crypto' } },
   { name: 'summarize', method: 'POST', path: '/v1/summarize', body: { text: 'AgentForge is a DeFi safety layer for AI agents. It exposes paid x402 endpoints for wallet safety, token risk, and Solana transaction simulation.', maxLength: 'brief' } },

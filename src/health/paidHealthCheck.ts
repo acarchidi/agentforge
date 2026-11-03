@@ -62,6 +62,7 @@ export const PAID_ENDPOINTS_FOR_HEALTH: PaidEndpointSpec[] = [
   { method: 'POST', path: '/v1/translate' },
   { method: 'POST', path: '/v1/wallet-safety' },
   { method: 'POST', path: '/v1/token-risk-metrics' },
+  { method: 'POST', path: '/v1/trade-check' },
   { method: 'GET', path: '/v1/pool-snapshot' },
   { method: 'GET', path: '/v1/gas' },
   { method: 'GET', path: '/v1/ping' },

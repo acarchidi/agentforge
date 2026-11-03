@@ -25,6 +25,7 @@ export const ENDPOINT_PRICES: Record<string, number> = {
   '/v1/wallet-safety': parsePrice(config.PRICE_WALLET_SAFETY),
   '/v1/pool-snapshot': parsePrice(config.PRICE_POOL_SNAPSHOT),
   '/v1/token-risk-metrics': parsePrice(config.PRICE_TOKEN_RISK_METRICS),
+  '/v1/trade-check': parsePrice(config.PRICE_TRADE_CHECK),
   '/v1/solana/tx-explain': parsePrice(config.PRICE_SOLANA_TX_EXPLAIN),
   '/v1/solana/tx-simulate': parsePrice(config.PRICE_SOLANA_TX_SIMULATE),
   '/v1/solana/token-risk-scan': parsePrice(config.PRICE_SOLANA_TOKEN_RISK_SCAN),
@@ -48,6 +49,7 @@ export const TOOL_TO_ENDPOINT: Record<string, string> = {
   wallet_safety: '/v1/wallet-safety',
   pool_snapshot: '/v1/pool-snapshot',
   token_risk_metrics: '/v1/token-risk-metrics',
+  trade_check: '/v1/trade-check',
   solana_tx_explain: '/v1/solana/tx-explain',
   solana_tx_simulate: '/v1/solana/tx-simulate',
   solana_token_risk_scan: '/v1/solana/token-risk-scan',
@@ -56,5 +58,7 @@ export const TOOL_TO_ENDPOINT: Record<string, string> = {
 export const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? 'https://agentforge-taupe.vercel.app';
 
 export function formatUsd(amount: number): string {
-  return `$${amount.toFixed(amount < 0.01 ? 3 : 2).replace(/\.?0+$/, '')}`;
+  // Sub-cent prices are the norm here; two-decimal rounding misadvertised
+  // $0.025 as "$0.03" and $0.015 as "$0.01". Number() trims trailing zeros.
+  return `$${Number(amount.toFixed(4))}`;
 }

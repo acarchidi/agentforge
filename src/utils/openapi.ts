@@ -21,6 +21,7 @@ import { translateInput, translateOutput } from '../schemas/translate.js';
 import { walletSafetyInput, walletSafetyOutput } from '../schemas/walletSafety.js';
 import { poolSnapshotInput, poolSnapshotOutput } from '../schemas/poolSnapshots.js';
 import { tokenRiskMetricsInput, tokenRiskMetricsOutput } from '../schemas/tokenRiskMetrics.js';
+import { tradeCheckInput, tradeCheckOutput } from '../schemas/tradeCheck.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
 import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
@@ -56,9 +57,9 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.5.0',
+      version: '1.6.0',
       description:
-        'Production-grade AI services for autonomous agents. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
+        'Check a token before you buy it, scan a wallet for risky approvals, audit a smart contract, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
     },
     servers: [
@@ -503,12 +504,41 @@ export function generateOpenApiSpec(): object {
           },
         },
       },
+      '/v1/trade-check': {
+        post: {
+          operationId: 'tradeCheck',
+          summary: 'Pre-trade token check (bundle)',
+          description:
+            `Check a token before you buy it: one call bundling quantitative rug-check metrics, AI risk assessment with market data, and current gas, rolled into a proceed/caution/avoid verdict. Cheaper than the three calls separately. Price: ${config.PRICE_TRADE_CHECK} USDC via x402.`,
+          tags: ['Security', 'Crypto Intelligence'],
+          'x-x402-price': config.PRICE_TRADE_CHECK,
+          'x-agentic-market-category': 'data',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'fixed', price: config.PRICE_TRADE_CHECK, protocols: ['x402'] },
+          requestBody: {
+            required: true,
+            content: { 'application/json': { schema: schemaOf(tradeCheckInput) } },
+          },
+          responses: {
+            '200': {
+              description: 'Pre-trade check result',
+              content: { 'application/json': { schema: schemaOf(tradeCheckOutput) } },
+            },
+            '400': {
+              description: 'Invalid input',
+              content: { 'application/json': { schema: errorSchema } },
+            },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
       '/v1/ping': {
         get: {
           operationId: 'ping',
           summary: 'Liveness check with payment verification',
           description:
-            'Minimal endpoint to verify service is operational and x402 payment flow works. Price: $0.001 USDC via x402.',
+            'Verify the service is operational and your x402 payment flow works. The response includes the full service catalog with prices and example inputs. Price: $0.001 USDC via x402.',
           tags: ['System'],
           'x-x402-price': '$0.001',
           'x-agentic-market-category': 'infra',

@@ -6,6 +6,7 @@
 
 import { SimpleCache } from '../utils/cache.js';
 import { config } from '../config.js';
+import { gasRelatedServices } from '../discovery/upsell.js';
 import {
   gasOracleInput,
   gasOracleOutput,
@@ -127,6 +128,10 @@ export async function getGasPriceWithCost(
       source: 'etherscan' as const,
       processingTimeMs: Date.now() - startTime,
     },
+    // Gas is most payers' first "real" call; point them at the services the
+    // gas check is usually in service of. Deterministic per chain, so caching
+    // it along with the prices is fine.
+    relatedServices: gasRelatedServices(validated.chain),
   });
 
   gasCache.set(cacheKey, output);
