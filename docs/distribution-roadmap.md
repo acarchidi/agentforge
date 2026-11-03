@@ -34,10 +34,10 @@ machine track matters more: it is where a paying agent actually picks a vendor.
 
 | # | Channel | Status | Next action |
 |---|---|---|---|
-| D1 | **agentforge-tools SDK** ([repo](https://github.com/acarchidi/agentforge-tools)) — typed client, x402 paying fetch with spend cap, tools for OpenAI / Vercel AI SDK / LangChain / ElizaOS | **Released v0.2.0 11-03**, installable via `npm install github:acarchidi/agentforge-tools` | Publish to npm **(you: one-time `npm login`)** |
+| D1 | **agentforge-tools SDK** ([repo](https://github.com/acarchidi/agentforge-tools)) — typed client, x402 paying fetch with spend cap, tools for OpenAI / Vercel AI SDK / LangChain / ElizaOS | **On npm 11-03:** [`agentforge-tools`](https://www.npmjs.com/package/agentforge-tools) 0.2.0 | Future releases: you approve `npm publish` (npm requires 2FA) |
 | D2 | **Coinbase AgentKit** action provider (6 actions, pays from the agent's wallet, policy-enforced spend cap) | **PR open:** [coinbase/agentkit#1619](https://github.com/coinbase/agentkit/pull/1619), GitHub-signed commit, tests/lint/tsc clean | Respond to review |
 | D3 | **ElizaOS** | Shipped as `agentforge-tools/eliza`; ElizaOS's plugin registry has been down since ~May 2026 and core no longer merges third-party plugins. ElizaOS's `plugin-mcp` already reaches all 25 tools via the MCP server | Submit to the registry if it reopens |
-| D4 | **Vercel AI SDK tools registry** (ai-sdk.dev/resources/tools) | Blocked: requires an npm-published package | PR `content/tools-registry/registry.ts` after D1 publishes |
+| D4 | **Vercel AI SDK tools registry** (ai-sdk.dev/resources/tools) | **PR open:** [vercel/ai#24464](https://github.com/vercel/ai/pull/24464), with docs at [/docs/ai-sdk](https://agentforge-taupe.vercel.app/docs/ai-sdk) and an end-to-end run with a real model | Respond to review |
 | D5 | **mcp.so** (2.1k★, issue-based) | **Submitted:** [chatmcp/mcpso#6689](https://github.com/chatmcp/mcpso/issues/6689) | none |
 | D6 | **PulseMCP** | Submissions paused since 2026-09-03; will ingest from the MCP Registry on reopen | none |
 | D7 | GitHub discoverability | **Done 11-03:** README added, topics + description on both repos | none |
