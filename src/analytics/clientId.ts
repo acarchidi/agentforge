@@ -138,3 +138,16 @@ export function mcpClientHash(req: Request): string {
   const ua = (req.headers['user-agent'] as string) || '';
   return hashClientId(`mcp-client:${ip}|${ua}`);
 }
+
+/**
+ * Which integration made the call, from the `x-agentforge-client` header the
+ * SDK sends (e.g. "agentforge-tools/0.5.0 guard"). Printable ASCII, ≤ 64 chars,
+ * or undefined. Lets the growth metrics count guard-origin traffic.
+ */
+export function clientTagOf(req: Request): string | undefined {
+  const h = req.headers['x-agentforge-client'];
+  const v = Array.isArray(h) ? h[0] : h;
+  if (typeof v !== 'string') return undefined;
+  const clean = v.replace(/[^\x20-\x7e]/g, '').trim().slice(0, 64);
+  return clean || undefined;
+}

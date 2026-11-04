@@ -25,10 +25,11 @@ import { simulateEvmTxWithCost } from '../services/txSimulate.js';
 import { getLendingHealthWithCost } from '../services/lendingHealth.js';
 import { signatureCheckWithCost } from '../services/signatureCheck.js';
 import { preflightWithCost } from '../services/preflight.js';
+import { contentScanWithCost } from '../services/contentScan.js';
 import { createWatchWithCost } from '../services/watch.js';
 import { logEvent } from '../analytics/logger.js';
 import { config } from '../config.js';
-import { hashClientId, paymentContextFromRequest } from '../analytics/clientId.js';
+import { hashClientId, paymentContextFromRequest, clientTagOf } from '../analytics/clientId.js';
 import { refundCreditPayment, type CreditPayment } from '../middleware/credits.js';
 import { ENDPOINT_PRICES, PUBLIC_BASE_URL, formatUsd, priceFor } from '../pricing.js';
 import { packFor } from '../credits/auth.js';
@@ -84,6 +85,7 @@ async function handlePaid(
     clientHash: payment.clientHash,
     paymentNetwork: payment.paymentNetwork,
     paymentScheme: viaAgentkitTrial ? 'agentkit-free-trial' : payment.paymentScheme,
+    clientTag: clientTagOf(req),
   };
 
   try {
@@ -205,6 +207,7 @@ paidRouter.post('/v1/watch', createHandler('/v1/watch', createWatchWithCost));
 paidRouter.post('/v1/preflight', createHandler('/v1/preflight', preflightWithCost));
 paidRouter.post('/v1/tx-simulate', createHandler('/v1/tx-simulate', simulateEvmTxWithCost));
 paidRouter.post('/v1/signature-check', createHandler('/v1/signature-check', signatureCheckWithCost));
+paidRouter.post('/v1/content-scan', createHandler('/v1/content-scan', contentScanWithCost));
 
 // Aave v3 position health — GET, query params
 paidRouter.get('/v1/lending/health', (req: Request, res: Response) =>
