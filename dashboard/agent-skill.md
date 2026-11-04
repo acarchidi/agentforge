@@ -1,6 +1,6 @@
 ---
 name: agentforge
-description: Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists before sending, rug-check a whole watchlist in one call, decode or simulate a transaction, document a contract — free DeFi lookups (433-contract label registry, Solana program registry, full service catalog) plus pay-per-call x402 APIs on Ethereum, Base, and Solana. Use when an agent needs a pre-trade token check (trade-check bundles rug check + AI risk + gas in one call), wallet safety, token risk scoring, transaction decode/simulate, or contract documentation. Start free via MCP (no wallet) or a registry lookup; every paid endpoint states its exact USDC price up front before any charge — no hidden fees, no obfuscation.
+description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and Solana. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge.
 metadata:
   author: agentforge
   version: "1.10.0"
@@ -8,14 +8,14 @@ metadata:
 
 # AgentForge
 
-AgentForge is a DeFi safety layer on Base and Solana mainnet. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
+AgentForge is a DeFi safety layer for AI agents on ten EVM chains and Solana. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
 2. **Paid** — 26 deeper analysis endpoints (one-call preflight safety checks, signature phishing checks, transaction simulation, liquidation risk, new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
-- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 402-contract label registry (protocol name, category, risk level).
+- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 433-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
 - `GET /catalog` — full machine-readable catalog of all 26 paid endpoints with current prices and JSON schemas.

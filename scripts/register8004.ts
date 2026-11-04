@@ -14,7 +14,7 @@ dotenv.config({ quiet: true });
 import { createPublicClient, createWalletClient, http, parseAbi, parseEventLogs } from 'viem';
 import { privateKeyToAccount } from 'viem/accounts';
 import { base } from 'viem/chains';
-import { ERC8004_REGISTRY } from '../src/discovery/manifests.js';
+import { ERC8004_AGENT_ID, ERC8004_REGISTRY } from '../src/discovery/manifests.js';
 
 const AGENT_URI = 'https://agentforge-taupe.vercel.app/.well-known/agent-registration.json';
 const abi = parseAbi([
@@ -27,6 +27,12 @@ if (!key) throw new Error('TEST_WALLET_PRIVATE_KEY not set in .env');
 const account = privateKeyToAccount(key);
 const pub = createPublicClient({ chain: base, transport: http() });
 const wallet = createWalletClient({ account, chain: base, transport: http() });
+
+// Already registered? ERC-8004 entries can't be deleted, so a second run would leave a duplicate.
+if (ERC8004_AGENT_ID !== null) {
+  console.log(`Already registered as agent ${ERC8004_AGENT_ID}: https://8004scan.io/agents/base/${ERC8004_AGENT_ID}`);
+  process.exit(0);
+}
 
 const eth = await pub.getBalance({ address: account.address });
 console.log(`Wallet ${account.address}: ${Number(eth) / 1e18} ETH on Base`);
