@@ -71,6 +71,15 @@ Posting on X / dev.to / Farcaster, and anything behind a sign-up. Ready-to-post 
 lives in `_launch/POSTS.md`. The single highest-leverage human action historically:
 the only real traffic spike followed the July launch post. **(you, optional)**
 
+**To do (you):**
+- [ ] Create an AgentForge X account (sign up with agentforge.api@gmail.com). It unblocks:
+  - the Hypurr ecosystem form, already filled in and waiting only on the X link;
+  - the launch post in `_launch/OUTREACH-2026-11.md`;
+  - an "X link" field that more directories require.
+- [ ] Sign in to Google as agentforge.api@gmail.com in the browser pane for the Circle Agent Marketplace form.
+- [ ] Review and OK the outreach drafts in `_launch/OUTREACH-2026-11.md`: ERC-8004 / EF / SEAL / Solana grant / Hyperliquid. On hold by your request.
+- [ ] LobeHub and the Claude connectors directory: one sign-in each in the browser pane.
+
 ## How we'll know it works
 
 The daily payment check tags every payer NEW or REPEAT. Success = new outside payers on
