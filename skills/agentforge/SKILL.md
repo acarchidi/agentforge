@@ -3,7 +3,7 @@ name: agentforge
 description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge.
 metadata:
   author: agentforge
-  version: "1.10.0"
+  version: "1.12.0"
 ---
 
 # AgentForge
@@ -18,14 +18,14 @@ AgentForge is a DeFi safety layer for AI agents on eleven EVM chains and Solana.
 - `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 436-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
-- `GET /catalog` — full machine-readable catalog of all 26 paid endpoints with current prices and JSON schemas.
+- `GET /catalog` — full machine-readable catalog of all 29 paid endpoints with current prices and JSON schemas.
 - `GET /about` — service overview, every endpoint with description and `input_example` payload.
 - `GET /.well-known/x402` — x402 discovery document (accepted networks, assets, payTo address).
 - `POST /feedback` — report a bad response or suggest an improvement.
 
 ## MCP server — free, no wallet needed
 
-All 27 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
+All 29 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
 
 - Lookups (`registry_lookup`, `solana_program_lookup`) and cheap data (`gas_oracle`, `pool_snapshot`) are unlimited.
 - Every analysis tool is free for 10 calls per tool per client per day. Past that, the tool returns the matching paid x402 endpoint and its exact price.

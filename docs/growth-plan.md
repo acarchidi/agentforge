@@ -17,7 +17,7 @@ gotchas; **read its §0 before touching code**).
 |---|---|---|
 | Paid endpoints live | 28 (EVM x 11 chains, Solana), all listed in the CDP Bazaar, MCP Registry, Glama, x402scan, gold-402 | `/catalog`, roadmap |
 | Settled revenue, last 120 days | $2.65, of which about $2.55 is our own keepalive wallet | `scripts/revenueReport.ts 120` |
-| Outside payers, last 30 days | 17 wallets, **0 repeat**, every payment $0.001–$0.003 (`/v1/ping`, `/v1/gas`); 4 of them are one operator's uptime bot | `scripts/dailyPayments.ts 720` |
+| Outside payers, last 30 days | 17 wallets; 5 paid on 2+ days but 4 of those are one operator's uptime bot pinging 4×/day; every payment $0.001–$0.003 (`/v1/ping`, `/v1/gas`) | `scripts/dailyPayments.ts 720` |
 | Outside MCP tool calls, last 30 days | 55 calls from 12 clients (about 1/day) | Neon `events` |
 | Credits bought by outsiders | 0 (the one $1 pack is ours) | Neon |
 | Watches bought by outsiders | 0 | Neon |
@@ -351,29 +351,30 @@ F. **Keepalive** stays yours: when the daily check says `LISTINGS_DUE`, click Ru
    `npm run keepalive` (about $1 a month).
 
 Waiting on owner (executor appends here):
-- (none yet)
+- 2026-11-04 · **npm trusted publisher** for `agentforge-tools` and `x402-sanctions-guard` (§7-A), then push the release tags. In each clone: `cd ~/dev/agentforge-tools && git tag v0.5.0 && git push origin v0.5.0` and `cd ~/dev/x402-sanctions-guard && git tag v0.1.0 && git push origin v0.1.0`. Tag pushes trigger publishing, which auto mode refuses to do for you.
+- 2026-11-04 · **Guard live acceptance** (~$0.02 USDC from the Base test wallet): `cd ~/dev/agentforge-tools && TEST_WALLET_PRIVATE_KEY=$(grep '^TEST_WALLET_PRIVATE_KEY=' ~/AgentForge/.env | cut -d= -f2-) npx tsx scripts/guardAcceptance.ts`
 
 ---
 
 ## 8. Checklist (the executor ticks these; keep order)
 
-- [ ] WP-2a `agentforge-tools`: `publish.yml` with OIDC trusted publishing (no secrets)
-- [ ] WP-1a `agentforge-tools` 0.5.0: `guardAccount`, `guardWalletClient`, `GuardBlockedError`, tests, README "Guard"
-- [ ] WP-1b `agentforge-tools` 0.5.0: `createCreditFetch` with auto top-up + `referrer`; guard uses it
-- [ ] WP-1c `agentforge-tools` 0.5.0: `agentForgePaymentPolicy` for `@x402/core` clients (v2.7 and 2.26 APIs)
-- [ ] WP-1d prod acceptance script (sanctioned transfer blocked, WETH wrap allowed) + tag `v0.5.0`
-- [ ] WP-10a `scripts/growthMetrics.ts` + `User-Agent` tagging in the SDK + log format
-- [ ] WP-3a main: `/v1/content-scan` endpoint (deterministic rules, per-chunk price) + preflight `promptInjection` block
+- [x] WP-2a `agentforge-tools`: `publish.yml` with OIDC trusted publishing (no secrets)
+- [x] WP-1a `agentforge-tools` 0.5.0: `guardAccount`, `guardWalletClient`, `GuardBlockedError`, tests, README "Guard"
+- [x] WP-1b `agentforge-tools` 0.5.0: `createCreditFetch` with auto top-up + `referrer`; guard uses it
+- [x] WP-1c `agentforge-tools` 0.5.0: `agentForgePaymentPolicy` for `@x402/core` clients (v2.7 and 2.26 APIs)
+- [ ] WP-1d prod acceptance (owner runs `scripts/guardAcceptance.ts` in agentforge-tools, ~$0.02) + owner pushes tag `v0.5.0` (script and tag push are owner clicks; see §7)
+- [x] WP-10a `scripts/growthMetrics.ts` + `User-Agent` tagging in the SDK + log format
+- [x] WP-3a main: `/v1/content-scan` endpoint (deterministic rules, per-chunk price) + preflight `promptInjection` block
 - [ ] WP-6a main: page renderer + `/t/<chain>/<address>` + `/c/<chain>/<address>` + sitemap + llms.txt entries
 - [ ] WP-4a main: `scripts/crawlVendors.ts` + Neon tables + Memory twin + `crawl-vendors.yml` (needs §7-B)
 - [ ] WP-4b main: `/v1/vendor-check` (single + batch) + `/x402/vendors` JSON + preflight `vendor` block
 - [ ] WP-6b main: `/x402/vendors/<host>` and `/launches/<chain>/<date>` pages
-- [ ] WP-2b `x402-sanctions-guard`: `publish.yml` + tag `v0.1.0`
+- [x] WP-2b `x402-sanctions-guard`: `publish.yml` + tag `v0.1.0`
 - [ ] WP-5a `x402-sanctions-guard` 0.2.0 reporting + main `/v1/badge/report` + `/badge/<host>.svg`
 - [ ] WP-8a `scripts/weeklyReport.ts` + `/report/<yyyy-ww>` page + `weekly-report.yml` (dev.to optional, §7-E)
 - [ ] WP-3b `agentforge-tools/openclaw` plugin (`before_tool_call`) + `scanToolResult`
-- [ ] WP-9a `guardWalletProvider` for AgentKit + update coinbase/agentkit#1619
-- [ ] WP-9b Claude Code / Cursor `PreToolUse` hook generator + `llms-install.md` section
+- [x] WP-9a `guardWalletProvider` for AgentKit (shipped in 0.5.0; coinbase/agentkit#1619 still to be updated once 0.5.0 is on npm)
+- [x] WP-9b Claude Code / Cursor `PreToolUse` hook generator + `llms-install.md` section
 - [ ] WP-7a url-check lists (eth-phishing-detect) in preflight/content-scan + monthly refresh
 - [ ] WP-7b signed verdicts + `/.well-known/agentforge-signer.json`
 - [ ] WP-7c address-poisoning check in preflight (Ethereum first)
