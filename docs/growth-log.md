@@ -2,6 +2,10 @@
 
 One entry per executor run (newest first). Format: date · item · PR · metrics line · blocked/notes.
 
+## 2026-11-04 · WP-1e agentforge-tools 0.5.0 on npm
+- Trusted publishing failed twice with E403 "OIDC permission denied for this action": the npm trusted publisher defaults to stage-only under *Allowed actions*. Owner enabled direct publishing; the workflow (fixed in agentforge-tools#3: no setup-node registry-url, manual dispatch from main, skip published versions) published 0.5.0 with provenance. Fresh install verified: Guard exports and `npx agentforge-tools hook` present.
+- Next: update coinbase/agentkit#1619 to mention `guardWalletProvider`; x402-sanctions-guard trusted publisher (owner).
+
 ## 2026-11-04 · WP-1d Guard acceptance passed on production
 - Transfer to an OFAC SDN address: preflight `avoid`, Guard refused to sign. WETH deposit: `proceed`, signed (not broadcast). Remaining for Bet 1 distribution: npm trusted publisher + `v0.5.0` tag (owner).
 

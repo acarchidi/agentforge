@@ -337,7 +337,8 @@ memory.
 
 A. **npm trusted publishing** (unblocks WP-2, WP-5, WP-9 publishing): npmjs.com → package
    `agentforge-tools` → Settings → "Trusted publisher" → GitHub Actions → repository
-   `acarchidi/agentforge-tools`, workflow `publish.yml`. Repeat for `x402-sanctions-guard`.
+   `acarchidi/agentforge-tools`, workflow `publish.yml`, and under *Allowed actions* allow
+   publishing directly (the default is stage-only, which fails with E403). Done for agentforge-tools. Repeat for `x402-sanctions-guard`.
    The executor will tell you when the workflow exists.
 B. **`DATABASE_URL` as a GitHub Actions secret** on `acarchidi/agentforge` (unblocks the vendor
    crawl and weekly report). One command in the AgentForge folder:
@@ -351,7 +352,7 @@ F. **Keepalive** stays yours: when the daily check says `LISTINGS_DUE`, click Ru
    `npm run keepalive` (about $1 a month).
 
 Waiting on owner (executor appends here):
-- 2026-11-04 · **npm trusted publisher** for `agentforge-tools` and `x402-sanctions-guard` (§7-A), then push the release tags. In each clone: `cd ~/dev/agentforge-tools && git tag v0.5.0 && git push origin v0.5.0` and `cd ~/dev/x402-sanctions-guard && git tag v0.1.0 && git push origin v0.1.0`. Tag pushes trigger publishing, which auto mode refuses to do for you.
+- 2026-11-04 · **npm trusted publisher for `x402-sanctions-guard`** (§7-A): same fields as agentforge-tools, and under *Allowed actions* enable publishing directly (stage-only gives E403 "OIDC permission denied"). Then: `cd ~/dev/x402-sanctions-guard && gh workflow run publish.yml --ref main`
 
 ---
 
@@ -362,7 +363,7 @@ Waiting on owner (executor appends here):
 - [x] WP-1b `agentforge-tools` 0.5.0: `createCreditFetch` with auto top-up + `referrer`; guard uses it
 - [x] WP-1c `agentforge-tools` 0.5.0: `agentForgePaymentPolicy` for `@x402/core` clients (v2.7 and 2.26 APIs)
 - [x] WP-1d prod acceptance passed 2026-11-04 (OFAC transfer blocked, WETH wrap allowed)
-- [ ] WP-1e owner pushes tag `v0.5.0` after configuring the npm trusted publisher (see §7); until then npm serves 0.4.0, which has no Guard
+- [x] WP-1e agentforge-tools 0.5.0 published to npm 2026-11-04 via trusted publishing (provenance signed)
 - [x] WP-10a `scripts/growthMetrics.ts` + `User-Agent` tagging in the SDK + log format
 - [x] WP-3a main: `/v1/content-scan` endpoint (deterministic rules, per-chunk price) + preflight `promptInjection` block
 - [ ] WP-6a main: page renderer + `/t/<chain>/<address>` + `/c/<chain>/<address>` + sitemap + llms.txt entries
