@@ -3,6 +3,7 @@ import { relatedServicesField } from './shared.js';
 import { txSimulateTx, txSimulateOutput } from './txSimulate.js';
 import { typedDataSchema, paymentRequiredSchema, signatureCheckOutput } from './signatureCheck.js';
 import { addressCheckItem } from './addressCheck.js';
+import { contentScanFinding, contentScanVerdict } from './contentScan.js';
 import { EVM_CHAINS } from '../utils/chains.js';
 import { PREFLIGHT_LIMITS } from '../pricing.js';
 
@@ -71,6 +72,12 @@ export const preflightOutput = z.object({
   signature: signatureCheckOutput.omit({ relatedServices: true }).optional(),
   addresses: z.array(addressCheckItem).optional(),
   tokens: z.array(preflightTokenItem).optional(),
+  /**
+   * Prompt-injection scan over the token names, symbols and labels the other
+   * checks surfaced (same rules as /v1/content-scan). Present when there was
+   * anything to scan; malicious downgrades the verdict to at least caution.
+   */
+  promptInjection: z.object({ verdict: contentScanVerdict, findings: z.array(contentScanFinding) }).optional(),
   /** Checks that could not run (e.g. simulation on a chain without eth_simulateV1). */
   skipped: z.array(z.object({ check: z.string(), reason: z.string() })),
   pricing: z.object({ base: z.string(), perToken: z.string(), tokensCharged: z.number().int(), total: z.string() }),

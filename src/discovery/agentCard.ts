@@ -65,6 +65,20 @@ export const SKILLS: Skill[] = [
     method: 'POST',
   },
   {
+    id: 'content-scan',
+    name: 'Prompt-Injection Content Scan',
+    description: 'Scan untrusted text before feeding it to your LLM: tool results, web pages, emails, token metadata. Catches instruction overrides, fund-movement directives, payloads hidden in base64, Morse, zero-width or tag characters and homoglyphs, leaked private keys and seed phrases, embedded addresses on sanctions or scam lists, and lookalike domains. Deterministic rules, no LLM. Verdict clean/suspicious/malicious.',
+    tags: ['security', 'prompt-injection', 'agent-safety', 'tool-results', 'hidden-text', 'seed-phrase', 'phishing'],
+    examples: [
+      'Is this web page trying to hijack my agent?',
+      'Scan these tool results for hidden instructions before I pass them to the model',
+      'Does this token metadata contain a prompt injection or a leaked private key?',
+    ],
+    price: PRICING_RULES['/v1/content-scan'],
+    endpoint: '/v1/content-scan',
+    method: 'POST',
+  },
+  {
     id: 'risk-batch',
     name: 'Batch Token Risk Scoring',
     description: 'Rug-check a whole watchlist in one call: holder concentration, mint/blacklist/pause/upgrade permissions, and liquidity depth risk scores for 2-25 EVM tokens. Priced per token, well below single calls.',
@@ -425,7 +439,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     description:
       'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check any signature request for phishing, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.11.0',
+    version: '1.12.0',
 
     provider: {
       organization: 'AgentForge',

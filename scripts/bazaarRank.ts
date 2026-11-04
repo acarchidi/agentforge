@@ -19,6 +19,8 @@ export const QUERIES: Array<[string, string]> = [
   ['scam address check', '/v1/address-check'],
   ['wallet address risk', '/v1/address-check'],
   ['AML crypto address', '/v1/address-check'],
+  ['prompt injection scan', '/v1/content-scan'],
+  ['tool result safety', '/v1/content-scan'],
   ['token rug check', '/v1/token-risk-metrics'],
   ['honeypot detection', '/v1/launches'],
   ['token security scan', '/v1/trade-check'],

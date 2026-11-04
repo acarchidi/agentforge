@@ -18,6 +18,7 @@ import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
 import { tradeCheckWithCost } from '../services/tradeCheck.js';
+import { contentScanWithCost } from '../services/contentScan.js';
 import { riskBatchWithCost } from '../services/riskBatch.js';
 import { addressCheckWithCost } from '../services/addressCheck.js';
 import { getLaunchesWithCost } from '../services/launches.js';
@@ -203,6 +204,7 @@ paidRouter.post('/v1/credits/buy', async (req: Request, res: Response) => {
 
 paidRouter.post('/v1/watch', createHandler('/v1/watch', createWatchWithCost));
 paidRouter.post('/v1/preflight', createHandler('/v1/preflight', preflightWithCost));
+paidRouter.post('/v1/content-scan', createHandler('/v1/content-scan', contentScanWithCost));
 paidRouter.post('/v1/tx-simulate', createHandler('/v1/tx-simulate', simulateEvmTxWithCost));
 paidRouter.post('/v1/signature-check', createHandler('/v1/signature-check', signatureCheckWithCost));
 

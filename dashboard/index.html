@@ -367,11 +367,11 @@
     <!-- ═══ Stats Bar ═══ -->
     <div class="stats-bar">
       <div class="stat-item">
-        <span class="stat-value">19</span>
+        <span class="stat-value">29</span>
         <span class="stat-label">Paid Endpoints</span>
       </div>
       <div class="stat-item">
-        <span class="stat-value">20</span>
+        <span class="stat-value">29</span>
         <span class="stat-label">MCP Tools</span>
       </div>
       <div class="stat-item">
@@ -440,6 +440,12 @@
           <div class="endpoint">/v1/address-check</div>
           <div class="desc">Screen counterparties before every transfer: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new address-poisoning wallets. 1-100 addresses per call.</div>
           <div class="price">$0.003<span class="price-unit">+ $0.001/extra</span></div>
+        </div>
+        <div class="service-card featured">
+          <div class="method">POST</div>
+          <div class="endpoint">/v1/content-scan</div>
+          <div class="desc">Prompt-injection scan for untrusted text before it reaches your LLM — hidden instructions, fund-movement directives, base64/Morse/zero-width payloads, leaked keys and seed phrases, sanctioned addresses, lookalike domains. Deterministic, no LLM.</div>
+          <div class="price">$0.001<span class="price-unit">per 4 KB</span></div>
         </div>
         <div class="service-card featured">
           <div class="method">POST</div>
@@ -672,7 +678,8 @@
   }
 }
 
-<span class="c">// 28 tools available after connecting:</span>
+<span class="c">// 29 tools available after connecting:</span>
+<span class="c">//   preflight, content_scan, signature_check, address_check,</span>
 <span class="c">//   wallet_safety, approval_scan, token_risk_metrics,</span>
 <span class="c">//   contract_monitor, contract_docs, tx_decode,</span>
 <span class="c">//   token_research, token_compare, token_intel, pool_snapshot,</span>

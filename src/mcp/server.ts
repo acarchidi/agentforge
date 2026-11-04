@@ -42,6 +42,7 @@ import { simulateEvmTxWithCost } from '../services/txSimulate.js';
 import { getLendingHealthWithCost } from '../services/lendingHealth.js';
 import { signatureCheckWithCost } from '../services/signatureCheck.js';
 import { preflightWithCost } from '../services/preflight.js';
+import { contentScanWithCost } from '../services/contentScan.js';
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
@@ -54,7 +55,7 @@ import { LENDING_CHAINS } from '../schemas/lendingHealth.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.11.0';
+export const MCP_SERVER_VERSION = '1.12.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -519,6 +520,16 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
       chain: z.enum([...EVM_CHAINS, 'solana']).optional().default('ethereum').describe('Default chain'),
     },
     async (input) => call('address_check', addressCheckWithCost, input),
+  );
+
+  register(
+    'content_scan',
+    'Scan untrusted text (tool results, web pages, emails, token metadata) for prompt injection before feeding it to your LLM: instruction overrides, fund-movement directives, payloads hidden in base64, Morse, zero-width or tag characters and homoglyphs, leaked private keys and seed phrases, embedded addresses screened against sanctions and scam lists, lookalike domains. Deterministic, no LLM. Returns clean / suspicious / malicious with findings. Up to 64 KB per call.',
+    {
+      text: z.string().optional().describe('One untrusted string to scan'),
+      items: z.array(z.string()).min(1).max(16).optional().describe('Several strings scanned in one call (findings carry the item index)'),
+    },
+    async (input) => call('content_scan', contentScanWithCost, input),
   );
 
   register(

@@ -9,12 +9,15 @@ function parsePrice(priceString: string): number {
 export const RISK_BATCH_LIMITS = { min: 2, max: 25 } as const;
 export const ADDRESS_CHECK_LIMITS = { min: 1, max: 100 } as const;
 export const PREFLIGHT_LIMITS = { recipients: 20, tokens: 5 } as const;
+/** Content scan: 1-16 items, priced per 4 KB chunk of total text, at most 64 KB (16 chunks). */
+export const CONTENT_SCAN_LIMITS = { items: 16, chunkBytes: 4096, maxBytes: 65_536, maxChunks: 16 } as const;
 
 export const RISK_BATCH_PER_TOKEN = parsePrice(config.PRICE_RISK_BATCH_PER_TOKEN);
 export const ADDRESS_CHECK_BASE = parsePrice(config.PRICE_ADDRESS_CHECK);
 export const ADDRESS_CHECK_PER_EXTRA = parsePrice(config.PRICE_ADDRESS_CHECK_PER_EXTRA);
 /** Preflight: flat base (simulation + signature + recipients + up to 2 received tokens), plus the batch per-token rate for each requested token. */
 export const PREFLIGHT_BASE = parsePrice(config.PRICE_PREFLIGHT);
+export const CONTENT_SCAN_PER_CHUNK = parsePrice(config.PRICE_CONTENT_SCAN_PER_CHUNK);
 export const WATCH_LIMITS = { minDays: 1, maxDays: 90 } as const;
 export const WATCH_PRICE_PER_DAY: Record<string, number> = {
   'contract-admin': parsePrice(config.PRICE_WATCH_CONTRACT_ADMIN_DAY),
@@ -52,6 +55,7 @@ export const ENDPOINT_PRICES: Record<string, number> = {
   '/v1/lending/health': parsePrice(config.PRICE_LENDING_HEALTH),
   '/v1/signature-check': parsePrice(config.PRICE_SIGNATURE_CHECK),
   '/v1/preflight': PREFLIGHT_BASE,
+  '/v1/content-scan': CONTENT_SCAN_PER_CHUNK,
   '/v1/watch': WATCH_MIN,
   // Smallest pack; priceFor() prices the pack actually requested.
   '/v1/credits/buy': Number(PACKS['1'].priceMicro) / 1e6,
@@ -85,6 +89,7 @@ export const TOOL_TO_ENDPOINT: Record<string, string> = {
   lending_health: '/v1/lending/health',
   signature_check: '/v1/signature-check',
   preflight: '/v1/preflight',
+  content_scan: '/v1/content-scan',
   solana_tx_explain: '/v1/solana/tx-explain',
   solana_tx_simulate: '/v1/solana/tx-simulate',
   solana_token_risk_scan: '/v1/solana/token-risk-scan',
@@ -93,6 +98,22 @@ export const TOOL_TO_ENDPOINT: Record<string, string> = {
 function itemCount(list: unknown, fallback: number, limits: { min: number; max: number }): number {
   const n = Array.isArray(list) ? list.length : fallback;
   return Math.min(limits.max, Math.max(limits.min, n));
+}
+
+/** UTF-8 bytes of the text a content-scan body carries (`text` or `items`). */
+export function contentScanBytes(body: unknown): number {
+  const b = (body && typeof body === 'object' ? body : {}) as Record<string, unknown>;
+  if (typeof b.text === 'string') return Buffer.byteLength(b.text, 'utf8');
+  if (Array.isArray(b.items)) {
+    return b.items.reduce<number>((n, it) => n + (typeof it === 'string' ? Buffer.byteLength(it, 'utf8') : 0), 0);
+  }
+  return 0;
+}
+
+/** 4 KB chunks a content-scan body is billed for: ceil(bytes / 4096), at least 1, clamped to the max. */
+export function contentScanChunks(body: unknown): number {
+  const chunks = Math.ceil(contentScanBytes(body) / CONTENT_SCAN_LIMITS.chunkBytes);
+  return Math.min(CONTENT_SCAN_LIMITS.maxChunks, Math.max(1, chunks));
 }
 
 /** USDC has 6 decimals; keep float noise out of quoted prices. */
@@ -126,6 +147,8 @@ export function priceFor(endpoint: string, body?: unknown): number {
       const tokens = Array.isArray(b.tokens) ? Math.min(b.tokens.length, PREFLIGHT_LIMITS.tokens) : 0;
       return roundUsd(PREFLIGHT_BASE + RISK_BATCH_PER_TOKEN * tokens);
     }
+    case '/v1/content-scan':
+      return roundUsd(CONTENT_SCAN_PER_CHUNK * contentScanChunks(b));
     default:
       return ENDPOINT_PRICES[endpoint] ?? 0;
   }
@@ -138,6 +161,7 @@ export const PRICING_RULES: Record<string, string> = {
   '/v1/credits/buy': 'pack=1: $1 for $1.10 of credit; pack=5: $5 for $5.75; pack=20: $20 for $24',
   '/v1/preflight': `${formatUsd(PREFLIGHT_BASE)} per check + ${formatUsd(RISK_BATCH_PER_TOKEN)} per token you ask it to rug-check (up to ${PREFLIGHT_LIMITS.tokens})`,
   '/v1/address-check': `${formatUsd(ADDRESS_CHECK_BASE)} for the first address + ${formatUsd(ADDRESS_CHECK_PER_EXTRA)} per additional, up to ${ADDRESS_CHECK_LIMITS.max} per call`,
+  '/v1/content-scan': `${formatUsd(CONTENT_SCAN_PER_CHUNK)} per 4 KB of text (minimum ${formatUsd(CONTENT_SCAN_PER_CHUNK)}), up to 64 KB and ${CONTENT_SCAN_LIMITS.items} items per call`,
 };
 
 export const PUBLIC_BASE_URL = process.env.PUBLIC_BASE_URL ?? 'https://agentforge-taupe.vercel.app';
