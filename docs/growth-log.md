@@ -2,6 +2,10 @@
 
 One entry per executor run (newest first). Format: date · item · PR · metrics line · blocked/notes.
 
+## 2026-11-04 · advertising audit + acceptance fix
+- Guard live acceptance (owner run) signed a transfer to the Tornado Cash router: preflight said caution. Cause: OFAC delisted Tornado Cash in March 2025, so the address is correctly absent from the current SDN list. The Guard behaved correctly; the test address was wrong. Fixed in acarchidi/agentforge-tools#2 (now uses a listed SDN address). Owner reruns the acceptance.
+- Audit found the Guard and credits on no server-side surface, no MCP instructions, and empty unpaid 402 bodies. PR #44 (v1.13.0, live): one pitch module on every unpaid 402, security responses' relatedServices, ping, MCP instructions and daily-cap message, llms.txt, agent card, MCP server card, MCP Registry (1.13.0 published), landing page, both skill files.
+
 ## 2026-11-04 · WP-2a, WP-1a/1b/1c, WP-9a/9b, WP-10a, WP-3a, WP-2b shipped
 - agentforge-tools 0.5.0 merged (PR acarchidi/agentforge-tools#1): Guard for viem accounts/wallet clients, x402 `onBeforePaymentCreation` hook + `guardPayingFetch`, AgentKit `guardWalletProvider`, Claude Code/Cursor `PreToolUse` hook CLI, `createCreditFetch` with auto top-up and `referrer`; publish.yml (npm trusted publishing). Not on npm until the owner configures the trusted publisher and pushes `v0.5.0`.
 - Main repo: `/v1/content-scan` ($0.001 per 4 KB, deterministic prompt-injection rules; Bankr-style Morse and base64 payloads flagged) + preflight `promptInjection` block (PR #43, v1.12.0, live, 29/29 healthy). `scripts/growthMetrics.ts` + `events.client_tag` for guard-origin traffic (PR #42, live).
