@@ -141,7 +141,7 @@ describe('Feedback Endpoint', () => {
 
   it('POST /feedback returns 400 for invalid type', async () => {
     const res = await request(app).post('/feedback').send({
-      type: 'complaint',
+      type: 'not_a_type',
       message: 'test',
     });
     expect(res.status).toBe(400);

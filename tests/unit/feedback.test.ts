@@ -34,7 +34,7 @@ describe('Feedback Schema Validation', () => {
 
   it('rejects invalid type', () => {
     expect(() =>
-      feedbackInput.parse({ type: 'complaint', message: 'test' }),
+      feedbackInput.parse({ type: 'not_a_type', message: 'test' }),
     ).toThrow();
   });
 

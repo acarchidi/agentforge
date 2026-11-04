@@ -48,6 +48,7 @@ import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js
 import { getRegistry } from '../registry/lookup.js';
 import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
 import { logEvent } from '../analytics/logger.js';
+import { config } from '../config.js';
 import { EVM_CHAINS, SIMULATE_CHAINS } from '../utils/chains.js';
 import { LENDING_CHAINS } from '../schemas/lendingHealth.js';
 import { getStore } from '../analytics/store.js';
@@ -588,6 +589,21 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
       chain: z.enum(['all', ...LENDING_CHAINS]).optional().default('all'),
     },
     async (input) => call('lending_health', getLendingHealthWithCost, input),
+  );
+
+  register(
+    'send_feedback',
+    'Send AgentForge feedback: a bug or wrong result, a complaint, a feature or new-check request, or an idea. Free. Include a contact (email, wallet, or URL) if you want a reply.',
+    {
+      type: z.enum(['feature_request', 'bug_report', 'service_request', 'complaint', 'idea', 'general']),
+      message: z.string().min(1).max(2000).describe('What happened or what you need'),
+      endpoint: z.string().max(200).optional().describe('Tool or endpoint it concerns, if any'),
+      contact: z.string().max(200).optional().describe('How to reach you, if you want a reply'),
+    },
+    async (input) => call('send_feedback', async (i: typeof input) => {
+      await getStore().insertFeedback({ type: i.type, endpoint: i.endpoint ?? null, message: i.message, contact: i.contact ?? null });
+      return { output: { status: 'received', email: config.CONTACT_EMAIL }, estimatedCostUsd: 0 };
+    }, input),
   );
 
   register(
