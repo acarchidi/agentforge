@@ -31,6 +31,8 @@ export interface AnalyticsEvent {
   txHash?: string;
   inputSize?: number;
   outputSize?: number;
+  /** Integration that made the call, from the x-agentforge-client header (e.g. "agentforge-tools/0.5.0 guard"). */
+  clientTag?: string;
 }
 
 export interface FeedbackEntry {
@@ -103,8 +105,10 @@ const PG_SCHEMA = `
     estimated_cost_usd NUMERIC(12,6),
     tx_hash TEXT,
     input_size INTEGER,
-    output_size INTEGER
+    output_size INTEGER,
+    client_tag TEXT
   );
+  ALTER TABLE events ADD COLUMN IF NOT EXISTS client_tag TEXT;
   CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts);
   CREATE INDEX IF NOT EXISTS idx_events_name_ts ON events(name, ts);
   CREATE INDEX IF NOT EXISTS idx_events_client_day ON events(client_hash, kind, name, ts);
@@ -167,11 +171,11 @@ class PostgresStore implements AnalyticsStore {
     await this.init();
     await this.q(
       `INSERT INTO events (kind, name, chain, latency_ms, success, error_class, payment_network, payment_scheme,
-         client_hash, amount_usd, estimated_cost_usd, tx_hash, input_size, output_size)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14)`,
+         client_hash, amount_usd, estimated_cost_usd, tx_hash, input_size, output_size, client_tag)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15)`,
       [e.kind, e.name, e.chain ?? null, e.latencyMs ?? null, e.success, e.errorClass ?? null,
         e.paymentNetwork ?? null, e.paymentScheme ?? null, e.clientHash ?? null, e.amountUsd ?? null,
-        e.estimatedCostUsd ?? null, e.txHash ?? null, e.inputSize ?? null, e.outputSize ?? null],
+        e.estimatedCostUsd ?? null, e.txHash ?? null, e.inputSize ?? null, e.outputSize ?? null, e.clientTag ?? null],
     );
   }
 
@@ -333,7 +337,8 @@ class SqliteStore implements AnalyticsStore {
         estimated_cost_usd REAL,
         tx_hash TEXT,
         input_size INTEGER,
-        output_size INTEGER
+        output_size INTEGER,
+        client_tag TEXT
       );
       CREATE INDEX IF NOT EXISTS idx_events_ts ON events(ts);
       CREATE INDEX IF NOT EXISTS idx_events_name_ts ON events(name, ts);
@@ -356,16 +361,19 @@ class SqliteStore implements AnalyticsStore {
         ts TEXT NOT NULL DEFAULT (datetime('now'))
       );
     `);
+    // Local databases created before client_tag existed: SQLite has no ADD COLUMN IF NOT EXISTS.
+    const cols = (getDb().prepare(`PRAGMA table_info(events)`).all() as Array<{ name: string }>).map((c) => c.name);
+    if (!cols.includes('client_tag')) getDb().exec(`ALTER TABLE events ADD COLUMN client_tag TEXT`);
   }
 
   async insertEvent(e: AnalyticsEvent): Promise<void> {
     getDb().prepare(
       `INSERT INTO events (kind, name, chain, latency_ms, success, error_class, payment_network, payment_scheme,
-         client_hash, amount_usd, estimated_cost_usd, tx_hash, input_size, output_size)
-       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+         client_hash, amount_usd, estimated_cost_usd, tx_hash, input_size, output_size, client_tag)
+       VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     ).run(e.kind, e.name, e.chain ?? null, e.latencyMs ?? null, e.success ? 1 : 0, e.errorClass ?? null,
       e.paymentNetwork ?? null, e.paymentScheme ?? null, e.clientHash ?? null, e.amountUsd ?? null,
-      e.estimatedCostUsd ?? null, e.txHash ?? null, e.inputSize ?? null, e.outputSize ?? null);
+      e.estimatedCostUsd ?? null, e.txHash ?? null, e.inputSize ?? null, e.outputSize ?? null, e.clientTag ?? null);
   }
 
   async insertFeedback(f: FeedbackEntry): Promise<void> {

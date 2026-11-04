@@ -57,6 +57,26 @@ describe('analytics store (sqlite fallback)', () => {
   });
 });
 
+describe('client tag', () => {
+  it('keeps a printable, bounded x-agentforge-client header and drops the rest', async () => {
+    const { clientTagOf } = await import('../../src/analytics/clientId.js');
+    const req = (h: unknown) => ({ headers: { 'x-agentforge-client': h } }) as never;
+    expect(clientTagOf(req('agentforge-tools/0.5.0 guard'))).toBe('agentforge-tools/0.5.0 guard');
+    expect(clientTagOf(req(`x${'y'.repeat(100)}`))).toHaveLength(64);
+    expect(clientTagOf(req('\u0000\u0007'))).toBeUndefined();
+    expect(clientTagOf(req(undefined))).toBeUndefined();
+    expect(clientTagOf(req(['first', 'second']))).toBe('first');
+  });
+
+  it('stores the tag on paid events', async () => {
+    const { getStore } = await import('../../src/analytics/store.js');
+    const { getDb } = await import('../../src/analytics/db.js');
+    await getStore().insertEvent({ kind: 'paid', name: '/v1/preflight', success: true, clientTag: 'agentforge-tools/0.5.0 guard' });
+    const row = getDb().prepare(`SELECT client_tag FROM events WHERE name = '/v1/preflight' ORDER BY id DESC LIMIT 1`).get() as { client_tag: string };
+    expect(row.client_tag).toBe('agentforge-tools/0.5.0 guard');
+  });
+});
+
 describe('client hashing', () => {
   it('never returns the raw identifier and is stable', () => {
     const h = hashClientId('0xABCDEF');

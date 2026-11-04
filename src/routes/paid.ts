@@ -29,7 +29,7 @@ import { preflightWithCost } from '../services/preflight.js';
 import { createWatchWithCost } from '../services/watch.js';
 import { logEvent } from '../analytics/logger.js';
 import { config } from '../config.js';
-import { hashClientId, paymentContextFromRequest } from '../analytics/clientId.js';
+import { hashClientId, paymentContextFromRequest, clientTagOf } from '../analytics/clientId.js';
 import { refundCreditPayment, type CreditPayment } from '../middleware/credits.js';
 import { ENDPOINT_PRICES, PUBLIC_BASE_URL, formatUsd, priceFor } from '../pricing.js';
 import { packFor } from '../credits/auth.js';
@@ -85,6 +85,7 @@ async function handlePaid(
     clientHash: payment.clientHash,
     paymentNetwork: payment.paymentNetwork,
     paymentScheme: viaAgentkitTrial ? 'agentkit-free-trial' : payment.paymentScheme,
+    clientTag: clientTagOf(req),
   };
 
   try {
