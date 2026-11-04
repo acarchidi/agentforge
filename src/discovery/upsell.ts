@@ -30,6 +30,13 @@ const FEATURED: FeaturedService[] = [
     suggestedInput: { address: '0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2', chain: 'ethereum' },
   },
   {
+    endpoint: '/v1/preflight',
+    method: 'POST',
+    job: 'Is this action safe? One call before any on-chain action: transactions simulated, signatures checked, recipients screened, tokens rug-checked, one verdict',
+    cadence: 'Call before every action your agent takes on-chain',
+    suggestedInput: { chain: 'base', from: '0x…your-wallet', transactions: [{ to: '0x…contract', data: '0x…calldata' }], recipients: ['0x…recipient'] },
+  },
+  {
     endpoint: '/v1/tx-simulate',
     method: 'POST',
     job: 'Simulate any EVM transaction before signing: revert reason, assets leaving the wallet, approvals granted, counterparty sanctions/scam screening, proceed/caution/avoid',

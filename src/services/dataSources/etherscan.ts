@@ -4,20 +4,14 @@
  */
 
 import { config } from '../../config.js';
+import { CHAIN_IDS } from '../../utils/chains.js';
 import { SimpleCache } from '../../utils/cache.js';
 import { etherscanSlot, isEtherscanRateLimit } from '../../utils/etherscanPacer.js';
 
 const sourceCache = new SimpleCache<EtherscanSource>(3600); // 1 hour
 const creationCache = new SimpleCache<EtherscanCreation>(3600); // 1 hour
 
-const CHAIN_ID_MAP: Record<string, number> = {
-  ethereum: 1,
-  base: 8453,
-  polygon: 137,
-  arbitrum: 42161,
-  optimism: 10,
-  avalanche: 43114,
-};
+const CHAIN_ID_MAP: Record<string, number> = CHAIN_IDS;
 
 export interface EtherscanSource {
   isVerified: boolean;

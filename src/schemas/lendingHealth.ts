@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { relatedServicesField } from './shared.js';
 
-export const LENDING_CHAINS = ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] as const;
+export const LENDING_CHAINS = ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'bsc', 'avalanche', 'linea', 'sonic'] as const;
 
 // ── Input (query string) ───────────────────────────────────────────
 

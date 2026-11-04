@@ -14,7 +14,7 @@ import { scoreLaunch } from './score.js';
 import { getLaunchStore, type LaunchMarketRow, type LaunchRecord } from './store.js';
 
 export const LEASE_SEC = 60;
-const PAGES: Record<LaunchChain, number> = { base: 2, ethereum: 1, arbitrum: 1 };
+const PAGES: Record<LaunchChain, number> = { base: 2, ethereum: 1, arbitrum: 1, bsc: 2 };
 const MAX_NEW_PER_RUN = 15;
 const NEW_CONCURRENCY = 3;
 const REFRESH_STALE_MIN = 5;

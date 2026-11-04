@@ -7,10 +7,13 @@ function parsePrice(priceString: string): number {
 /** Item limits for the per-item priced batch endpoints. */
 export const RISK_BATCH_LIMITS = { min: 2, max: 25 } as const;
 export const ADDRESS_CHECK_LIMITS = { min: 1, max: 100 } as const;
+export const PREFLIGHT_LIMITS = { recipients: 20, tokens: 5 } as const;
 
 export const RISK_BATCH_PER_TOKEN = parsePrice(config.PRICE_RISK_BATCH_PER_TOKEN);
 export const ADDRESS_CHECK_BASE = parsePrice(config.PRICE_ADDRESS_CHECK);
 export const ADDRESS_CHECK_PER_EXTRA = parsePrice(config.PRICE_ADDRESS_CHECK_PER_EXTRA);
+/** Preflight: flat base (simulation + signature + recipients + up to 2 received tokens), plus the batch per-token rate for each requested token. */
+export const PREFLIGHT_BASE = parsePrice(config.PRICE_PREFLIGHT);
 
 /**
  * Price per paid endpoint in USD — derived from config.PRICE_* (the same
@@ -40,6 +43,7 @@ export const ENDPOINT_PRICES: Record<string, number> = {
   '/v1/tx-simulate': parsePrice(config.PRICE_TX_SIMULATE),
   '/v1/lending/health': parsePrice(config.PRICE_LENDING_HEALTH),
   '/v1/signature-check': parsePrice(config.PRICE_SIGNATURE_CHECK),
+  '/v1/preflight': PREFLIGHT_BASE,
   '/v1/solana/tx-explain': parsePrice(config.PRICE_SOLANA_TX_EXPLAIN),
   '/v1/solana/tx-simulate': parsePrice(config.PRICE_SOLANA_TX_SIMULATE),
   '/v1/solana/token-risk-scan': parsePrice(config.PRICE_SOLANA_TOKEN_RISK_SCAN),
@@ -69,6 +73,7 @@ export const TOOL_TO_ENDPOINT: Record<string, string> = {
   tx_simulate: '/v1/tx-simulate',
   lending_health: '/v1/lending/health',
   signature_check: '/v1/signature-check',
+  preflight: '/v1/preflight',
   solana_tx_explain: '/v1/solana/tx-explain',
   solana_tx_simulate: '/v1/solana/tx-simulate',
   solana_token_risk_scan: '/v1/solana/token-risk-scan',
@@ -99,6 +104,10 @@ export function priceFor(endpoint: string, body?: unknown): number {
       const n = itemCount(b.addresses, typeof b.address === 'string' ? 1 : ADDRESS_CHECK_LIMITS.min, ADDRESS_CHECK_LIMITS);
       return roundUsd(ADDRESS_CHECK_BASE + ADDRESS_CHECK_PER_EXTRA * (n - 1));
     }
+    case '/v1/preflight': {
+      const tokens = Array.isArray(b.tokens) ? Math.min(b.tokens.length, PREFLIGHT_LIMITS.tokens) : 0;
+      return roundUsd(PREFLIGHT_BASE + RISK_BATCH_PER_TOKEN * tokens);
+    }
     default:
       return ENDPOINT_PRICES[endpoint] ?? 0;
   }
@@ -107,6 +116,7 @@ export function priceFor(endpoint: string, body?: unknown): number {
 /** Human-readable pricing rule for discovery docs. */
 export const PRICING_RULES: Record<string, string> = {
   '/v1/risk-batch': `${formatUsd(RISK_BATCH_PER_TOKEN)} per token, ${RISK_BATCH_LIMITS.min}-${RISK_BATCH_LIMITS.max} tokens per call`,
+  '/v1/preflight': `${formatUsd(PREFLIGHT_BASE)} per check + ${formatUsd(RISK_BATCH_PER_TOKEN)} per token you ask it to rug-check (up to ${PREFLIGHT_LIMITS.tokens})`,
   '/v1/address-check': `${formatUsd(ADDRESS_CHECK_BASE)} for the first address + ${formatUsd(ADDRESS_CHECK_PER_EXTRA)} per additional, up to ${ADDRESS_CHECK_LIMITS.max} per call`,
 };
 

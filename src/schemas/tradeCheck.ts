@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { EVM_CHAINS } from '../utils/chains.js';
 import { relatedServicesField } from './shared.js';
 import { tokenRiskMetricsOutput } from './tokenRiskMetrics.js';
 import { tokenIntelOutput } from './tokenIntel.js';
@@ -10,7 +11,7 @@ import { gasOracleOutput } from './gasOracle.js';
 export const tradeCheckInput = z.object({
   address: z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Must be a valid 0x-prefixed EVM token address'),
   chain: z
-    .enum(['ethereum', 'base', 'polygon', 'arbitrum'])
+    .enum(EVM_CHAINS)
     .default('ethereum'),
 });
 

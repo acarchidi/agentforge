@@ -27,6 +27,7 @@ import { launchesOutput } from '../schemas/launches.js';
 import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
+import { preflightInput, preflightOutput } from '../schemas/preflight.js';
 import { PRICING_RULES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
@@ -63,9 +64,9 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.9.0',
+      version: '1.10.0',
       description:
-        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
+        'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl },
     },
     servers: [
@@ -550,6 +551,26 @@ export function generateOpenApiSpec(): object {
           },
         },
       },
+      '/v1/preflight': {
+        post: {
+          operationId: 'preflight',
+          summary: 'Is this action safe? One preflight call before any on-chain action',
+          description:
+            `One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic. Price: ${PRICING_RULES['/v1/preflight']} USDC via x402.`,
+          tags: ['Security'],
+          'x-x402-price': PRICING_RULES['/v1/preflight'],
+          'x-agentic-market-category': 'security',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'dynamic', price: PRICING_RULES['/v1/preflight'], protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(preflightInput) } } },
+          responses: {
+            '200': { description: 'One verdict with every check behind it', content: { 'application/json': { schema: schemaOf(preflightOutput) } } },
+            '400': { description: 'Invalid input', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
       '/v1/tx-simulate': {
         post: {
           operationId: 'simulateEvmTx',
@@ -595,7 +616,7 @@ export function generateOpenApiSpec(): object {
           operationId: 'getLendingHealth',
           summary: 'Aave v3 liquidation risk',
           description:
-            `Aave v3 position health for a wallet on Ethereum, Base, Arbitrum, Optimism, and Polygon. Price: ${config.PRICE_LENDING_HEALTH} USDC via x402.`,
+            `Aave v3 position health for a wallet on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, and Sonic. Price: ${config.PRICE_LENDING_HEALTH} USDC via x402.`,
           tags: ['DeFi'],
           'x-x402-price': config.PRICE_LENDING_HEALTH,
           'x-agentic-market-category': 'data',
@@ -618,7 +639,7 @@ export function generateOpenApiSpec(): object {
           operationId: 'getLaunches',
           summary: 'New token launch feed (risk-scored)',
           description:
-            `Newly launched tokens on Base, Ethereum, and Arbitrum, each already risk-scored. Poll with since=<previous nextSince> to get only new launches. Price: ${config.PRICE_LAUNCHES} USDC via x402.`,
+            `Newly launched tokens on Base, Ethereum, Arbitrum, and BNB Chain, each already risk-scored. Poll with since=<previous nextSince> to get only new launches. Price: ${config.PRICE_LAUNCHES} USDC via x402.`,
           tags: ['Crypto Intelligence', 'Security'],
           'x-x402-price': config.PRICE_LAUNCHES,
           'x-agentic-market-category': 'data',

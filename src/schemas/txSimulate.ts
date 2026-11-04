@@ -4,7 +4,9 @@ import { relatedServicesField } from './shared.js';
 const hex = z.string().regex(/^0x[0-9a-fA-F]*$/, 'Must be 0x-prefixed hex');
 const addr = z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Must be a valid 0x-prefixed EVM address');
 
-export const SIMULATE_CHAINS = ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] as const;
+import { SIMULATE_CHAINS } from '../utils/chains.js';
+
+export { SIMULATE_CHAINS };
 
 // ── Input ──────────────────────────────────────────────────────────
 

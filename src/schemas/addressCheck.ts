@@ -1,8 +1,9 @@
 import { z } from 'zod';
+import { EVM_CHAINS } from '../utils/chains.js';
 import { relatedServicesField } from './shared.js';
 import { ADDRESS_CHECK_LIMITS } from '../pricing.js';
 
-const checkChain = z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana']);
+const checkChain = z.enum([...EVM_CHAINS, 'solana']);
 const addressEntry = z.object({ address: z.string().min(32).max(64), chain: checkChain.optional() });
 
 // ── Input ──────────────────────────────────────────────────────────

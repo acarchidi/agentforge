@@ -44,6 +44,7 @@ const envSchema = z.object({
   PRICE_LENDING_HEALTH: z.string().startsWith('$').default('$0.003'),
   // Signature check: deterministic decode + screening RPC, no LLM.
   PRICE_SIGNATURE_CHECK: z.string().startsWith('$').default('$0.003'),
+  PRICE_PREFLIGHT: z.string().startsWith('$').default('$0.008'),
   ETHERSCAN_API_KEY: z.string().optional(),
   CDP_API_KEY_ID: z.string().optional(),
   CDP_API_KEY_SECRET: z.string().optional(),

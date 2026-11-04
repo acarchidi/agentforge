@@ -1,10 +1,11 @@
 import { z } from 'zod';
+import { EVM_CHAINS } from '../utils/chains.js';
 import { relatedServicesField } from './shared.js';
 
 export const tokenIntelInput = z.object({
   address: z.string().min(1),
   chain: z
-    .enum(['ethereum', 'base', 'solana', 'polygon', 'arbitrum'])
+    .enum([...EVM_CHAINS, 'solana'])
     .default('ethereum'),
 });
 

@@ -11,7 +11,8 @@
  */
 
 import { decodeFunctionResult, encodeFunctionData, erc20Abi, formatUnits } from 'viem';
-import { rpcBatch, type EvmChain } from '../utils/evmRpc.js';
+import { rpcBatch } from '../utils/evmRpc.js';
+import { CHAIN_BY_ID, CHAIN_INFO, EVM_CHAINS, type EvmChain } from '../utils/chains.js';
 import { screenAddresses } from './addressCheck.js';
 import { getRegistry } from '../registry/lookup.js';
 import {
@@ -24,25 +25,22 @@ type Kind = SignatureCheckOutput['kind'];
 type Verdict = SignatureCheckOutput['verdict'];
 type Grant = SignatureCheckOutput['grants'][number];
 
-const CHAIN_BY_ID: Record<number, EvmChain> = { 1: 'ethereum', 8453: 'base', 42161: 'arbitrum', 10: 'optimism', 137: 'polygon' };
+const SOLANA = 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp';
+const caip = (c: EvmChain) => `eip155:${CHAIN_INFO[c].id}`;
 const NETWORK_NAME: Record<string, string> = {
-  'eip155:1': 'Ethereum', 'eip155:8453': 'Base', 'eip155:42161': 'Arbitrum', 'eip155:10': 'Optimism', 'eip155:137': 'Polygon',
-  'eip155:84532': 'Base Sepolia', 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': 'Solana',
+  ...Object.fromEntries(EVM_CHAINS.map((c) => [caip(c), CHAIN_INFO[c].name])),
+  'eip155:84532': 'Base Sepolia', [SOLANA]: 'Solana',
 };
 const CHAIN_BY_CAIP: Record<string, EvmChain | 'solana'> = {
-  'eip155:1': 'ethereum', 'eip155:8453': 'base', 'eip155:42161': 'arbitrum', 'eip155:10': 'optimism', 'eip155:137': 'polygon',
-  'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': 'solana',
+  ...Object.fromEntries(EVM_CHAINS.map((c) => [caip(c), c])),
+  [SOLANA]: 'solana',
 };
 
 /** Circle USDC per network (CAIP-2). Used to spot fake "USD Coin" domains and non-USDC x402 assets. */
 const USDC: Record<string, string> = {
-  'eip155:1': '0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48',
-  'eip155:8453': '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913',
-  'eip155:42161': '0xaf88d065e77c8cc2239327c5edb3a432268e5831',
-  'eip155:10': '0x0b2c639c533813f4aa9d7837caf62653d097ff85',
-  'eip155:137': '0x3c499c542cef5e3811e1192ce70d8cc03d5c3359',
+  ...Object.fromEntries(EVM_CHAINS.map((c) => [caip(c), CHAIN_INFO[c].usdc])),
   'eip155:84532': '0x036cbd53842c5426634e7929541ec2318f3dcf7e',
-  'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp': 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+  [SOLANA]: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
 };
 const PERMIT2 = '0x000000000022d473030f116ddee9f6b43ac78ba3';
 const UNLIMITED = 2n ** 159n; // ≥ half of uint160 (Permit2's max) counts as unlimited; uint256 maxes are far above
