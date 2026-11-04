@@ -544,9 +544,15 @@ describe('x402 Discovery', () => {
       expect(op).toBeDefined();
       expect(op['x-agentcash-auth']).toEqual({ mode: 'paid' });
       expect(op['x-payment-info']).toBeDefined();
-      expect(op['x-payment-info'].protocols).toContain('x402');
-      expect(op['x-payment-info'].pricingMode).toBe('fixed');
+      expect(op['x-payment-info'].protocols).toEqual([{ x402: {} }]);
+      expect(op['x-payment-info'].price).toMatchObject({ mode: 'fixed', currency: 'USD' });
+      expect(op['x-payment-info'].price.amount).toMatch(/^\d+\.\d{6}$/);
+      expect(op.responses['402']).toBeDefined();
     }
+    // Per-item endpoints quote a dynamic range.
+    const pf = res.body.paths['/v1/preflight'].post['x-payment-info'];
+    expect(pf.price).toEqual({ mode: 'dynamic', currency: 'USD', min: '0.008000', max: '0.028000' });
+    expect(res.body.info['x-guidance']).toMatch(/preflight/);
   });
 
   it('OpenAPI spec free endpoints have free auth mode', async () => {

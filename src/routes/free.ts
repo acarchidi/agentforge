@@ -576,7 +576,7 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
 
 let cachedAgentCard: Record<string, unknown> | null = null;
 
-freeRouter.get('/.well-known/agent.json', (req: Request, res: Response) => {
+freeRouter.get(['/.well-known/agent.json', '/.well-known/agent-card.json'], (req: Request, res: Response) => {
   const baseUrl = getBaseUrl(req);
   if (!cachedAgentCard || cachedAgentCard.url !== baseUrl) {
     cachedAgentCard = generateAgentCard(baseUrl);
