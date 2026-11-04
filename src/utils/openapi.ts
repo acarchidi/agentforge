@@ -674,6 +674,8 @@ export function generateOpenApiSpec(): object {
           'x-x402-network': x402Network,
           'x-agentcash-auth': { mode: 'paid' },
           'x-payment-info': { pricingMode: 'fixed', price: '$0.001', protocols: ['x402'] },
+          // No inputs; an explicit empty parameter list tells discovery tools so.
+          parameters: [],
           responses: {
             '200': {
               description: 'Service is operational',
