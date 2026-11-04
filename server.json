@@ -1,12 +1,12 @@
 {
   "$schema": "https://static.modelcontextprotocol.io/schemas/2025-07-09/server.schema.json",
   "name": "io.github.acarchidi/agentforge",
-  "description": "DeFi safety for AI agents: one-call preflight, tx/signature checks, sanctions, rug checks. 28 tools.",
+  "description": "Safety checks for AI agents: preflight before signing, prompt-injection scan, sanctions, rug checks.",
   "repository": {
     "url": "https://github.com/acarchidi/agentforge",
     "source": "github"
   },
-  "version": "1.12.0",
+  "version": "1.13.0",
   "remotes": [
     {
       "type": "streamable-http",

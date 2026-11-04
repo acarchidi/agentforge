@@ -69,7 +69,7 @@ describe('Free Endpoints', () => {
     expect(res.body.services).toBeInstanceOf(Array);
     expect(res.body.services.length).toBe(29);
     expect(res.body.payment.protocol).toBe('x402');
-    expect(res.body.version).toBe('1.12.0');
+    expect(res.body.version).toBe('1.13.0');
   });
 
   it('GET /catalog services have endpoint and price', async () => {
@@ -311,7 +311,7 @@ describe('Discovery Layer', () => {
     expect(res.status).toBe(200);
     expect(res.body.openapi).toBe('3.1.0');
     expect(res.body.info.title).toBe('AgentForge API');
-    expect(res.body.info.version).toBe('1.12.0');
+    expect(res.body.info.version).toBe('1.13.0');
     const paths = Object.keys(res.body.paths);
     // Must contain all current service paths
     expect(paths).toContain('/v1/token-intel');
@@ -372,7 +372,7 @@ describe('Discovery Layer', () => {
     const res = await request(app).get('/about');
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('AgentForge');
-    expect(res.body.version).toBe('1.12.0');
+    expect(res.body.version).toBe('1.13.0');
     expect(res.body.services).toBeDefined();
     // Current services
     expect(res.body.services.token_intelligence).toBeDefined();
@@ -412,7 +412,7 @@ describe('Discovery Layer', () => {
     const res = await request(app).get('/.well-known/agent.json');
     expect(res.status).toBe(200);
     expect(res.body.name).toBe('AgentForge');
-    expect(res.body.version).toBe('1.12.0');
+    expect(res.body.version).toBe('1.13.0');
     expect(res.body.description).toBeDefined();
     expect(res.body.provider).toBeDefined();
     expect(res.body.provider.organization).toBe('AgentForge');

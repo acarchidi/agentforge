@@ -1,3 +1,4 @@
+import { unpaidBody } from '../discovery/pitch.js';
 import { paymentMiddlewareFromHTTPServer, x402HTTPResourceServer, x402ResourceServer } from '@x402/express';
 import type { RouteConfig } from '@x402/core/server';
 import { ExactEvmScheme } from '@x402/evm/exact/server';
@@ -1718,6 +1719,9 @@ export function applyDiscoverabilityMetadata(routes: Record<string, RouteConfig>
     route.serviceName = meta.name;
     route.tags = meta.tags;
     route.iconUrl = ICON_URL;
+    // API clients get a body that explains the charge and the cheaper ways to
+    // get the same check (credits, free MCP tier, the Guard SDK).
+    route.unpaidResponseBody = () => ({ contentType: 'application/json', body: unpaidBody(path) });
 
     const ext = (route.extensions ?? {}) as Record<string, unknown>;
     const bazaar = (ext.bazaar ?? {}) as Record<string, unknown>;

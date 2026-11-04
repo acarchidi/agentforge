@@ -17,9 +17,10 @@ export const ERC8004_AGENT_ID: number | null = 1153855;
 
 const DESCRIPTION =
   'DeFi safety tools for AI agents, paid per call over x402 (USDC on Base or Solana, no API keys). ' +
-  'One-call preflight before any on-chain action, transaction simulation, signature and permit phishing checks, ' +
+  'One-call preflight before any on-chain action, prompt-injection scans of untrusted text, transaction simulation, signature and permit phishing checks, ' +
   'sanctions and scam address screening, rug checks, risk-scored new launches, and Aave liquidation risk, ' +
-  'on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana.';
+  'on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. ' +
+  'The agentforge-tools SDK (Guard) makes the preflight automatic on every signature.';
 
 interface RegisteredTool {
   title?: string;

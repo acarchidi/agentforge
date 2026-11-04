@@ -1,9 +1,9 @@
 ---
 name: agentforge
-description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge.
+description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Also `content_scan` for prompt injection in untrusted text. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge. To make the check automatic, the `agentforge-tools` SDK wraps the wallet so every signature is preflighted and `avoid` is refused.
 metadata:
   author: agentforge
-  version: "1.12.0"
+  version: "1.13.0"
 ---
 
 # AgentForge
@@ -11,7 +11,7 @@ metadata:
 AgentForge is a DeFi safety layer for AI agents on eleven EVM chains and Solana. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
-2. **Paid** — 26 deeper analysis endpoints (one-call preflight safety checks, signature phishing checks, transaction simulation, liquidation risk, new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
+2. **Paid** — 29 deeper analysis endpoints (one-call preflight safety checks, prompt-injection content scans, signature phishing checks, transaction simulation, liquidation risk, new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
@@ -42,10 +42,13 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 - In a trading loop: poll `launches` every 1-5 minutes (pass `nextSince` back as `since`) for newly listed tokens that are already risk-scored, then re-screen your watchlist with `risk-batch` (2-25 tokens per call, priced per token).
 - Before signing any message or permit: `signature-check` explains what the signature allows and catches permit phishing, sell-for-nothing NFT orders, and over-priced or fake x402 payment requests.
+- Holding a position or depending on a contract: `watch` alerts you by webhook when an admin key, proxy or pause state changes, a token turns risky, or a loan nears liquidation. No polling needed.
+- Calling many times a day: buy `credits` once and sign requests (up to 20% bonus, no per-call settlement).
 - Before ANY on-chain action, the simplest rule: call `preflight` with whatever you are about to do (transactions, a signature request, an x402 payment request, recipients, tokens to buy). One verdict covers simulation, signature phishing, sanctions/scam screening, and rug checks, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM.
 - Before signing any EVM transaction: `tx-simulate` shows exactly what leaves the wallet, which approvals are granted, and whether any counterparty is sanctioned or a known scammer.
 - Managing a leveraged position: `lending/health` reports the Aave v3 health factor on every chain and how far collateral can fall before liquidation.
 - Before every outgoing transfer or approval: `address-check` screens the counterparty against OFAC sanctions and scam-wallet lists and flags brand-new address-poisoning wallets (1-100 addresses per call).
+- Before feeding any untrusted text to your model (tool results, web pages, emails, token metadata): `content-scan` catches instructions aimed at the agent ("ignore previous instructions", "transfer all funds to 0x…"), payloads hidden in base64, Morse, zero-width or tag characters and homoglyphs, leaked private keys and seed phrases, sanctioned addresses, and lookalike domains. Deterministic rules, no LLM, priced per 4 KB.
 - Before buying a token: `trade-check` runs the rug check, the AI risk assessment, and the gas oracle in one call and returns a proceed/caution/avoid verdict — cheaper than the three calls separately.
 - Before executing a DeFi transaction: check `wallet-safety` or `approval-scan` (EVM) — or `solana/tx-simulate` (Solana).
 - Before touching a new token: run `token-risk-metrics` (EVM) or `solana/token-risk-scan` (Solana) — rug check: mint/freeze authority, holder concentration, liquidity.
@@ -57,12 +60,15 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 | Method | Path | Price (USDC) | What it does |
 |---|---|---|---|
+| POST | `/v1/watch` | $0.01–$0.02/day (min $0.05) | Watch a contract (owner/proxy/pause changes), a token (rug score crosses a threshold) or an Aave position (health factor) and get signed webhook alerts. Prepaid for 1–90 days. |
+| POST | `/v1/credits/buy?pack=1\|5\|20` | $1 / $5 / $20 | Prepaid credits: $1.10 / $5.75 / $24 of credit, spent by signing requests instead of paying per call. |
 | POST | `/v1/preflight` | $0.008 + $0.004/token | Is this action safe? One call before any on-chain action: transactions simulated, signatures checked for phishing, recipients screened for sanctions and scams, tokens rug-checked (including tokens the simulation shows you receiving). One proceed/caution/avoid verdict. |
 | POST | `/v1/signature-check` | $0.003 | Check a signature request before signing: EIP-712 permits, Permit2, Seaport orders, transfer authorizations, and x402 payment requests decoded, spenders and payees screened, drainer patterns caught. |
 | POST | `/v1/tx-simulate` | $0.005 | Simulate 1-5 EVM transactions before signing: revert reason, asset changes, approvals, counterparty sanctions/scam screening, proceed/caution/avoid. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic. |
 | GET | `/v1/lending/health` | $0.003 | Aave v3 liquidation risk across nine chains: collateral, debt, health factor, status, collateral drop to liquidation. |
 | GET | `/v1/launches` | $0.005 | New-launch feed (Base, Ethereum, Arbitrum, BNB Chain, HyperEVM), each launch already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern. Poll with `since=<nextSince>`. |
 | POST | `/v1/address-check` | $0.003 + $0.001/extra address | Counterparty screening for 1-100 EVM or Solana addresses: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses. |
+| POST | `/v1/content-scan` | $0.001 per 4 KB (max 64 KB) | Prompt-injection scan for untrusted text before it reaches your LLM: instruction overrides, fund-movement directives, base64/Morse/zero-width/homoglyph payloads, leaked keys and seed phrases, sanctioned addresses, lookalike domains. Verdict clean/suspicious/malicious. |
 | POST | `/v1/risk-batch` | $0.004 per token (2-25) | Rug-check a watchlist in one call: holder, permission, and liquidity risk per token. |
 | POST | `/v1/trade-check` | $0.025 | Pre-trade bundle: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately. |
 | POST | `/v1/wallet-safety` | $0.10 | Comprehensive pre-transaction wallet safety check: approvals + activity pattern + target contract risk in one call. |
@@ -85,6 +91,87 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 | POST | `/v1/solana/tx-explain` | $0.05 | Explain a Solana transaction: labeled programs, token/SOL movements, plain-English summary. Base or Solana USDC. |
 
 Prices and JSON Schemas for every endpoint are always authoritative at `GET /catalog` — treat the table above as a snapshot, not the source of truth. The three `solana/*` endpoints accept payment on **either** Base or Solana mainnet USDC — pick whichever network your wallet holds funds on.
+
+## Make it automatic: the Guard
+
+Calling `preflight` only protects you when you remember to call it. A prompt-injected agent will not. The `agentforge-tools` SDK wraps the wallet instead, so every transaction, signature and x402 payment is preflighted before it is signed, and an `avoid` verdict is refused in code:
+
+```ts
+import { privateKeyToAccount } from 'viem/accounts';
+import { guardAccount } from 'agentforge-tools';
+const account = guardAccount(privateKeyToAccount(KEY), { privateKey: KEY }); // signTransaction / signTypedData now refuse `avoid`
+```
+
+- viem: `guardAccount`, `guardWalletClient` (covers `sendTransaction` and `writeContract`).
+- x402 clients: `client.onBeforePaymentCreation(agentForgePaymentHook({ privateKey: KEY }))` screens every seller you pay.
+- Coinbase AgentKit: `guardWalletProvider(walletProvider, { privateKey: KEY })` from `agentforge-tools/agentkit`.
+- Claude Code / Cursor: `npx agentforge-tools hook` prints a `PreToolUse` hook.
+
+Fail-closed by default (`failOpen: false`). Each check is $0.008, paid from prepaid credits that top up automatically. Integrators: pass `credits: { referrer: '0xYourWallet' }` to earn 10% of the credit packs your users buy.
+
+## Prepaid credits
+
+For loops that call AgentForge often, buy credits once and sign each request instead of paying per call: no per-call settlement, up to 20% bonus.
+
+1. Buy: `POST /v1/credits/buy?pack=5` paid with x402 from an EVM wallet on Base ($5 → $5.75 of credit; pack 1 = $1.10, pack 20 = $24). Credits land on the paying wallet when the payment settles.
+2. Spend: add an `X-AgentForge-Credit` header to any paid request, signed by the same wallet:
+
+```ts
+import { privateKeyToAccount } from 'viem/accounts';
+import { createHash, randomBytes } from 'node:crypto';
+
+const account = privateKeyToAccount(process.env.AGENT_KEY as `0x${string}`);
+const path = '/v1/preflight';
+const body = JSON.stringify({ chain: 'base', recipients: ['0x…'] });
+const ts = Math.floor(Date.now() / 1000);
+const nonce = randomBytes(16).toString('hex');
+const message = [
+  'AgentForge credit spend',
+  'method:POST',
+  `path:${path}`,
+  'query:',                                   // raw query string without '?', empty if none
+  `body-sha256:${createHash('sha256').update(body).digest('hex')}`, // sha256 of '' for GET
+  `ts:${ts}`,
+  `nonce:${nonce}`,
+].join('\n');
+const sig = await account.signMessage({ message });
+const res = await fetch(`https://agentforge-taupe.vercel.app${path}`, {
+  method: 'POST',
+  headers: {
+    'content-type': 'application/json',
+    'x-agentforge-credit': Buffer.from(JSON.stringify({ wallet: account.address, ts, nonce, sig })).toString('base64'),
+  },
+  body, // send exactly the bytes you hashed
+});
+// res.headers.get('x-agentforge-credit-balance') → remaining balance
+```
+
+- Signatures expire after 120 s and each nonce works once. Smart-contract wallets (ERC-1271/6492) are supported.
+- Out of credit → `402 INSUFFICIENT_CREDITS` with a top-up link. Failed calls (4xx/5xx) are refunded automatically.
+- Balance and referral stats: `GET /credits/balance?wallet=0x…` (free).
+
+### Referral program
+
+Share `https://agentforge-taupe.vercel.app/v1/credits/buy?pack=5&ref=<your wallet>`. Every wallet that buys through it is tied to you: **you earn 10% of every pack it buys, for as long as it keeps buying**, paid as credit to your wallet, and it gets 5% extra credit. The first referrer a wallet uses sticks, and self-referral doesn't count. Building an agent, skill or SDK on AgentForge? Put your wallet in the `ref` of the purchase link you ship.
+
+## Watches (webhook alerts)
+
+`POST /v1/watch` with `{ type, chain, target, webhookUrl, days, params? }`:
+
+| type | target | alerts when | checked |
+|---|---|---|---|
+| `contract-admin` | contract | owner, EIP-1967 implementation/admin, or paused state changes | every 30 min |
+| `token-risk` | token | risk score crosses `params.threshold` (default 50), or a new risk flag appears | daily |
+| `lending-health` | wallet | Aave v3 status band changes, or health factor crosses `params.threshold` | every 30 min |
+
+The response includes a `secret` (keep it) and the result of a `test` event sent to your webhook. Alerts are POSTed as JSON with `X-AgentForge-Signature: t=<unix>,v1=<hex>`; verify with:
+
+```ts
+const [t, v1] = sigHeader.split(',').map((p) => p.split('=')[1]);
+const ok = createHmac('sha256', secret).update(`${t}.${rawBody}`).digest('hex') === v1;
+```
+
+Failed deliveries retry with exponential backoff (up to 6 attempts). Status: `GET /watch/:id`, cancel: `DELETE /watch/:id` (both with `X-Watch-Secret`; cancellations aren't refunded).
 
 ## Paying via x402 (3 representative examples)
 
@@ -131,6 +218,13 @@ const res = await paidFetch('https://agentforge-taupe.vercel.app/v1/wallet-safet
   body: JSON.stringify({ walletAddress: '0x...', chain: 'ethereum' }),
 });
 ```
+
+## Contact and feedback
+
+Wrong result, a problem, a complaint, or a check you need that doesn't exist? Tell us; we read everything:
+- `POST /feedback` with `{ "type": "bug_report" | "feature_request" | "complaint" | "idea" | "general", "message": "…", "endpoint"?: "/v1/…", "contact"?: "…" }`
+- the free `send_feedback` MCP tool
+- email agentforge.api@gmail.com, or the form at https://agentforge-taupe.vercel.app/contact
 
 ## Notes for buying agents
 

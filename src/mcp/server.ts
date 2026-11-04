@@ -17,6 +17,7 @@
  * request after the first on a warm serverless instance.
  */
 
+import { creditsPitch, guardPitch, mcpInstructions } from '../discovery/pitch.js';
 import { McpServer, type ToolCallback } from '@modelcontextprotocol/sdk/server/mcp.js';
 import type { ZodRawShape } from 'zod';
 import { z } from 'zod';
@@ -55,7 +56,7 @@ import { LENDING_CHAINS } from '../schemas/lendingHealth.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.12.0';
+export const MCP_SERVER_VERSION = '1.13.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -157,6 +158,8 @@ function capHitResponse(toolName: string, used: number) {
       instruction: `${GET_ENDPOINTS.has(path) ? 'GET' : 'POST'} ${url} with an x402 payment of ${price} USDC (Base or Solana) — no signup, no key; any x402 client (e.g. @x402/fetch) handles the 402 automatically.`,
       docs: `${PUBLIC_BASE_URL}/SKILL.md`,
     },
+    credits: creditsPitch(),
+    guard: guardPitch(),
     relatedServices: relatedServicesFor(toolName, null),
   };
   return {
@@ -170,10 +173,10 @@ function capHitResponse(toolName: string, used: number) {
  * Pass the request context so tool calls are logged against a hashed client id.
  */
 export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymous' }): McpServer {
-  const server = new McpServer({
-    name: 'agentforge',
-    version: MCP_SERVER_VERSION,
-  });
+  const server = new McpServer(
+    { name: 'agentforge', version: MCP_SERVER_VERSION },
+    { instructions: mcpInstructions(MCP_DAILY_CAP) },
+  );
 
   // Every tool reads public data and changes nothing, so declare it (MCP tool
   // annotations), and tell agents about the free daily cap and the paid
