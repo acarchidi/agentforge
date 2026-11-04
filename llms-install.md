@@ -17,7 +17,7 @@ AgentForge is a remote MCP server (Streamable HTTP). There is nothing to downloa
 
    In Claude Code, the equivalent is: `claude mcp add --transport http agentforge https://agentforge-taupe.vercel.app/mcp`
 
-2. Restart or reload the client, then list tools. You should see 27 tools, including `preflight`, `tx_simulate`, `signature_check`, `address_check`, `trade_check` and `lending_health`.
+2. Restart or reload the client, then list tools. You should see 28 tools, including `preflight`, `tx_simulate`, `signature_check`, `address_check`, `trade_check` and `lending_health`.
 
 3. Verify with a call that costs nothing, e.g. `registry_lookup` with `{ "address": "0x000000000022D473030F116dDEE9F6B43aC78BA3", "chain": "base" }`; it should return "Uniswap: Permit2".
 

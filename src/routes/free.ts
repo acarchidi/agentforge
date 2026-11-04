@@ -153,6 +153,10 @@ freeRouter.delete('/watch/:id', async (req: Request, res: Response) => {
   res.status(cancelled ? 200 : 404).json(cancelled ? { watchId: id, status: 'cancelled', refund: 'none' } : { error: 'NOT_FOUND_OR_INACTIVE' });
 });
 
+freeRouter.get('/contact', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../../dashboard/contact.html'), { dotfiles: 'allow' });
+});
+
 freeRouter.get('/privacy', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../dashboard/privacy.html'), { dotfiles: 'allow' });
 });
@@ -528,7 +532,11 @@ freeRouter.post('/feedback', async (req: Request, res: Response) => {
       contact: validated.contact ?? null,
     });
 
-    res.json({ status: 'ok', message: 'Thank you for your feedback.' });
+    res.json({
+      status: 'ok',
+      message: 'Thank you: we read every message. Include a contact if you want a reply.',
+      email: config.CONTACT_EMAIL,
+    });
   } catch (err) {
     if (err instanceof z.ZodError) {
       res.status(400).json({ error: 'VALIDATION_ERROR', details: err.issues });
@@ -725,6 +733,7 @@ freeRouter.get('/llms.txt', (req: Request, res: Response) => {
     `- [Catalog](${base}/catalog): machine-readable services, prices, schemas`,
     `- [Agent card](${base}/.well-known/agent.json): A2A skills`,
     `- [Skill guide](${base}/SKILL.md): when to use what, with examples`,
+    `- [Contact](${base}/contact): feedback, problems, feature requests (POST /feedback, or email ${config.CONTACT_EMAIL})`,
     `- [Prepaid credits](${base}/credits/balance): packs with up to 20% bonus, signed requests instead of per-call payment, 10% referral rewards`,
     '',
     '## Paid endpoints',

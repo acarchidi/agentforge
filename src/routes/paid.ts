@@ -27,6 +27,7 @@ import { signatureCheckWithCost } from '../services/signatureCheck.js';
 import { preflightWithCost } from '../services/preflight.js';
 import { createWatchWithCost } from '../services/watch.js';
 import { logEvent } from '../analytics/logger.js';
+import { config } from '../config.js';
 import { hashClientId, paymentContextFromRequest } from '../analytics/clientId.js';
 import { refundCreditPayment, type CreditPayment } from '../middleware/credits.js';
 import { ENDPOINT_PRICES, PUBLIC_BASE_URL, formatUsd, priceFor } from '../pricing.js';
@@ -131,6 +132,8 @@ async function handlePaid(
     res.status(500).json({
       error: 'INTERNAL_ERROR',
       message: error instanceof Error ? error.message : 'Unknown error',
+      charged: false,
+      report: `Something wrong? POST ${PUBLIC_BASE_URL}/feedback or email ${config.CONTACT_EMAIL}`,
     });
   }
 }

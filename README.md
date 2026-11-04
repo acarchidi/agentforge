@@ -81,3 +81,7 @@ Payments: x402 v2, USDC on Base (and Solana for the Solana endpoints), settled t
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Contact
+
+Feedback, problems, complaints or feature requests: agentforge.api@gmail.com, the form at https://agentforge-taupe.vercel.app/contact, `POST /feedback`, or the free `send_feedback` MCP tool.

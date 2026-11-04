@@ -25,7 +25,7 @@ AgentForge is a DeFi safety layer for AI agents on eleven EVM chains and Solana.
 
 ## MCP server — free, no wallet needed
 
-All 27 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
+All 28 tools are exposed over MCP at `https://agentforge-taupe.vercel.app/mcp` (Streamable HTTP). MCP calls are **free**: no wallet, no x402, no account.
 
 - Lookups (`registry_lookup`, `solana_program_lookup`) and cheap data (`gas_oracle`, `pool_snapshot`) are unlimited.
 - Every analysis tool is free for 10 calls per tool per client per day. Past that, the tool returns the matching paid x402 endpoint and its exact price.
@@ -199,6 +199,13 @@ const res = await paidFetch('https://agentforge-taupe.vercel.app/v1/wallet-safet
   body: JSON.stringify({ walletAddress: '0x...', chain: 'ethereum' }),
 });
 ```
+
+## Contact and feedback
+
+Wrong result, a problem, a complaint, or a check you need that doesn't exist? Tell us; we read everything:
+- `POST /feedback` with `{ "type": "bug_report" | "feature_request" | "complaint" | "idea" | "general", "message": "…", "endpoint"?: "/v1/…", "contact"?: "…" }`
+- the free `send_feedback` MCP tool
+- email agentforge.api@gmail.com, or the form at https://agentforge-taupe.vercel.app/contact
 
 ## Notes for buying agents
 
