@@ -102,7 +102,12 @@ async function main() {
       if (pr) {
         try { tx = JSON.parse(Buffer.from(pr, 'base64').toString()).transaction; } catch { /* ignore */ }
       }
-      const text = await res.text();
+      let text = await res.text();
+      // A 402 on the paid retry carries the rejection reason in PAYMENT-REQUIRED, not the body.
+      const rejected = res.status === 402 ? res.headers.get('payment-required') : null;
+      if (rejected) {
+        try { text = `payment rejected: ${JSON.parse(Buffer.from(rejected, 'base64').toString()).error ?? 'no reason given'}`; } catch { /* keep body */ }
+      }
       results.push({ name: c.name, status: res.status, ms: Date.now() - t, tx, note: res.ok ? undefined : text.slice(0, 120) });
       console.log(`${res.ok ? 'PASS' : 'FAIL'} ${c.name} ${res.status} ${Date.now() - t}ms ${tx ? `tx=${tx.slice(0, 12)}…` : ''} ${res.ok ? '' : text.slice(0, 120)}`);
     } catch (error) {
