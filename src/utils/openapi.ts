@@ -28,7 +28,7 @@ import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
 import { preflightInput, preflightOutput } from '../schemas/preflight.js';
-import { PRICING_RULES } from '../pricing.js';
+import { PRICING_RULES, priceFor, ENDPOINT_PRICES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
 import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
@@ -60,7 +60,7 @@ const errorSchema = {
 };
 
 export function generateOpenApiSpec(): object {
-  return markFreeOperations({
+  return normalizePaymentInfo(markFreeOperations({
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
@@ -68,6 +68,8 @@ export function generateOpenApiSpec(): object {
       description:
         'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl, email: config.CONTACT_EMAIL },
+      'x-guidance':
+        'Safety checks for agents that act on-chain. Call POST /v1/preflight once before any send, swap, approval, signature or x402 payment: pass the transactions (with from), an EIP-712 typedData, an x402 paymentRequired, recipients and/or tokens you are about to act on, and act on the verdict (proceed: continue; caution: surface the reasons and confirm; avoid: do not sign). Individual checks: /v1/signature-check, /v1/tx-simulate, /v1/address-check, /v1/trade-check, /v1/risk-batch (watchlists), /v1/launches (new tokens), /v1/lending/health (Aave). Every paid route answers an unpaid request with 402 and the exact price; failed calls are never charged. Chains: Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM, Solana. Free lookups: /registry/lookup, /catalog.',
     },
     servers: [
       {
@@ -908,13 +910,44 @@ export function generateOpenApiSpec(): object {
         },
       },
     },
-  });
+  }));
 }
 
 /**
  * Operations without an x402 price are free. Mark them `security: []` so x402
  * crawlers (x402scan, Bazaar) skip them instead of reporting "no 402 challenge".
  */
+/** Request bodies at each end of a per-item endpoint's range, for dynamic min/max quotes. */
+const DYNAMIC_RANGE: Record<string, [unknown, unknown]> = {
+  '/v1/risk-batch': [{ tokens: [1, 2] }, { tokens: Array(25).fill(1) }],
+  '/v1/address-check': [{ addresses: [1] }, { addresses: Array(100).fill(1) }],
+  '/v1/preflight': [{}, { tokens: Array(5).fill(1) }],
+};
+
+const usd = (n: number) => n.toFixed(6);
+
+/**
+ * x-payment-info in the shape AgentCash discovery and x402scan validate:
+ * protocol objects plus a structured USD price (decimal, not atomic units),
+ * fixed or a dynamic min/max range. Also guarantees a 402 response entry.
+ */
+function normalizePaymentInfo<T extends { paths: Record<string, Record<string, Record<string, unknown>>> }>(spec: T): T {
+  for (const [path, ops] of Object.entries(spec.paths)) {
+    for (const op of Object.values(ops)) {
+      if (!op || typeof op !== 'object' || !('x-payment-info' in op)) continue;
+      const range = DYNAMIC_RANGE[path];
+      const price = range
+        ? { mode: 'dynamic', currency: 'USD', min: usd(priceFor(path, range[0])), max: usd(priceFor(path, range[1])) }
+        : { mode: 'fixed', currency: 'USD', amount: usd(ENDPOINT_PRICES[path] ?? 0) };
+      op['x-payment-info'] = { price, protocols: [{ x402: {} }] };
+      const responses = (op.responses ?? {}) as Record<string, unknown>;
+      if (!responses['402']) responses['402'] = { description: 'Payment Required' };
+      op.responses = responses;
+    }
+  }
+  return spec;
+}
+
 function markFreeOperations<T extends { paths: Record<string, Record<string, Record<string, unknown>>> }>(spec: T): T {
   for (const ops of Object.values(spec.paths)) {
     for (const op of Object.values(ops)) {
