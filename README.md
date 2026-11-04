@@ -54,6 +54,8 @@ if (sim.verdict === 'avoid') throw new Error('refusing to sign');
 | `GET /v1/pool-snapshot` | $0.005 | Cached snapshot of top 500 DeFi liquidity pools. Filter by protocol, chain, or token. Returns TVL, APY, volume, IL risk, and registry enrichment. |
 | `POST /v1/token-risk-metrics` | $0.05 | Quantitative token risk metrics: holder concentration, liquidity depth, contract permissions, deployer history, and composite risk score (0-100). |
 | `POST /v1/trade-check` | $0.025 | Check a token before you buy it: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately. |
+| `POST /v1/watch` | $0.01–$0.02/day | Signed webhook alerts when a contract's admin/proxy/pause state changes, a token turns risky, or an Aave position nears liquidation. |
+| `POST /v1/credits/buy` | $1 / $5 / $20 | Prepaid credits with up to 20% bonus: sign requests instead of paying per call. Referral: 10% of referred purchases. |
 | `POST /v1/preflight` | $0.008 + $0.004/token | **Is this action safe?** One call before any on-chain action: transactions simulated, signatures checked for phishing, recipients screened, tokens rug-checked, one proceed/caution/avoid verdict. |
 | `POST /v1/tx-simulate` | $0.005 | Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, asset changes, approvals, counterparty screening, proceed/caution/avoid verdict. |
 | `GET /v1/lending/health` | $0.003 | Aave v3 liquidation risk for a wallet across nine chains: collateral, debt, health factor, status, collateral drop to liquidation. |

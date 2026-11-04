@@ -28,6 +28,7 @@ import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
 import { preflightInput, preflightOutput } from '../schemas/preflight.js';
+import { watchCreateInput, watchCreateOutput } from '../schemas/watch.js';
 import { PRICING_RULES, priceFor, ENDPOINT_PRICES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
@@ -64,7 +65,7 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.10.0',
+      version: '1.11.0',
       description:
         'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl, email: config.CONTACT_EMAIL },
@@ -553,6 +554,51 @@ export function generateOpenApiSpec(): object {
           },
         },
       },
+      '/v1/watch': {
+        post: {
+          operationId: 'createWatch',
+          summary: 'Watch a contract, token or lending position; get signed webhook alerts',
+          description: `Watch alerts by signed webhook, prepaid per day: contract-admin (owner, proxy implementation/admin or pause state changes; checked every 30 min), token-risk (rug score crosses a threshold or a new risk flag appears; daily), lending-health (Aave v3 status band or health-factor threshold; every 30 min). Manage with GET/DELETE /watch/:id. Price: ${PRICING_RULES['/v1/watch']}.`,
+          tags: ['Security'],
+          'x-x402-price': PRICING_RULES['/v1/watch'],
+          'x-payment-info': { pricingMode: 'dynamic', price: PRICING_RULES['/v1/watch'], protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(watchCreateInput) } } },
+          responses: {
+            '200': { description: 'Watch created; keep the secret', content: { 'application/json': { schema: schemaOf(watchCreateOutput) } } },
+            '400': { description: 'Invalid input (e.g. webhook not public https)', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/v1/credits/buy': {
+        post: {
+          operationId: 'buyCredits',
+          summary: 'Buy prepaid credits (bulk discount, referral rewards)',
+          description: `Prepaid credits for high-volume agents: pay once with x402 (pack 1/5/20 = $1/$5/$20 for $1.10/$5.75/$24 of credit), then sign each request (X-AgentForge-Credit header) instead of paying per call. No per-call settlement, up to 20% bonus. Referral: add ?ref=<wallet> and the referrer earns 10% of every pack that wallet buys, the buyer 5% extra.`,
+          tags: ['Credits'],
+          'x-x402-price': PRICING_RULES['/v1/credits/buy'],
+          'x-payment-info': { pricingMode: 'dynamic', price: PRICING_RULES['/v1/credits/buy'], protocols: ['x402'] },
+          parameters: [
+            { name: 'pack', in: 'query', schema: { type: 'string', enum: ['1', '5', '20'], default: '1' } },
+            { name: 'ref', in: 'query', schema: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' }, description: 'Referrer wallet' },
+          ],
+          requestBody: { required: false, content: { 'application/json': { schema: { type: 'object', properties: { pack: { type: 'string', enum: ['1', '5', '20'] } } } } } },
+          responses: {
+            '200': { description: 'Credited on settlement', content: { 'application/json': { schema: { type: 'object' } } } },
+            '400': { description: 'Invalid pack', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
+      '/credits/balance': {
+        get: {
+          operationId: 'creditBalance',
+          summary: 'Credit balance, packs and referral stats (free)',
+          tags: ['Credits'],
+          parameters: [{ name: 'wallet', in: 'query', required: false, schema: { type: 'string' } }],
+          responses: { '200': { description: 'Balance', content: { 'application/json': { schema: { type: 'object' } } } } },
+        },
+      },
       '/v1/preflight': {
         post: {
           operationId: 'preflight',
@@ -924,6 +970,8 @@ const DYNAMIC_RANGE: Record<string, [unknown, unknown]> = {
   '/v1/risk-batch': [{ tokens: [1, 2] }, { tokens: Array(25).fill(1) }],
   '/v1/address-check': [{ addresses: [1] }, { addresses: Array(100).fill(1) }],
   '/v1/preflight': [{}, { tokens: Array(5).fill(1) }],
+  '/v1/watch': [{ type: 'contract-admin', days: 1 }, { type: 'token-risk', days: 90 }],
+  '/v1/credits/buy': [{ pack: '1' }, { pack: '20' }],
 };
 
 const usd = (n: number) => n.toFixed(6);

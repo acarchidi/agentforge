@@ -25,9 +25,12 @@ import { simulateEvmTxWithCost } from '../services/txSimulate.js';
 import { getLendingHealthWithCost } from '../services/lendingHealth.js';
 import { signatureCheckWithCost } from '../services/signatureCheck.js';
 import { preflightWithCost } from '../services/preflight.js';
+import { createWatchWithCost } from '../services/watch.js';
 import { logEvent } from '../analytics/logger.js';
-import { paymentContextFromRequest } from '../analytics/clientId.js';
-import { ENDPOINT_PRICES, PUBLIC_BASE_URL, priceFor } from '../pricing.js';
+import { hashClientId, paymentContextFromRequest } from '../analytics/clientId.js';
+import { refundCreditPayment, type CreditPayment } from '../middleware/credits.js';
+import { ENDPOINT_PRICES, PUBLIC_BASE_URL, formatUsd, priceFor } from '../pricing.js';
+import { packFor } from '../credits/auth.js';
 import { pingCatalog } from '../discovery/upsell.js';
 
 export const paidRouter = Router();
@@ -67,7 +70,10 @@ async function handlePaid(
   input: unknown,
 ): Promise<void> {
   const startTime = Date.now();
-  const payment = paymentContextFromRequest(req);
+  const credit = res.locals.payment as CreditPayment | undefined;
+  const payment = credit?.scheme === 'credits'
+    ? { clientHash: hashClientId(credit.wallet), paymentNetwork: 'credits', paymentScheme: 'credits' }
+    : paymentContextFromRequest(req);
   const viaAgentkitTrial = !payment.paymentNetwork && typeof req.headers['agentkit'] === 'string';
   const inputObj = (input && typeof input === 'object' ? input : undefined) as Record<string, unknown> | undefined;
   const base = {
@@ -95,7 +101,10 @@ async function handlePaid(
   } catch (error) {
     const latencyMs = Date.now() - startTime;
     const errorClass = classifyError(error);
-    await logEvent({ ...base, success: false, latencyMs, errorClass });
+    await Promise.all([
+      logEvent({ ...base, success: false, latencyMs, errorClass }),
+      refundCreditPayment(res, endpoint),
+    ]);
 
     if (error instanceof z.ZodError) {
       // A failed first call is where most would-be customers are lost; give
@@ -146,6 +155,50 @@ paidRouter.post('/v1/token-risk-metrics', createHandler('/v1/token-risk-metrics'
 paidRouter.post('/v1/trade-check', createHandler('/v1/trade-check', tradeCheckWithCost));
 paidRouter.post('/v1/risk-batch', createHandler('/v1/risk-batch', riskBatchWithCost));
 paidRouter.post('/v1/address-check', createHandler('/v1/address-check', addressCheckWithCost));
+// Buying credits: the balance is credited in the x402 settlement hook (keyed by
+// the settlement tx hash), so a failed or duplicate settlement never credits.
+paidRouter.post('/v1/credits/buy', async (req: Request, res: Response) => {
+  const packId = String(req.query.pack ?? (req.body as { pack?: unknown } | undefined)?.pack ?? '1');
+  const pack = packFor(packId);
+  if (!pack) {
+    res.status(400).json({ error: 'VALIDATION_ERROR', message: 'pack must be 1, 5 or 20', packs: `${PUBLIC_BASE_URL}/credits/balance` });
+    return;
+  }
+  const payment = paymentContextFromRequest(req);
+  if (!payment.payer || !/^0x[0-9a-fA-F]{40}$/.test(payment.payer)) {
+    res.status(400).json({ error: 'EVM_WALLET_REQUIRED', message: 'Credits are bought and spent with an EVM wallet paying in USDC on Base.' });
+    return;
+  }
+  const wallet = payment.payer.toLowerCase();
+  const priceUsd = Number(pack.priceMicro) / 1e6;
+  const ref = typeof req.query.ref === 'string' && /^0x[0-9a-fA-F]{40}$/.test(req.query.ref) && req.query.ref.toLowerCase() !== wallet
+    ? req.query.ref.toLowerCase()
+    : null;
+  await logEvent({
+    kind: 'paid',
+    name: '/v1/credits/buy',
+    success: true,
+    clientHash: payment.clientHash,
+    paymentNetwork: payment.paymentNetwork,
+    paymentScheme: payment.paymentScheme,
+    amountUsd: priceUsd,
+    estimatedCostUsd: 0,
+  });
+  res.json({
+    status: 'credited_on_settlement',
+    wallet,
+    pack: packId,
+    priceUsd: formatUsd(priceUsd),
+    creditUsd: formatUsd(Number(pack.creditMicro) / 1e6),
+    bonusPct: pack.bonusPct,
+    ...(ref ? { referrer: ref, referralBonusPct: 5, note: 'A referrer applies on your first referred purchase and stays attached; if one was already set, that one is kept.' } : {}),
+    referral: `Share ${PUBLIC_BASE_URL}/v1/credits/buy?pack=5&ref=${wallet}: you earn 10% of every pack the wallets you refer buy, as credit; they get 5% extra.`,
+    balanceUrl: `${PUBLIC_BASE_URL}/credits/balance?wallet=${wallet}`,
+    howToSpend: `Sign each request and send it in the X-AgentForge-Credit header: ${PUBLIC_BASE_URL}/SKILL.md#prepaid-credits`,
+  });
+});
+
+paidRouter.post('/v1/watch', createHandler('/v1/watch', createWatchWithCost));
 paidRouter.post('/v1/preflight', createHandler('/v1/preflight', preflightWithCost));
 paidRouter.post('/v1/tx-simulate', createHandler('/v1/tx-simulate', simulateEvmTxWithCost));
 paidRouter.post('/v1/signature-check', createHandler('/v1/signature-check', signatureCheckWithCost));

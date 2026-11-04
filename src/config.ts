@@ -63,6 +63,19 @@ const envSchema = z.object({
   MCP_DAILY_CAP: z.coerce.number().int().positive().optional(),
   // Discoverability
   PUBLIC_BASE_URL: z.string().url().default('https://agentforge-taupe.vercel.app'),
+  /**
+   * Watches. Per watch-day costs: contract-admin and lending-health run 48 batched
+   * public-RPC checks/day (~$0); token-risk runs one Etherscan-free check/day (~$0).
+   * The real cost is the scheduler waking Neon every 30 min (~30 CU-h/month,
+   * inside the free plan), so watches are off until WATCHES_ENABLED=true.
+   */
+  PRICE_WATCH_CONTRACT_ADMIN_DAY: z.string().startsWith('$').default('$0.01'),
+  PRICE_WATCH_TOKEN_RISK_DAY: z.string().startsWith('$').default('$0.02'),
+  PRICE_WATCH_LENDING_HEALTH_DAY: z.string().startsWith('$').default('$0.01'),
+  PRICE_WATCH_MIN: z.string().startsWith('$').default('$0.05'),
+  WATCH_MASTER_KEY: z.string().min(32).optional(),
+  CRON_SECRET: z.string().min(16).optional(),
+  WATCHES_ENABLED: z.enum(['true', 'false']).default('false'),
   BASE_BUILDER_CODE: z.string().regex(/^[a-z0-9_]{1,32}$/).optional(),
   X402_ENABLE_PERMIT2: z.enum(['true', 'false']).default('true'),
   // Last-known facilitator /supported response (JSON), used only when the live

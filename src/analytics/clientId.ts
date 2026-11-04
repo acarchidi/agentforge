@@ -20,6 +20,8 @@ export interface PaymentContext {
   clientHash?: string;
   paymentNetwork?: string;
   paymentScheme?: string;
+  /** Raw payer address. Only for crediting purchases; never log or store it. */
+  payer?: string;
 }
 
 function decodeBase64Json(value: string): Record<string, unknown> | null {
@@ -71,6 +73,7 @@ export function paymentContextFromRequest(req: Request): PaymentContext {
     clientHash: payer ? hashClientId(payer) : undefined,
     paymentNetwork: network,
     paymentScheme,
+    payer,
   };
 }
 

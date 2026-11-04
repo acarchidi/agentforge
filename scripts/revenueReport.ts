@@ -46,6 +46,14 @@ const recent = await sql`
 const total = byEndpoint.reduce((s, r) => s + Number(r.revenue_usd), 0);
 const cost = byEndpoint.reduce((s, r) => s + Number(r.llm_cost_usd), 0);
 console.log(`\nSettled revenue, last ${days} days: $${total.toFixed(4)}  (LLM cost $${cost.toFixed(4)}, gross $${(total - cost).toFixed(4)})\n`);
+
+// Prepaid credits: purchases are cash (settled rows for /v1/credits/buy above);
+// spends are non-cash draws on that prepaid liability.
+const [spend] = await sql`
+  SELECT COUNT(*)::int AS calls, ROUND(COALESCE(SUM(amount_usd), 0), 4)::float AS usd FROM events
+  WHERE kind = 'paid' AND success AND payment_scheme = 'credits' AND ts > now() - (${days} || ' days')::interval`;
+const liability = await sql`SELECT COALESCE(SUM(balance_micro), 0)::float / 1e6 AS usd FROM credit_accounts`.catch(() => [{ usd: 0 }]);
+console.log(`Credit spend (non-cash): ${spend.calls} calls, $${Number(spend.usd).toFixed(4)} · outstanding credit liability: $${Number(liability[0].usd).toFixed(4)}\n`);
 console.table(byEndpoint);
 if (failed.length) {
   console.log('\nSettlement failures:');

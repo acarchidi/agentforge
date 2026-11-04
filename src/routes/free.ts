@@ -23,8 +23,9 @@ import { launchesInput, launchesOutput } from '../schemas/launches.js';
 import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
 import { preflightInput, preflightOutput } from '../schemas/preflight.js';
+import { watchCreateInput, watchCreateOutput } from '../schemas/watch.js';
 import { lendingHealthInput, lendingHealthOutput } from '../schemas/lendingHealth.js';
-import { PRICING_RULES } from '../pricing.js';
+import { PRICING_RULES, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
 import { solanaTxSimulateInput, solanaTxSimulateOutput } from '../schemas/solanaTxSimulate.js';
 import { solanaTokenRiskScanInput, solanaTokenRiskScanOutput } from '../schemas/solanaTokenRiskScan.js';
@@ -39,6 +40,10 @@ import { getCacheStore } from '../cache/store.js';
 import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 import { getPoolSnapshotsCache } from '../cache/poolSnapshotsCache.js';
 import { mcpServerCard, agentRegistration } from '../discovery/manifests.js';
+import { getCreditStore } from '../credits/store.js';
+import { getWatchStore } from '../watches/store.js';
+import { checkWatchSecret } from '../watches/webhook.js';
+import { PACKS } from '../credits/auth.js';
 import { getTokenRiskMetricsCache } from '../cache/tokenRiskMetricsCache.js';
 import { getSolanaTokenRiskScanCache } from '../cache/solanaTokenRiskScanCache.js';
 import { generateAgentCard, SKILLS } from '../discovery/agentCard.js';
@@ -58,7 +63,7 @@ const ALL_PRICES = [
   config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
   config.PRICE_WALLET_SAFETY, config.PRICE_POOL_SNAPSHOT, config.PRICE_TOKEN_RISK_METRICS,
   config.PRICE_TRADE_CHECK, config.PRICE_ADDRESS_CHECK, config.PRICE_LAUNCHES,
-  config.PRICE_TX_SIMULATE, config.PRICE_LENDING_HEALTH, config.PRICE_SIGNATURE_CHECK, config.PRICE_PREFLIGHT,
+  config.PRICE_TX_SIMULATE, config.PRICE_LENDING_HEALTH, config.PRICE_SIGNATURE_CHECK, config.PRICE_PREFLIGHT, config.PRICE_WATCH_MIN,
   '$0.001',
 ].map((p) => Number(p.replace(/^\$/, '')));
 const minPayment = `$${Math.min(...ALL_PRICES)}`;
@@ -86,6 +91,66 @@ freeRouter.get('/dashboard', (_req: Request, res: Response) => {
 
 freeRouter.get('/docs/ai-sdk', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../dashboard/docs-ai-sdk.html'), { dotfiles: 'allow' });
+});
+
+// Prepaid credit balance (free, public: balances are keyed by wallet address).
+freeRouter.get('/credits/balance', async (req: Request, res: Response) => {
+  const packs = Object.entries(PACKS).map(([id, p]) => ({
+    pack: id, priceUsd: formatUsd(Number(p.priceMicro) / 1e6), creditUsd: formatUsd(Number(p.creditMicro) / 1e6), bonusPct: p.bonusPct,
+    buy: `POST ${PUBLIC_BASE_URL}/v1/credits/buy?pack=${id}`,
+  }));
+  const wallet = typeof req.query.wallet === 'string' ? req.query.wallet.toLowerCase() : '';
+  if (!/^0x[0-9a-f]{40}$/.test(wallet)) {
+    res.status(wallet ? 400 : 200).json({ ...(wallet ? { error: 'wallet must be a 0x address' } : {}), packs, docs: `${PUBLIC_BASE_URL}/SKILL.md#prepaid-credits` });
+    return;
+  }
+  try {
+    const store = getCreditStore();
+    const [b, r] = await Promise.all([store.balance(wallet), store.referralStats(wallet)]);
+    res.json({
+      wallet, balanceUsd: formatUsd(Number(b.micro) / 1e6), updatedAt: b.updatedAt, packs,
+      referral: {
+        link: `${PUBLIC_BASE_URL}/v1/credits/buy?pack=5&ref=${wallet}`,
+        terms: 'You earn 10% of every credit pack bought by wallets you refer, for as long as they keep buying, paid as credit. They get 5% extra credit.',
+        referredWallets: r.referred,
+        earnedUsd: formatUsd(Number(r.earnedMicro) / 1e6),
+      },
+    });
+  } catch {
+    res.status(503).json({ error: 'CREDITS_UNAVAILABLE' });
+  }
+});
+
+// Watch status / cancel (free; authenticated by the per-watch secret).
+freeRouter.get('/watch/:id', async (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  if (!checkWatchSecret(id, req.headers['x-watch-secret'])) {
+    res.status(401).json({ error: 'UNAUTHORIZED', message: 'Send the secret returned at creation in X-Watch-Secret' });
+    return;
+  }
+  const store = getWatchStore();
+  const w = await store.get(id);
+  if (!w) {
+    res.status(404).json({ error: 'NOT_FOUND' });
+    return;
+  }
+  const alerts = await store.recentAlerts(id, 20);
+  res.json({
+    watchId: w.id, type: w.type, chain: w.chain, target: w.target, status: w.status,
+    createdAt: w.createdAt, expiresAt: w.expiresAt, lastCheckAt: w.lastCheckAt, nextCheckAt: w.nextCheckAt,
+    lastState: w.lastState, consecutiveCheckFailures: w.failures,
+    alerts: alerts.map((a) => ({ ts: a.ts, event: a.event, summary: a.payload.summary, delivered: a.delivered, attempts: a.attempts, lastError: a.lastError })),
+  });
+});
+
+freeRouter.delete('/watch/:id', async (req: Request, res: Response) => {
+  const id = String(req.params.id);
+  if (!checkWatchSecret(id, req.headers['x-watch-secret'])) {
+    res.status(401).json({ error: 'UNAUTHORIZED' });
+    return;
+  }
+  const cancelled = await getWatchStore().cancel(id);
+  res.status(cancelled ? 200 : 404).json(cancelled ? { watchId: id, status: 'cancelled', refund: 'none' } : { error: 'NOT_FOUND_OR_INACTIVE' });
 });
 
 freeRouter.get('/privacy', (_req: Request, res: Response) => {
@@ -124,7 +189,7 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.10.0',
+    version: '1.11.0',
     description:
       'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
@@ -271,6 +336,24 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         tags: ['crypto', 'token', 'risk', 'pre-trade', 'bundle', 'security'],
         inputSchema: schemaOf(tradeCheckInput),
         outputSchema: schemaOf(tradeCheckOutput),
+      },
+      {
+        endpoint: 'POST /v1/watch',
+        operationId: 'createWatch',
+        description: 'Watch alerts by signed webhook, prepaid per day: contract-admin (owner, proxy implementation/admin or pause state changes; checked every 30 min), token-risk (rug score crosses a threshold or a new risk flag appears; daily), lending-health (Aave v3 status band or health-factor threshold; every 30 min). Manage with GET/DELETE /watch/:id.',
+        price: PRICING_RULES['/v1/watch'],
+        tags: ['security', 'monitoring', 'webhook', 'alerts', 'subscription'],
+        inputSchema: schemaOf(watchCreateInput),
+        outputSchema: schemaOf(watchCreateOutput),
+      },
+      {
+        endpoint: 'POST /v1/credits/buy',
+        operationId: 'buyCredits',
+        description: 'Prepaid credits for high-volume agents: pay once with x402 (pack 1/5/20 = $1/$5/$20 for $1.10/$5.75/$24 of credit), then sign each request (X-AgentForge-Credit header) instead of paying per call. No per-call settlement, up to 20% bonus. Referral: add ?ref=<wallet> and the referrer earns 10% of every pack that wallet buys, the buyer 5% extra.',
+        price: PRICING_RULES['/v1/credits/buy'],
+        tags: ['credits', 'prepaid', 'bulk-discount', 'referral', 'x402'],
+        inputSchema: { type: 'object', properties: { pack: { type: 'string', enum: ['1', '5', '20'] }, ref: { type: 'string', description: 'Referrer wallet (query param)' } } },
+        outputSchema: { type: 'object', properties: { status: { type: 'string' }, wallet: { type: 'string' }, creditUsd: { type: 'string' }, balanceUrl: { type: 'string' } } },
       },
       {
         endpoint: 'POST /v1/preflight',
@@ -559,6 +642,8 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'POST /v1/address-check',
       'GET /v1/launches',
       'POST /v1/preflight',
+      'POST /v1/watch',
+      'POST /v1/credits/buy',
       'POST /v1/tx-simulate',
       'POST /v1/signature-check',
       'GET /v1/lending/health',
@@ -640,6 +725,7 @@ freeRouter.get('/llms.txt', (req: Request, res: Response) => {
     `- [Catalog](${base}/catalog): machine-readable services, prices, schemas`,
     `- [Agent card](${base}/.well-known/agent.json): A2A skills`,
     `- [Skill guide](${base}/SKILL.md): when to use what, with examples`,
+    `- [Prepaid credits](${base}/credits/balance): packs with up to 20% bonus, signed requests instead of per-call payment, 10% referral rewards`,
     '',
     '## Paid endpoints',
     '',
@@ -693,7 +779,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.10.0',
+    version: '1.11.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
@@ -840,6 +926,20 @@ freeRouter.get('/about', (req: Request, res: Response) => {
           'Check a token before you buy it: one call bundling token-risk-metrics (quantitative rug check), token-intel (market data + AI risk assessment), and the gas oracle, rolled into a proceed/caution/avoid verdict with reasons. Priced below the three calls made separately.',
         best_for: 'Pre-trade screening in trading bots, "should I buy this?" checks, one-call token due diligence',
         input_example: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chain: 'ethereum' },
+      },
+      watch: {
+        endpoint: 'POST /v1/watch',
+        price: PRICING_RULES['/v1/watch'],
+        description: 'Watch alerts by signed webhook, prepaid per day: contract-admin (owner, proxy implementation/admin or pause state changes; checked every 30 min), token-risk (rug score crosses a threshold or a new risk flag appears; daily), lending-health (Aave v3 status band or health-factor threshold; every 30 min). Manage with GET/DELETE /watch/:id. Checks are RPC-only and batched; alerts carry X-AgentForge-Signature (HMAC-SHA256 with the secret returned at creation) and retry with backoff up to 6 times.',
+        best_for: 'Agents holding positions or depending on contracts: know when an admin key, proxy or pause state changes, when a token turns risky, or when a loan nears liquidation, without polling',
+        input_example: { type: 'contract-admin', chain: 'base', target: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', webhookUrl: 'https://example.com/agentforge-hook', days: 30 },
+      },
+      credits: {
+        endpoint: 'POST /v1/credits/buy?pack=5',
+        price: PRICING_RULES['/v1/credits/buy'],
+        description: 'Prepaid credits for high-volume agents: pay once with x402 (pack 1/5/20 = $1/$5/$20 for $1.10/$5.75/$24 of credit), then sign each request (X-AgentForge-Credit header) instead of paying per call. No per-call settlement, up to 20% bonus. Referral: add ?ref=<wallet> and the referrer earns 10% of every pack that wallet buys, the buyer 5% extra. Balance and referral stats: GET /credits/balance?wallet=0x…',
+        best_for: 'Loops that call AgentForge many times a day (preflight before every transaction, launch polling, watch fleets)',
+        input_example: { pack: '5' },
       },
       preflight: {
         endpoint: 'POST /v1/preflight',

@@ -1,4 +1,5 @@
 import { config } from './config.js';
+import { PACKS, packFor } from './credits/auth.js';
 
 function parsePrice(priceString: string): number {
   return Number(priceString.replace(/^\$/, ''));
@@ -14,6 +15,13 @@ export const ADDRESS_CHECK_BASE = parsePrice(config.PRICE_ADDRESS_CHECK);
 export const ADDRESS_CHECK_PER_EXTRA = parsePrice(config.PRICE_ADDRESS_CHECK_PER_EXTRA);
 /** Preflight: flat base (simulation + signature + recipients + up to 2 received tokens), plus the batch per-token rate for each requested token. */
 export const PREFLIGHT_BASE = parsePrice(config.PRICE_PREFLIGHT);
+export const WATCH_LIMITS = { minDays: 1, maxDays: 90 } as const;
+export const WATCH_PRICE_PER_DAY: Record<string, number> = {
+  'contract-admin': parsePrice(config.PRICE_WATCH_CONTRACT_ADMIN_DAY),
+  'token-risk': parsePrice(config.PRICE_WATCH_TOKEN_RISK_DAY),
+  'lending-health': parsePrice(config.PRICE_WATCH_LENDING_HEALTH_DAY),
+};
+export const WATCH_MIN = parsePrice(config.PRICE_WATCH_MIN);
 
 /**
  * Price per paid endpoint in USD — derived from config.PRICE_* (the same
@@ -44,6 +52,9 @@ export const ENDPOINT_PRICES: Record<string, number> = {
   '/v1/lending/health': parsePrice(config.PRICE_LENDING_HEALTH),
   '/v1/signature-check': parsePrice(config.PRICE_SIGNATURE_CHECK),
   '/v1/preflight': PREFLIGHT_BASE,
+  '/v1/watch': WATCH_MIN,
+  // Smallest pack; priceFor() prices the pack actually requested.
+  '/v1/credits/buy': Number(PACKS['1'].priceMicro) / 1e6,
   '/v1/solana/tx-explain': parsePrice(config.PRICE_SOLANA_TX_EXPLAIN),
   '/v1/solana/tx-simulate': parsePrice(config.PRICE_SOLANA_TX_SIMULATE),
   '/v1/solana/token-risk-scan': parsePrice(config.PRICE_SOLANA_TOKEN_RISK_SCAN),
@@ -104,6 +115,13 @@ export function priceFor(endpoint: string, body?: unknown): number {
       const n = itemCount(b.addresses, typeof b.address === 'string' ? 1 : ADDRESS_CHECK_LIMITS.min, ADDRESS_CHECK_LIMITS);
       return roundUsd(ADDRESS_CHECK_BASE + ADDRESS_CHECK_PER_EXTRA * (n - 1));
     }
+    case '/v1/watch': {
+      const perDay = WATCH_PRICE_PER_DAY[String(b.type)] ?? WATCH_PRICE_PER_DAY['contract-admin'];
+      const days = Math.min(WATCH_LIMITS.maxDays, Math.max(WATCH_LIMITS.minDays, Math.floor(Number(b.days) || WATCH_LIMITS.minDays)));
+      return roundUsd(Math.max(WATCH_MIN, perDay * days));
+    }
+    case '/v1/credits/buy':
+      return Number((packFor(String(b.pack ?? '1')) ?? PACKS['1']).priceMicro) / 1e6;
     case '/v1/preflight': {
       const tokens = Array.isArray(b.tokens) ? Math.min(b.tokens.length, PREFLIGHT_LIMITS.tokens) : 0;
       return roundUsd(PREFLIGHT_BASE + RISK_BATCH_PER_TOKEN * tokens);
@@ -116,6 +134,8 @@ export function priceFor(endpoint: string, body?: unknown): number {
 /** Human-readable pricing rule for discovery docs. */
 export const PRICING_RULES: Record<string, string> = {
   '/v1/risk-batch': `${formatUsd(RISK_BATCH_PER_TOKEN)} per token, ${RISK_BATCH_LIMITS.min}-${RISK_BATCH_LIMITS.max} tokens per call`,
+  '/v1/watch': `per day: contract-admin ${formatUsd(parsePrice(config.PRICE_WATCH_CONTRACT_ADMIN_DAY))}, token-risk ${formatUsd(parsePrice(config.PRICE_WATCH_TOKEN_RISK_DAY))}, lending-health ${formatUsd(parsePrice(config.PRICE_WATCH_LENDING_HEALTH_DAY))}; minimum ${formatUsd(parsePrice(config.PRICE_WATCH_MIN))}, 1-90 days`,
+  '/v1/credits/buy': 'pack=1: $1 for $1.10 of credit; pack=5: $5 for $5.75; pack=20: $20 for $24',
   '/v1/preflight': `${formatUsd(PREFLIGHT_BASE)} per check + ${formatUsd(RISK_BATCH_PER_TOKEN)} per token you ask it to rug-check (up to ${PREFLIGHT_LIMITS.tokens})`,
   '/v1/address-check': `${formatUsd(ADDRESS_CHECK_BASE)} for the first address + ${formatUsd(ADDRESS_CHECK_PER_EXTRA)} per additional, up to ${ADDRESS_CHECK_LIMITS.max} per call`,
 };

@@ -91,7 +91,7 @@ const FEATURED: FeaturedService[] = [
  */
 export function pingCatalog(): Record<string, unknown> {
   return {
-    hint: 'Payment verified — your x402 setup works against every endpoint below. Prices are per call, USDC on Base or Solana, no signup.',
+    hint: 'Payment verified — your x402 setup works against every endpoint below. Prices are per call, USDC on Base or Solana, no signup. High volume? Prepay with POST /v1/credits/buy (up to 20% bonus) and sign requests instead of paying per call.',
     featured: FEATURED.map((s) => ({
       endpoint: `${s.method} ${PUBLIC_BASE_URL}${s.endpoint}`,
       price: priceOf(s.endpoint),
