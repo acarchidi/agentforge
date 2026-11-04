@@ -75,3 +75,7 @@ npm test
 ```
 
 Payments: x402 v2, USDC on Base (and Solana for the Solana endpoints), settled through the CDP facilitator. Every paid route returns `402` to an unpaid request; `GET /health/paid` checks all of them.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

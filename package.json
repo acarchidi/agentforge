@@ -31,7 +31,7 @@
     "api"
   ],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@coinbase/x402": "^2.1.0",
     "@modelcontextprotocol/sdk": "^1.27.1",
