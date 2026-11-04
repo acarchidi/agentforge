@@ -606,7 +606,7 @@ freeRouter.get('/.well-known/ai-plugin.json', (req: Request, res: Response) => {
       transport: 'streamable-http',
     },
     logo_url: `${baseUrl}/logo.png`,
-    contact_email: '',
+    contact_email: config.CONTACT_EMAIL,
     legal_info_url: '',
   });
 });

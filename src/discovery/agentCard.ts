@@ -406,6 +406,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     provider: {
       organization: 'AgentForge',
       url: baseUrl,
+      email: config.CONTACT_EMAIL,
     },
 
     capabilities: {

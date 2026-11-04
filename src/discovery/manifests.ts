@@ -8,6 +8,7 @@
 
 import { z } from 'zod';
 import { mcpServer, MCP_SERVER_VERSION } from '../mcp/server.js';
+import { config } from '../config.js';
 
 /** Base Identity Registry (ERC-8004). */
 export const ERC8004_REGISTRY = '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432';
@@ -76,6 +77,7 @@ export function agentRegistration(base: string): Record<string, unknown> {
       { name: 'A2A', endpoint: `${base}/.well-known/agent.json`, version: '0.2.0' },
       { name: 'OpenAPI', endpoint: `${base}/openapi.json`, version: '3.1.0' },
       { name: 'x402', endpoint: `${base}/.well-known/x402` },
+      { name: 'email', endpoint: config.CONTACT_EMAIL },
     ],
     x402Support: true,
     active: true,
