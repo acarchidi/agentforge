@@ -856,7 +856,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'New token launches feed (memecoin sniper feed with honeypot detection) on Base, Ethereum, Arbitrum, and BNB Chain, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
+      description: 'New token launches feed (memecoin sniper feed with honeypot detection) on Base, Ethereum, Arbitrum, BNB Chain, and HyperEVM, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -864,7 +864,7 @@ export function createPaymentMiddleware() {
           inputSchema: {
             type: 'object',
             properties: {
-              chain: { type: 'string', enum: ['base', 'ethereum', 'arbitrum', 'bsc'], default: 'base' },
+              chain: { type: 'string', enum: ['base', 'ethereum', 'arbitrum', 'bsc', 'hyperevm'], default: 'base' },
               since: { type: 'string', format: 'date-time', description: 'Only pools created after this; pass the previous nextSince' },
               minLiquidityUsd: { type: 'number', default: 1000 },
               maxRiskScore: { type: 'integer', minimum: 0, maximum: 100 },
@@ -899,7 +899,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: `Is this action safe? One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic. Priced ${PRICING_RULES['/v1/preflight']}. Category: security.`,
+      description: `Is this action safe? One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM. Priced ${PRICING_RULES['/v1/preflight']}. Category: security.`,
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({

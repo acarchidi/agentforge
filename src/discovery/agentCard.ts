@@ -39,7 +39,7 @@ export const SKILLS: Skill[] = [
   {
     id: 'launches',
     name: 'New Launch Feed',
-    description: 'Newly launched tokens on Base, Ethereum, Arbitrum, and BNB Chain, each already risk-scored: verification, owner mint/blacklist/tax powers, upgradeable proxy, supply held off-pool, thin liquidity, honeypot trading pattern. Poll it with nextSince to get only new launches.',
+    description: 'Newly launched tokens on Base, Ethereum, Arbitrum, BNB Chain, and HyperEVM, each already risk-scored: verification, owner mint/blacklist/tax powers, upgradeable proxy, supply held off-pool, thin liquidity, honeypot trading pattern. Poll it with nextSince to get only new launches.',
     tags: ['crypto', 'new-tokens', 'launches', 'sniper', 'rug-check', 'memecoin', 'feed'],
     examples: [
       'What tokens launched on Base in the last 10 minutes?',

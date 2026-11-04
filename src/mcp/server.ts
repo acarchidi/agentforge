@@ -524,7 +524,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     'launch_feed',
     'Newly launched tokens on Base, Ethereum, or Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Poll it: pass the previous nextSince as since to get only new launches.',
     {
-      chain: z.enum(['base', 'ethereum', 'arbitrum', 'bsc']).optional().default('base'),
+      chain: z.enum(['base', 'ethereum', 'arbitrum', 'bsc', 'hyperevm']).optional().default('base'),
       since: z.string().optional().describe('ISO timestamp; only pools created after it'),
       minLiquidityUsd: z.number().min(0).optional().default(1000),
       maxRiskScore: z.number().int().min(0).max(100).optional().describe('Only launches scoring at or below this'),
@@ -535,7 +535,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
 
   register(
     'preflight',
-    'Is this action safe? Call once before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Returns one proceed / caution / avoid verdict with reasons. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.',
+    'Is this action safe? Call once before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Returns one proceed / caution / avoid verdict with reasons. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM.',
     {
       chain: z.enum(EVM_CHAINS).optional().describe('Chain of the action (defaults to the typed data chainId, else base)'),
       from: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe('Wallet taking the action; required with transactions'),

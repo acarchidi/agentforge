@@ -4,13 +4,13 @@
  * Adding a chain: it needs a public RPC that answers JSON-RPC batches, and
  * Etherscan v2 must cover its chain id (token risk uses verified source). Set
  * `simulate` only when the RPC answers `eth_simulateV1` with traceTransfers —
- * Avalanche's public RPCs don't, so it is left out of tx-simulate.
+ * Avalanche's and HyperEVM's public RPCs don't, so they are left out of tx-simulate.
  * Override any RPC with EVM_RPC_URL_<CHAIN> (e.g. EVM_RPC_URL_BSC).
  */
 
 export const EVM_CHAINS = [
   'ethereum', 'base', 'arbitrum', 'optimism', 'polygon',
-  'bsc', 'avalanche', 'linea', 'unichain', 'sonic',
+  'bsc', 'avalanche', 'linea', 'unichain', 'sonic', 'hyperevm',
 ] as const;
 export type EvmChain = (typeof EVM_CHAINS)[number];
 
@@ -42,6 +42,7 @@ export const CHAIN_INFO: Record<EvmChain, ChainInfo> = {
   avalanche: { id: 43114, name: 'Avalanche', rpc: 'https://avalanche-c-chain-rpc.publicnode.com', nativeSymbol: 'AVAX', usdc: '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e', dexscreener: 'avalanche', geckoterminal: 'avax', coingecko: 'avalanche' },
   linea: { id: 59144, name: 'Linea', rpc: 'https://linea-rpc.publicnode.com', nativeSymbol: 'ETH', usdc: '0x176211869ca2b568f2a7d4ee941e073a821ee1ff', dexscreener: 'linea', geckoterminal: 'linea', coingecko: 'linea' },
   unichain: { id: 130, name: 'Unichain', rpc: 'https://unichain-rpc.publicnode.com', nativeSymbol: 'ETH', usdc: '0x078d782b760474a361dda0af3839290b0ef57ad6', dexscreener: 'unichain', geckoterminal: 'unichain', coingecko: 'unichain' },
+  hyperevm: { id: 999, name: 'HyperEVM', rpc: 'https://hyperliquid-rpc.publicnode.com', nativeSymbol: 'HYPE', usdc: '0xb88339cb7199b77e23db6e890353e22632ba630f', dexscreener: 'hyperevm', geckoterminal: 'hyperevm', coingecko: 'hyperevm' },
   sonic: { id: 146, name: 'Sonic', rpc: 'https://sonic-rpc.publicnode.com', nativeSymbol: 'S', usdc: '0x29219dd400f2bf60e5a23d13be72b486d4038894', dexscreener: 'sonic', geckoterminal: 'sonic', coingecko: 'sonic' },
 };
 

@@ -6154,6 +6154,50 @@
       ],
       "source": "curated",
       "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "name": "Uniswap: Permit2",
+      "chain": "hyperevm",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "permit2",
+        "approvals",
+        "signature"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0xb88339cb7199b77e23db6e890353e22632ba630f",
+      "name": "USDC: Token",
+      "chain": "hyperevm",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "usdc",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x5555555555555555555555555555555555555555",
+      "name": "WHYPE: Token",
+      "chain": "hyperevm",
+      "protocol": "Hyperliquid",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "wrapped-native",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
     }
   ]
 }

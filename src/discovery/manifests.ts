@@ -19,7 +19,7 @@ const DESCRIPTION =
   'DeFi safety tools for AI agents, paid per call over x402 (USDC on Base or Solana, no API keys). ' +
   'One-call preflight before any on-chain action, transaction simulation, signature and permit phishing checks, ' +
   'sanctions and scam address screening, rug checks, risk-scored new launches, and Aave liquidation risk, ' +
-  'on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and Solana.';
+  'on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana.';
 
 interface RegisteredTool {
   title?: string;

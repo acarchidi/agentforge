@@ -4,7 +4,7 @@ import { relatedServicesField } from './shared.js';
 // ── Input (query string) ───────────────────────────────────────────
 
 export const launchesInput = z.object({
-  chain: z.enum(['base', 'ethereum', 'arbitrum', 'bsc']).default('base'),
+  chain: z.enum(['base', 'ethereum', 'arbitrum', 'bsc', 'hyperevm']).default('base'),
   /** ISO timestamp; only pools created after it. Pass the previous response's nextSince. */
   since: z.string().datetime({ offset: true }).optional(),
   minLiquidityUsd: z.coerce.number().min(0).default(1000),
