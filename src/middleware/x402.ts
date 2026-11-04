@@ -975,6 +975,7 @@ export function createPaymentMiddleware() {
             example: {
               verdict: 'avoid',
               reasons: ['Transaction 1 reverts: Blacklistable: account is blacklisted', 'recipient 0x0330… is on a sanctions or scam list'],
+              calls: [{ index: 0, to: '0x8335…2913', toLabel: 'USDC', success: false, revertReason: 'Blacklistable: account is blacklisted' }],
               assetChanges: [],
               approvals: [],
               counterparties: [{ address: '0x0330…', role: 'recipient', verdict: 'block' }],
@@ -1032,6 +1033,8 @@ export function createPaymentMiddleware() {
               verdict: 'avoid',
               summary: 'Lets 0xabab…abab spend an unlimited amount of USDC from this wallet until revoked, without any further approval.',
               reasons: ['Grants token permissions to a plain wallet, not a contract — the common signature-drainer pattern'],
+              grants: [{ token: '0x8335…2913', symbol: 'USDC', to: '0xabab…abab', amount: 'unlimited', unlimited: true, expires: '2030-03-17T17:46:40.000Z' }],
+              counterparties: [{ address: '0xabab…abab', role: 'spender', verdict: 'caution', isContract: false }],
             },
           },
         }),
@@ -1071,6 +1074,7 @@ export function createPaymentMiddleware() {
             example: {
               address: '0x7192…',
               positions: [{ protocol: 'aave-v3', chain: 'ethereum', collateralUsd: 1803.93, debtUsd: 502.93, healthFactor: 3.021, status: 'safe', collateralDropToLiquidationPct: 66.9 }],
+              worst: { chain: 'ethereum', healthFactor: 3.021, status: 'safe' },
             },
           },
         }),
