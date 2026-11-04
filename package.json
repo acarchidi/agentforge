@@ -21,7 +21,8 @@
     "revenue:onchain": "tsx scripts/onchainRevenue.ts",
     "keepalive:bazaar": "tsx scripts/buyerAgentAll.ts",
     "keepalive": "tsx scripts/keepalive.ts",
-    "refresh:address-lists": "tsx scripts/refreshAddressLists.ts"
+    "refresh:address-lists": "tsx scripts/refreshAddressLists.ts",
+    "register:8004": "tsx scripts/register8004.ts"
   },
   "keywords": [
     "x402",
