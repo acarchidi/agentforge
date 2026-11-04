@@ -10,6 +10,7 @@
 
 import { ENDPOINT_PRICES, PRICING_RULES, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 import type { RelatedService } from '../schemas/shared.js';
+import { creditsPitch, guardPitch } from './pitch.js';
 
 interface FeaturedService {
   endpoint: string;
@@ -106,6 +107,8 @@ export function pingCatalog(): Record<string, unknown> {
       ...(s.cadence ? { cadence: s.cadence } : {}),
       ...(s.suggestedInput ? { suggestedInput: s.suggestedInput } : {}),
     })),
+    guard: guardPitch(),
+    credits: creditsPitch(),
     fullCatalog: `${PUBLIC_BASE_URL}/catalog`,
     openapi: `${PUBLIC_BASE_URL}/openapi.json`,
     agentCard: `${PUBLIC_BASE_URL}/.well-known/agent.json`,

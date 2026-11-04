@@ -1,9 +1,9 @@
 ---
 name: agentforge
-description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge.
+description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Also `content_scan` for prompt injection in untrusted text. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge. To make the check automatic, the `agentforge-tools` SDK wraps the wallet so every signature is preflighted and `avoid` is refused.
 metadata:
   author: agentforge
-  version: "1.12.0"
+  version: "1.13.0"
 ---
 
 # AgentForge
@@ -91,6 +91,23 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 | POST | `/v1/solana/tx-explain` | $0.05 | Explain a Solana transaction: labeled programs, token/SOL movements, plain-English summary. Base or Solana USDC. |
 
 Prices and JSON Schemas for every endpoint are always authoritative at `GET /catalog` — treat the table above as a snapshot, not the source of truth. The three `solana/*` endpoints accept payment on **either** Base or Solana mainnet USDC — pick whichever network your wallet holds funds on.
+
+## Make it automatic: the Guard
+
+Calling `preflight` only protects you when you remember to call it. A prompt-injected agent will not. The `agentforge-tools` SDK wraps the wallet instead, so every transaction, signature and x402 payment is preflighted before it is signed, and an `avoid` verdict is refused in code:
+
+```ts
+import { privateKeyToAccount } from 'viem/accounts';
+import { guardAccount } from 'agentforge-tools';
+const account = guardAccount(privateKeyToAccount(KEY), { privateKey: KEY }); // signTransaction / signTypedData now refuse `avoid`
+```
+
+- viem: `guardAccount`, `guardWalletClient` (covers `sendTransaction` and `writeContract`).
+- x402 clients: `client.onBeforePaymentCreation(agentForgePaymentHook({ privateKey: KEY }))` screens every seller you pay.
+- Coinbase AgentKit: `guardWalletProvider(walletProvider, { privateKey: KEY })` from `agentforge-tools/agentkit`.
+- Claude Code / Cursor: `npx agentforge-tools hook` prints a `PreToolUse` hook.
+
+Fail-closed by default (`failOpen: false`). Each check is $0.008, paid from prepaid credits that top up automatically. Integrators: pass `credits: { referrer: '0xYourWallet' }` to earn 10% of the credit packs your users buy.
 
 ## Prepaid credits
 

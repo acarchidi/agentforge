@@ -1,4 +1,5 @@
 import { Router, type Request, type Response } from 'express';
+import { withPitch } from '../discovery/pitch.js';
 import { z } from 'zod';
 import { getTokenIntelWithCost } from '../services/tokenIntel.js';
 import { tokenResearchWithCost } from '../services/tokenResearch.js';
@@ -100,7 +101,7 @@ async function handlePaid(
       amountUsd: viaAgentkitTrial ? 0 : priceFor(endpoint, input),
       estimatedCostUsd: result.estimatedCostUsd,
     });
-    res.json(result.output);
+    res.json(withPitch(endpoint, result.output, { paidWithCredits: credit?.scheme === 'credits' }));
   } catch (error) {
     const latencyMs = Date.now() - startTime;
     const errorClass = classifyError(error);

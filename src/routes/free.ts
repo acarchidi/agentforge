@@ -195,7 +195,7 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.12.0',
+    version: '1.13.0',
     description:
       'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
@@ -735,7 +735,7 @@ freeRouter.get('/llms.txt', (req: Request, res: Response) => {
   const lines = [
     '# AgentForge',
     '',
-    '> Pay-per-call DeFi safety tools for AI agents: one-call preflight before any on-chain action (`POST /v1/preflight`), simulate a transaction before signing, check a signature request for phishing, screen counterparties against sanctions and scam lists, catch new token launches already risk-scored, rug-check tokens, check liquidation risk, decode transactions. x402 payments in USDC on Base or Solana; no API keys or accounts. Every paid endpoint answers an unpaid request with HTTP 402 and its exact price.',
+    '> Pay-per-call DeFi safety tools for AI agents: one-call preflight before any on-chain action (`POST /v1/preflight`), simulate a transaction before signing, check a signature request for phishing, screen counterparties against sanctions and scam lists, catch new token launches already risk-scored, rug-check tokens, check liquidation risk, decode transactions, and scan untrusted text for prompt injection (`POST /v1/content-scan`). The `agentforge-tools` SDK makes the preflight automatic on every signature. x402 payments in USDC on Base or Solana; no API keys or accounts. Every paid endpoint answers an unpaid request with HTTP 402 and its exact price.',
     '',
     '## Connect',
     '',
@@ -747,6 +747,12 @@ freeRouter.get('/llms.txt', (req: Request, res: Response) => {
     `- [Skill guide](${base}/SKILL.md): when to use what, with examples`,
     `- [Contact](${base}/contact): feedback, problems, feature requests (POST /feedback, or email ${config.CONTACT_EMAIL})`,
     `- [Prepaid credits](${base}/credits/balance): packs with up to 20% bonus, signed requests instead of per-call payment, 10% referral rewards`,
+    '',
+    '## Make it automatic (Guard)',
+    '',
+    `- [agentforge-tools on npm](https://www.npmjs.com/package/agentforge-tools): \`npm install agentforge-tools\`, then \`guardAccount(account, { privateKey })\` (viem), \`guardWalletClient\`, \`agentForgePaymentHook\` (x402 clients) or \`guardWalletProvider\` (Coinbase AgentKit). Every transaction, signature and x402 payment is preflighted before signing; \`avoid\` is refused. Paid from prepaid credits with auto top-up.`,
+    '- Claude Code / Cursor: `npx agentforge-tools hook` prints a PreToolUse hook that blocks tool calls carrying an unsafe transaction.',
+    '- Integrators: set `referrer` (SDK) or `&ref=<wallet>` on the credits buy URL to earn 10% of the credit packs your users buy.',
     '',
     '## Paid endpoints',
     '',
@@ -800,7 +806,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.12.0',
+    version: '1.13.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
