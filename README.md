@@ -57,7 +57,7 @@ if (sim.verdict === 'avoid') throw new Error('refusing to sign');
 | `POST /v1/preflight` | $0.008 + $0.004/token | **Is this action safe?** One call before any on-chain action: transactions simulated, signatures checked for phishing, recipients screened, tokens rug-checked, one proceed/caution/avoid verdict. |
 | `POST /v1/tx-simulate` | $0.005 | Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, asset changes, approvals, counterparty screening, proceed/caution/avoid verdict. |
 | `GET /v1/lending/health` | $0.003 | Aave v3 liquidation risk for a wallet across nine chains: collateral, debt, health factor, status, collateral drop to liquidation. |
-| `GET /v1/launches` | $0.005 | Feed of newly launched tokens (Base, Ethereum, Arbitrum, BNB Chain), each already risk-scored. Poll with since=<previous nextSince> to get only new launches. |
+| `GET /v1/launches` | $0.005 | Feed of newly launched tokens (Base, Ethereum, Arbitrum, BNB Chain, HyperEVM), each already risk-scored. Poll with since=<previous nextSince> to get only new launches. |
 | `POST /v1/address-check` | $0.003 for the first address + $0.001 per additional, up to 100 per call | Counterparty screening for 1-100 EVM or Solana addresses: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses. |
 | `POST /v1/risk-batch` | $0.004 per token, 2-25 tokens per call | Rug-check 2-25 EVM tokens in one call: holder, permission, and liquidity risk scores per token. |
 | `POST /v1/solana/tx-explain` | $0.05 | Decode a Solana transaction into plain English: labeled programs, token/SOL movements, and risk flags. Falls back to raw RPC decoding if enhanced parsing is unavailable. |

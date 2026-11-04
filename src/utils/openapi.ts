@@ -556,7 +556,7 @@ export function generateOpenApiSpec(): object {
           operationId: 'preflight',
           summary: 'Is this action safe? One preflight call before any on-chain action',
           description:
-            `One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic. Price: ${PRICING_RULES['/v1/preflight']} USDC via x402.`,
+            `One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM. Price: ${PRICING_RULES['/v1/preflight']} USDC via x402.`,
           tags: ['Security'],
           'x-x402-price': PRICING_RULES['/v1/preflight'],
           'x-agentic-market-category': 'security',
@@ -639,7 +639,7 @@ export function generateOpenApiSpec(): object {
           operationId: 'getLaunches',
           summary: 'New token launch feed (risk-scored)',
           description:
-            `Newly launched tokens on Base, Ethereum, Arbitrum, and BNB Chain, each already risk-scored. Poll with since=<previous nextSince> to get only new launches. Price: ${config.PRICE_LAUNCHES} USDC via x402.`,
+            `Newly launched tokens on Base, Ethereum, Arbitrum, BNB Chain, and HyperEVM, each already risk-scored. Poll with since=<previous nextSince> to get only new launches. Price: ${config.PRICE_LAUNCHES} USDC via x402.`,
           tags: ['Crypto Intelligence', 'Security'],
           'x-x402-price': config.PRICE_LAUNCHES,
           'x-agentic-market-category': 'data',

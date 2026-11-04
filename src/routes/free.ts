@@ -275,7 +275,7 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
       {
         endpoint: 'POST /v1/preflight',
         operationId: 'preflight',
-        description: 'Is this action safe? One call: transactions simulated, signatures checked for phishing, recipients screened, tokens rug-checked, one proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.',
+        description: 'Is this action safe? One call: transactions simulated, signatures checked for phishing, recipients screened, tokens rug-checked, one proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM.',
         price: PRICING_RULES['/v1/preflight'],
         tags: ['security', 'preflight', 'agent-safety', 'simulation', 'signature', 'sanctions', 'rug-check'],
         inputSchema: schemaOf(preflightInput),
@@ -311,7 +311,7 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
       {
         endpoint: 'GET /v1/launches',
         operationId: 'getLaunches',
-        description: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum, BNB Chain), each already risk-scored. Poll with since=<previous nextSince> to get only new launches.',
+        description: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum, BNB Chain, HyperEVM), each already risk-scored. Poll with since=<previous nextSince> to get only new launches.',
         price: config.PRICE_LAUNCHES,
         tags: ['crypto', 'new-tokens', 'launches', 'rug-check', 'feed'],
         inputSchema: schemaOf(launchesInput),
@@ -845,7 +845,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
         endpoint: 'POST /v1/preflight',
         price: PRICING_RULES['/v1/preflight'],
         description:
-          'Is this action safe? The one call to make before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Checks run in parallel; no LLM. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.',
+          'Is this action safe? The one call to make before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Checks run in parallel; no LLM. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM.',
         best_for: 'Any agent that moves funds: call it before every send, swap, approval, signature, or x402 payment',
         input_example: { chain: 'base', from: '0x8ec901f7e2710163387d70950f680f1ea2269d15', transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb000000000000000000000000abababababababababababababababababababab00000000000000000000000000000000000000000000000000000000000f4240' }], recipients: ['0xabababababababababababababababababababab'] },
       },
@@ -877,7 +877,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
         endpoint: 'GET /v1/launches?chain=base',
         price: config.PRICE_LAUNCHES,
         description:
-          'Feed of newly launched tokens on Base, Ethereum, Arbitrum, and BNB Chain. Each launch is scored once at discovery from on-chain checks (source verification, owner mint/blacklist/tax/pause powers via bytecode scan, upgradeable proxy, share of supply held off-pool) and re-scored every few minutes for 24h as trading activity accrues (thin liquidity, buys-without-sells honeypot pattern). Poll it: pass the previous nextSince as since to get only new launches.',
+          'Feed of newly launched tokens on Base, Ethereum, Arbitrum, BNB Chain, and HyperEVM. Each launch is scored once at discovery from on-chain checks (source verification, owner mint/blacklist/tax/pause powers via bytecode scan, upgradeable proxy, share of supply held off-pool) and re-scored every few minutes for 24h as trading activity accrues (thin liquidity, buys-without-sells honeypot pattern). Poll it: pass the previous nextSince as since to get only new launches.',
         best_for: 'Sniper and launch-trading bots, new-listing alerts, filtering out rugs before they reach a buy decision',
         input_example: { chain: 'base', minLiquidityUsd: 1000, maxRiskScore: 50 },
       },

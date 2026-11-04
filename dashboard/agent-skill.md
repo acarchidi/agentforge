@@ -1,6 +1,6 @@
 ---
 name: agentforge
-description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and Solana. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge.
+description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge.
 metadata:
   author: agentforge
   version: "1.10.0"
@@ -8,14 +8,14 @@ metadata:
 
 # AgentForge
 
-AgentForge is a DeFi safety layer for AI agents on ten EVM chains and Solana. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
+AgentForge is a DeFi safety layer for AI agents on eleven EVM chains and Solana. Base URL: `https://agentforge-taupe.vercel.app`. It has two tiers, and the free tier costs nothing to try:
 
 1. **Free** — contract/program label lookups, full catalog, service docs, feedback. No wallet, no payment, no account.
 2. **Paid** — 26 deeper analysis endpoints (one-call preflight safety checks, signature phishing checks, transaction simulation, liquidation risk, new-launch feed, address screening, batch rug checks, pre-trade token checks, wallet safety, transaction decode/simulate, and more), each billed per call via [x402](https://www.x402.org/) in USDC. Every price is stated plainly below and at `GET /catalog` — nothing is hidden.
 
 ## Free entry points (start here, no payment required)
 
-- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 433-contract label registry (protocol name, category, risk level).
+- `GET /registry/lookup?address=0x...&chain=ethereum` — look up an EVM contract in our 436-contract label registry (protocol name, category, risk level).
 - `GET /v1/solana/program-lookup?programId=...` — look up a Solana program in our 63-program label registry (protocol, category, risk level). Same idea, Solana side.
 - `GET /registry/stats` — EVM registry coverage stats (entry count, chains, categories).
 - `GET /catalog` — full machine-readable catalog of all 26 paid endpoints with current prices and JSON schemas.
@@ -42,7 +42,7 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 
 - In a trading loop: poll `launches` every 1-5 minutes (pass `nextSince` back as `since`) for newly listed tokens that are already risk-scored, then re-screen your watchlist with `risk-batch` (2-25 tokens per call, priced per token).
 - Before signing any message or permit: `signature-check` explains what the signature allows and catches permit phishing, sell-for-nothing NFT orders, and over-priced or fake x402 payment requests.
-- Before ANY on-chain action, the simplest rule: call `preflight` with whatever you are about to do (transactions, a signature request, an x402 payment request, recipients, tokens to buy). One verdict covers simulation, signature phishing, sanctions/scam screening, and rug checks, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.
+- Before ANY on-chain action, the simplest rule: call `preflight` with whatever you are about to do (transactions, a signature request, an x402 payment request, recipients, tokens to buy). One verdict covers simulation, signature phishing, sanctions/scam screening, and rug checks, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM.
 - Before signing any EVM transaction: `tx-simulate` shows exactly what leaves the wallet, which approvals are granted, and whether any counterparty is sanctioned or a known scammer.
 - Managing a leveraged position: `lending/health` reports the Aave v3 health factor on every chain and how far collateral can fall before liquidation.
 - Before every outgoing transfer or approval: `address-check` screens the counterparty against OFAC sanctions and scam-wallet lists and flags brand-new address-poisoning wallets (1-100 addresses per call).
@@ -61,7 +61,7 @@ Use the paid HTTP endpoints below when you need more volume than the free daily 
 | POST | `/v1/signature-check` | $0.003 | Check a signature request before signing: EIP-712 permits, Permit2, Seaport orders, transfer authorizations, and x402 payment requests decoded, spenders and payees screened, drainer patterns caught. |
 | POST | `/v1/tx-simulate` | $0.005 | Simulate 1-5 EVM transactions before signing: revert reason, asset changes, approvals, counterparty sanctions/scam screening, proceed/caution/avoid. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic. |
 | GET | `/v1/lending/health` | $0.003 | Aave v3 liquidation risk across nine chains: collateral, debt, health factor, status, collateral drop to liquidation. |
-| GET | `/v1/launches` | $0.005 | New-launch feed (Base, Ethereum, Arbitrum, BNB Chain), each launch already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern. Poll with `since=<nextSince>`. |
+| GET | `/v1/launches` | $0.005 | New-launch feed (Base, Ethereum, Arbitrum, BNB Chain, HyperEVM), each launch already risk-scored: owner powers, proxy, supply held off-pool, honeypot trading pattern. Poll with `since=<nextSince>`. |
 | POST | `/v1/address-check` | $0.003 + $0.001/extra address | Counterparty screening for 1-100 EVM or Solana addresses: OFAC sanctions, scam/phishing wallets, labeled protocols, brand-new addresses. |
 | POST | `/v1/risk-batch` | $0.004 per token (2-25) | Rug-check a watchlist in one call: holder, permission, and liquidity risk per token. |
 | POST | `/v1/trade-check` | $0.025 | Pre-trade bundle: rug-check metrics + AI risk assessment + current gas in one call, with a proceed/caution/avoid verdict. Cheaper than the three calls separately. |

@@ -5,13 +5,14 @@
  * activity. Same company as CoinGecko, which the token services already use.
  */
 
-export type LaunchChain = 'base' | 'ethereum' | 'arbitrum' | 'bsc';
+export type LaunchChain = 'base' | 'ethereum' | 'arbitrum' | 'bsc' | 'hyperevm';
 
 const GT_NETWORK: Record<LaunchChain, string> = {
   base: 'base',
   ethereum: 'eth',
   arbitrum: 'arbitrum',
   bsc: 'bsc',
+  hyperevm: 'hyperevm',
 };
 
 /** Quote assets: when one of these is a pool's base token, the launch is the other side. */
@@ -42,6 +43,12 @@ const QUOTE_ASSETS: Record<LaunchChain, Set<string>> = {
     '0xe9e7cea3dedca5984780bafc599bd69add087d56', // BUSD
     '0xc5f0f7b66764f6ec8c8dff7ba683102295e16409', // FDUSD
     '0x0000000000000000000000000000000000000000', // native BNB (v4)
+  ]),
+  hyperevm: new Set([
+    '0x5555555555555555555555555555555555555555', // WHYPE
+    '0xb88339cb7199b77e23db6e890353e22632ba630f', // USDC
+    '0xb8ce59fc3717ada4c02eadf9682a9e934f625ebb', // USDT0
+    '0x0000000000000000000000000000000000000000',
   ]),
 };
 
