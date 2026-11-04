@@ -1,5 +1,7 @@
 # AgentForge distribution roadmap
 
+> The 90-day operating plan (guard, x402 trust layer, growth engine, executor protocol) is `docs/growth-plan.md`; progress is in `docs/growth-log.md`.
+
 Last updated 2026-11-03. Owner of every step below is Claude unless marked **(you)**.
 
 AgentForge's buyers are AI agents and the developers who wire them up. Agents find
