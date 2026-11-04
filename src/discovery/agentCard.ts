@@ -93,6 +93,30 @@ export const SKILLS: Skill[] = [
     method: 'POST',
   },
   {
+    id: 'watch',
+    name: 'Watch Alerts',
+    description: 'Watch alerts by signed webhook, prepaid per day: contract-admin (owner, proxy implementation/admin or pause state changes; checked every 30 min), token-risk (rug score crosses a threshold or a new risk flag appears; daily), lending-health (Aave v3 status band or health-factor threshold; every 30 min). Manage with GET/DELETE /watch/:id.',
+    tags: ['security', 'monitoring', 'webhook', 'alerts', 'liquidation', 'admin-key'],
+    examples: [
+      'Alert me if this contract\'s owner or proxy implementation changes',
+      'Tell me when my Aave health factor drops below 1.3',
+      'Watch this token and alert me if it turns risky',
+    ],
+    price: config.PRICE_WATCH_MIN,
+    endpoint: '/v1/watch',
+    method: 'POST',
+  },
+  {
+    id: 'credits',
+    name: 'Prepaid Credits',
+    description: 'Prepaid credits for high-volume agents: pay once with x402 (pack 1/5/20 = $1/$5/$20 for $1.10/$5.75/$24 of credit), then sign each request (X-AgentForge-Credit header) instead of paying per call. No per-call settlement, up to 20% bonus. Referral: add ?ref=<wallet> and the referrer earns 10% of every pack that wallet buys, the buyer 5% extra.',
+    tags: ['credits', 'prepaid', 'bulk-discount', 'referral'],
+    examples: ['Buy $5 of AgentForge credits', 'How do I avoid paying per call?', 'What is my AgentForge credit balance?'],
+    price: '$1',
+    endpoint: '/v1/credits/buy',
+    method: 'POST',
+  },
+  {
     id: 'tx-simulate',
     name: 'EVM Transaction Simulation',
     description: 'Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, every asset leaving or entering the wallet, approvals granted, counterparty sanctions/scam screening, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic.',
@@ -401,7 +425,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     description:
       'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check any signature request for phishing, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.10.0',
+    version: '1.11.0',
 
     provider: {
       organization: 'AgentForge',

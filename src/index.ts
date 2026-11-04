@@ -1,10 +1,12 @@
 import express from 'express';
 import { config } from './config.js';
 import { createPaymentMiddleware } from './middleware/x402.js';
+import { creditsGate, keepRawBody } from './middleware/credits.js';
 import { rateLimit } from './middleware/rateLimit.js';
 import { paidRouter } from './routes/paid.js';
 import { freeRouter } from './routes/free.js';
 import { adminRouter } from './routes/admin.js';
+import { cronRouter } from './routes/cron.js';
 import { initDb, getDb } from './analytics/db.js';
 import { createMcpServer } from './mcp/server.js';
 import { mcpClientHash } from './analytics/clientId.js';
@@ -18,17 +20,17 @@ const app = express();
 app.set('trust proxy', true);
 
 // Parse JSON bodies
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '1mb', verify: keepRawBody }));
 
 // CORS — allow agent clients from any origin
 app.use((_req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
   res.setHeader(
     'Access-Control-Allow-Headers',
-    'Content-Type, Authorization, PAYMENT-SIGNATURE, X-PAYMENT, X-PAYMENT-RESPONSE, agentkit',
+    'Content-Type, Authorization, PAYMENT-SIGNATURE, X-PAYMENT, X-PAYMENT-RESPONSE, agentkit, X-AgentForge-Credit, X-Watch-Secret',
   );
-  res.setHeader('Access-Control-Expose-Headers', 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE');
+  res.setHeader('Access-Control-Expose-Headers', 'PAYMENT-REQUIRED, PAYMENT-RESPONSE, X-PAYMENT-RESPONSE, X-AgentForge-Credit-Balance');
   if (_req.method === 'OPTIONS') {
     res.status(204).end();
     return;
@@ -48,6 +50,9 @@ app.use(freeRouter);
 
 // Admin routes (token auth, no x402)
 app.use(adminRouter);
+
+// Scheduled jobs (CRON_SECRET bearer auth)
+app.use(cronRouter);
 
 // MCP server (free — bypasses x402)
 app.post('/mcp', async (req, res) => {
@@ -79,6 +84,9 @@ app.delete('/mcp', (_req, res) => {
 });
 
 // x402 payment middleware — intercepts paid routes
+// Prepaid credits: a signed X-AgentForge-Credit request is served from its balance here, skipping x402.
+app.use(creditsGate(paidRouter));
+
 app.use(createPaymentMiddleware());
 
 // Paid routes (x402 has already verified payment before these execute)

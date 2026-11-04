@@ -12,6 +12,8 @@ import { PRICING_RULES, priceFor } from '../pricing.js';
 import { logEvent } from '../analytics/logger.js';
 import { EVM_CHAINS, SIMULATE_CHAINS } from '../utils/chains.js';
 import { LENDING_CHAINS } from '../schemas/lendingHealth.js';
+import { PACK_BY_PRICE_MICRO } from '../credits/auth.js';
+import { getCreditStore } from '../credits/store.js';
 import { hashClientId } from '../analytics/clientId.js';
 import {
   agentkitServerExtension,
@@ -46,6 +48,8 @@ export const ICON_URL = `${config.PUBLIC_BASE_URL}/brand/agentforge-icon-512.png
  * Measured with scripts/bazaarRank.ts.
  */
 export const ROUTE_METADATA: Record<string, { name: string; category: string; tags: string[] }> = {
+  '/v1/watch': { name: 'Contract & Wallet Watch Alerts', category: 'security', tags: ['webhook alerts', 'contract monitoring', 'liquidation alert', 'rug alert', 'admin key change'] },
+  '/v1/credits/buy': { name: 'Prepaid Credits (bulk discount)', category: 'infra', tags: ['prepaid credits', 'bulk discount', 'high volume', 'x402 credits', 'api credits'] },
   '/v1/preflight': { name: 'Preflight Safety Check', category: 'security', tags: ['is this safe', 'preflight check', 'agent safety', 'drainer detection', 'pre-sign check'] },
   '/v1/tx-simulate': { name: 'Pre-Sign Transaction Simulation', category: 'security', tags: ['transaction simulation', 'pre-sign check', 'drainer detection', 'simulate transaction', 'approval check'] },
   '/v1/signature-check': { name: 'Signature Phishing Check', category: 'security', tags: ['signature check', 'permit phishing', 'eip-712 decoder', 'drainer detection', 'x402 payment check'] },
@@ -893,6 +897,65 @@ export function buildRouteConfig() {
         }),
       },
     },
+    'POST /v1/watch': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: perItemPrice('/v1/watch'),
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: `Watch alerts by signed webhook: contract-admin (owner/proxy/pause changes, every 30 min), token-risk (rug score crosses a threshold, daily), lending-health (Aave health factor, every 30 min). Prepaid per day: ${PRICING_RULES['/v1/watch']}. Category: security.`,
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: { type: 'contract-admin', chain: 'base', target: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', webhookUrl: 'https://example.com/agentforge-hook', days: 30 },
+          inputSchema: {
+            type: 'object',
+            required: ['type', 'target', 'webhookUrl'],
+            properties: {
+              type: { type: 'string', enum: ['contract-admin', 'token-risk', 'lending-health'] },
+              chain: { type: 'string', enum: [...EVM_CHAINS], default: 'base' },
+              target: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Contract, token, or wallet to watch' },
+              webhookUrl: { type: 'string', description: 'Public https URL that receives signed alert POSTs' },
+              days: { type: 'integer', minimum: 1, maximum: 90, default: 30 },
+              params: { type: 'object', properties: { threshold: { type: 'number' } } },
+            },
+          },
+          output: {
+            example: { watchId: 'w_3f…', secret: '…', type: 'contract-admin', expiresAt: '2026-12-04T00:00:00.000Z', checkEvery: 'every 30 minutes', webhookTest: { ok: true, status: 200 } },
+          },
+        }),
+      },
+    },
+    'POST /v1/credits/buy': {
+      // Base only: credits are spent by signing with the same EVM wallet.
+      accepts: [{
+        scheme: 'exact' as const,
+        price: (ctx: { adapter: { getQueryParam?(n: string): string | string[] | undefined; getBody?(): unknown } }) => {
+          const q = ctx.adapter.getQueryParam?.('pack');
+          const pack = (Array.isArray(q) ? q[0] : q) ?? (ctx.adapter.getBody?.() as { pack?: unknown } | undefined)?.pack;
+          return `$${priceFor('/v1/credits/buy', { pack })}`;
+        },
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: `Prepaid credits for high-volume agents: pay once, then sign requests instead of paying per call, with up to 20% bonus credit and no per-call settlement. ${PRICING_RULES['/v1/credits/buy']}. Add ?ref=<wallet> to give a referrer 10% and yourself 5% extra. Category: infra.`,
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: { pack: '5' },
+          inputSchema: {
+            type: 'object',
+            properties: { pack: { type: 'string', enum: ['1', '5', '20'], default: '1', description: 'Pack to buy (also accepted as ?pack=)' } },
+          },
+          output: {
+            example: { status: 'credited_on_settlement', wallet: '0x…', pack: '5', priceUsd: '$5', creditUsd: '$5.75', bonusPct: 15 },
+          },
+        }),
+      },
+    },
     'POST /v1/preflight': {
       accepts: [{
         scheme: 'exact' as const,
@@ -1458,6 +1521,22 @@ export function createPaymentMiddleware() {
       amountUsd: Number(ctx.result.amount ?? ctx.requirements.amount) / 1e6,
       txHash: ctx.result.transaction,
     });
+    // Prepaid credits: credit the payer once per settlement tx (idempotent).
+    const resourceUrl = (ctx.paymentPayload as { resource?: { url?: string } }).resource?.url;
+    if (resourcePath(resourceUrl) === '/v1/credits/buy') {
+      const wallet = ctx.result.payer?.toLowerCase();
+      const pack = PACK_BY_PRICE_MICRO.get(BigInt(ctx.result.amount ?? ctx.requirements.amount));
+      if (wallet?.startsWith('0x') && pack && ctx.result.transaction) {
+        try {
+          await getCreditStore().creditPurchase(wallet, pack.priceMicro, pack.creditMicro, ctx.result.transaction, referrerFrom(resourceUrl));
+        } catch (e) {
+          // The payment settled: re-credit with scripts/creditByTx.ts <tx>.
+          console.error('credits: crediting failed for settled tx', ctx.result.transaction, e);
+        }
+      } else {
+        console.error('credits: settled purchase could not be mapped to a pack', ctx.result.transaction, ctx.requirements.amount);
+      }
+    }
   });
 
   if (isAgentkitEnabled()) {
@@ -1566,6 +1645,16 @@ export function parseSupportedSnapshot(
  * Enrich every route with service metadata, bazaar category/discoverable/tags,
  * a Permit2 accept for EVM routes, and the builder-code extension when configured.
  */
+/** `ref` query param on a credit purchase: the referring wallet (lowercased), if well-formed. */
+export function referrerFrom(resourceUrl: string | undefined): string | null {
+  try {
+    const ref = new URL(resourceUrl ?? '').searchParams.get('ref')?.toLowerCase();
+    return ref && /^0x[0-9a-f]{40}$/.test(ref) ? ref : null;
+  } catch {
+    return null;
+  }
+}
+
 export function applyDiscoverabilityMetadata(routes: Record<string, RouteConfig>): void {
   const seen = new Set<RouteConfig>(); // '* path' aliases share the same object
   for (const [key, route] of Object.entries(routes)) {
