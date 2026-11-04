@@ -13,7 +13,7 @@ import { config } from '../config.js';
 /** Base Identity Registry (ERC-8004). */
 export const ERC8004_REGISTRY = '0x8004A169FB4a3325136EB29fA0ceB6D2e539a432';
 /** Set once scripts/register8004.ts has minted our agent id; null until then. */
-export const ERC8004_AGENT_ID: number | null = null;
+export const ERC8004_AGENT_ID: number | null = 1153855;
 
 const DESCRIPTION =
   'DeFi safety tools for AI agents, paid per call over x402 (USDC on Base or Solana, no API keys). ' +
