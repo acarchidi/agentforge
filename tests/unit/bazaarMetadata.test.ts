@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { ROUTE_METADATA } from '../../src/middleware/x402.js';
+import { ROUTE_METADATA, buildRouteConfig } from '../../src/middleware/x402.js';
 import { ENDPOINT_PRICES } from '../../src/pricing.js';
 
 // The x402 bazaar extension drops service names over 32 chars and tags past
@@ -16,6 +16,16 @@ describe('Bazaar listing metadata', () => {
       expect(m.tags.length, path).toBeLessThanOrEqual(5);
       for (const t of m.tags) expect(t.length, `${path} ${t}`).toBeLessThanOrEqual(32);
       expect(new Set(m.tags.map((t) => t.toLowerCase())).size, path).toBe(m.tags.length);
+    }
+  });
+
+  // CDP's facilitator rejects the whole payment payload ("'paymentPayload' is
+  // invalid") when the echoed resource description is too long: /v1/preflight
+  // at 702 chars failed verify while every route under 500 settled.
+  it('keeps every payment description under the facilitator limit', () => {
+    for (const [key, route] of Object.entries(buildRouteConfig())) {
+      const description = (route as { description?: string }).description ?? '';
+      expect(description.length, key).toBeLessThanOrEqual(480);
     }
   });
 });

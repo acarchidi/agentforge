@@ -83,7 +83,8 @@ function perItemPrice(endpoint: string) {
   return (ctx: { adapter: { getBody?(): unknown } }) => `$${priceFor(endpoint, ctx.adapter.getBody?.())}`;
 }
 
-export function createPaymentMiddleware() {
+/** Every paid route's x402 config (with wildcard-verb aliases and discovery metadata applied). */
+export function buildRouteConfig() {
   const routeConfig = {
     'POST /v1/token-intel': {
       accepts: [{
@@ -899,7 +900,8 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: `Is this action safe? One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic and HyperEVM. Priced ${PRICING_RULES['/v1/preflight']}. Category: security.`,
+      // CDP's facilitator rejects payment payloads whose resource description runs past ~500 chars.
+      description: `Is this action safe? One pre-sign call for agents: simulates the transactions, checks EIP-712 signatures and x402 requests for phishing, screens recipients for sanctions and scams, rug-checks tokens. One proceed/caution/avoid verdict. 11 EVM chains + Solana. ${PRICING_RULES['/v1/preflight']}. Category: security.`,
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -1406,6 +1408,11 @@ export function createPaymentMiddleware() {
   }
 
   applyDiscoverabilityMetadata(routeConfig as unknown as Record<string, RouteConfig>);
+  return routeConfig;
+}
+
+export function createPaymentMiddleware() {
+  const routeConfig = buildRouteConfig();
 
   const evmScheme = new ExactEvmScheme();
   const svmScheme = new ExactSvmScheme();

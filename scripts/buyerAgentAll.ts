@@ -108,7 +108,7 @@ async function main() {
       if (rejected) {
         try { text = `payment rejected: ${JSON.parse(Buffer.from(rejected, 'base64').toString()).error ?? 'no reason given'}`; } catch { /* keep body */ }
       }
-      results.push({ name: c.name, status: res.status, ms: Date.now() - t, tx, note: res.ok ? undefined : text.slice(0, 120) });
+      results.push({ name: c.name, status: res.status, ms: Date.now() - t, tx, note: res.ok ? undefined : text.slice(0, 600) });
       console.log(`${res.ok ? 'PASS' : 'FAIL'} ${c.name} ${res.status} ${Date.now() - t}ms ${tx ? `tx=${tx.slice(0, 12)}…` : ''} ${res.ok ? '' : text.slice(0, 120)}`);
     } catch (error) {
       results.push({ name: c.name, status: 0, ms: Date.now() - t, note: error instanceof Error ? error.message.slice(0, 160) : String(error) });
