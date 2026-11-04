@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AgentForge Privacy Policy</title>
+<link rel="icon" href="/favicon.ico">
+<style>
+  :root { --bg: #ffffff; --fg: #1a1a1a; --muted: #5c5c5c; --code-bg: #f4f4f5; --border: #e4e4e7; --accent: #2563eb; }
+  @media (prefers-color-scheme: dark) { :root { --bg: #0b0b0c; --fg: #ededed; --muted: #a1a1aa; --code-bg: #18181b; --border: #27272a; --accent: #60a5fa; } }
+  body { background: var(--bg); color: var(--fg); font: 16px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; margin: 0; }
+  main { max-width: 760px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.8rem; margin-bottom: 4px; } h2 { margin-top: 2em; font-size: 1.25rem; }
+  p.lead { color: var(--muted); margin-top: 0; }
+  pre { background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px; padding: 14px; overflow-x: auto; font-size: 14px; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+  :not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; } th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  a { color: var(--accent); }
+</style>
+</head>
+<body>
+<main>
+<h1>Privacy Policy</h1>
+<p class="lead">AgentForge API and MCP server. Last updated November 4, 2026.</p>
+
+<h2>What AgentForge is</h2>
+<p>AgentForge is an API and remote MCP server that returns safety checks and data about public blockchains: transaction simulations, signature decodes, address screening, token risk scores. There are no user accounts, and no API keys.</p>
+
+<h2>What we receive</h2>
+<p>Each request contains the inputs you send, such as wallet and contract addresses, transaction data, typed data or text. We use them only to produce the response. We do not store request or response bodies.</p>
+
+<h2>What we log</h2>
+<ul>
+  <li><strong>Usage events:</strong> the endpoint or tool name, the chain, success or failure, the error type, latency, the input and output sizes, and a timestamp.</li>
+  <li><strong>Payments:</strong> for paid calls, the amount, the payment network and scheme, and the on-chain transaction hash. These are already public on the blockchain.</li>
+  <li><strong>Client identifier:</strong> a salted one-way hash of the paying wallet address. For MCP calls, it is a hash of the MCP session ID, or of the IP address and user agent when there is no session. We use it to apply the free daily MCP cap and to count repeat usage. We do not store raw IP addresses in our analytics.</li>
+  <li><strong>Feedback:</strong> if you send feedback through <code>/feedback</code>, we store your message and any contact detail you include.</li>
+</ul>
+<p>We delete usage events after 90 days.</p>
+
+<h2>Third parties</h2>
+<p>To answer requests, we query public blockchain RPC nodes and data providers (for example Etherscan, CoinGecko, GeckoTerminal, DexScreener and DefiLlama) with the addresses or tokens you ask about. Some text endpoints, such as summarize, translate and sentiment, send your text to Anthropic's Claude API. Payments are verified and settled through the Coinbase Developer Platform x402 facilitator. The service runs on Vercel, which keeps standard request logs under its own policy.</p>
+
+<h2>What we don't do</h2>
+<p>We do not sell data, run advertising, or use cookies or trackers on the API. We never ask for private keys or seed phrases, and our tools never sign transactions or move funds.</p>
+
+<h2>Contact</h2>
+<p><a href="mailto:agentforge.api@gmail.com">agentforge.api@gmail.com</a></p>
+</main>
+</body>
+</html>
