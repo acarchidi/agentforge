@@ -10,6 +10,8 @@ import { declareBuilderCodeExtension, builderCodeResourceServerExtension } from 
 import { config, networkId } from '../config.js';
 import { PRICING_RULES, priceFor } from '../pricing.js';
 import { logEvent } from '../analytics/logger.js';
+import { EVM_CHAINS, SIMULATE_CHAINS } from '../utils/chains.js';
+import { LENDING_CHAINS } from '../schemas/lendingHealth.js';
 import { hashClientId } from '../analytics/clientId.js';
 import {
   agentkitServerExtension,
@@ -44,6 +46,7 @@ export const ICON_URL = `${config.PUBLIC_BASE_URL}/brand/agentforge-icon-512.png
  * Measured with scripts/bazaarRank.ts.
  */
 export const ROUTE_METADATA: Record<string, { name: string; category: string; tags: string[] }> = {
+  '/v1/preflight': { name: 'Preflight Safety Check', category: 'security', tags: ['is this safe', 'preflight check', 'agent safety', 'drainer detection', 'pre-sign check'] },
   '/v1/tx-simulate': { name: 'Pre-Sign Transaction Simulation', category: 'security', tags: ['transaction simulation', 'pre-sign check', 'drainer detection', 'simulate transaction', 'approval check'] },
   '/v1/signature-check': { name: 'Signature Phishing Check', category: 'security', tags: ['signature check', 'permit phishing', 'eip-712 decoder', 'drainer detection', 'x402 payment check'] },
   '/v1/address-check': { name: 'Sanctions & Scam Address Check', category: 'security', tags: ['sanctions screening', 'ofac', 'aml', 'scam address check', 'wallet address risk'] },
@@ -103,7 +106,7 @@ export function createPaymentMiddleware() {
             required: ['address'],
             properties: {
               address: { type: 'string', minLength: 1, description: 'Token contract address' },
-              chain: { type: 'string', enum: ['ethereum', 'base', 'solana', 'polygon', 'arbitrum'], default: 'ethereum' },
+              chain: { type: 'string', enum: [...EVM_CHAINS, 'solana'], default: 'ethereum' },
             },
           },
           output: {
@@ -668,7 +671,7 @@ export function createPaymentMiddleware() {
             required: ['address'],
             properties: {
               address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Token contract address' },
-              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'ethereum' },
+              chain: { type: 'string', enum: [...EVM_CHAINS], default: 'ethereum' },
             },
           },
           output: {
@@ -725,7 +728,7 @@ export function createPaymentMiddleware() {
             required: ['address'],
             properties: {
               address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Token contract address' },
-              chain: { type: 'string', enum: ['ethereum', 'base', 'polygon', 'arbitrum'], default: 'ethereum' },
+              chain: { type: 'string', enum: [...EVM_CHAINS], default: 'ethereum' },
             },
           },
           output: {
@@ -779,9 +782,9 @@ export function createPaymentMiddleware() {
             properties: {
               tokens: {
                 type: 'array', minItems: 2, maxItems: 25,
-                items: { type: 'object', required: ['address'], properties: { address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' }, chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] } } },
+                items: { type: 'object', required: ['address'], properties: { address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' }, chain: { type: 'string', enum: [...EVM_CHAINS] } } },
               },
-              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'ethereum', description: 'Default chain for tokens without one' },
+              chain: { type: 'string', enum: [...EVM_CHAINS], default: 'ethereum', description: 'Default chain for tokens without one' },
             },
           },
           output: {
@@ -822,10 +825,10 @@ export function createPaymentMiddleware() {
             properties: {
               addresses: {
                 type: 'array', minItems: 1, maxItems: 100,
-                items: { type: 'object', required: ['address'], properties: { address: { type: 'string' }, chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana'] } } },
+                items: { type: 'object', required: ['address'], properties: { address: { type: 'string' }, chain: { type: 'string', enum: [...EVM_CHAINS, 'solana'] } } },
               },
               address: { type: 'string', description: 'Single-address shorthand (instead of addresses)' },
-              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana'], default: 'ethereum' },
+              chain: { type: 'string', enum: [...EVM_CHAINS, 'solana'], default: 'ethereum' },
             },
           },
           output: {
@@ -853,7 +856,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'New token launches feed (memecoin sniper feed with honeypot detection) on Base, Ethereum, and Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
+      description: 'New token launches feed (memecoin sniper feed with honeypot detection) on Base, Ethereum, Arbitrum, and BNB Chain, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Built for polling: pass nextSince back as since to get only new launches. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -861,7 +864,7 @@ export function createPaymentMiddleware() {
           inputSchema: {
             type: 'object',
             properties: {
-              chain: { type: 'string', enum: ['base', 'ethereum', 'arbitrum'], default: 'base' },
+              chain: { type: 'string', enum: ['base', 'ethereum', 'arbitrum', 'bsc'], default: 'base' },
               since: { type: 'string', format: 'date-time', description: 'Only pools created after this; pass the previous nextSince' },
               minLiquidityUsd: { type: 'number', default: 1000 },
               maxRiskScore: { type: 'integer', minimum: 0, maximum: 100 },
@@ -889,6 +892,43 @@ export function createPaymentMiddleware() {
         }),
       },
     },
+    'POST /v1/preflight': {
+      accepts: [{
+        scheme: 'exact' as const,
+        price: perItemPrice('/v1/preflight'),
+        network: networkId,
+        payTo: config.PAY_TO_ADDRESS,
+      }],
+      description: `Is this action safe? One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic. Priced ${PRICING_RULES['/v1/preflight']}. Category: security.`,
+      mimeType: 'application/json',
+      extensions: {
+        ...declareDiscoveryExtension({
+          bodyType: 'json' as const,
+          input: { chain: 'base', from: '0x8ec901f7e2710163387d70950f680f1ea2269d15', transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb000000000000000000000000abababababababababababababababababababab00000000000000000000000000000000000000000000000000000000000f4240' }], recipients: ['0xabababababababababababababababababababab'] },
+          inputSchema: {
+            type: 'object',
+            properties: {
+              chain: { type: 'string', enum: [...EVM_CHAINS] },
+              from: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Wallet taking the action (required with transactions)' },
+              transactions: { type: 'array', maxItems: 5, items: { type: 'object', required: ['to'], properties: { to: { type: 'string' }, data: { type: 'string' }, value: { type: 'string' } } } },
+              typedData: { type: 'object', description: 'EIP-712 typed data about to be signed' },
+              paymentRequired: { type: 'object', description: 'x402 PaymentRequired about to be paid' },
+              expectedMaxUsd: { type: 'number' },
+              recipients: { type: 'array', maxItems: 20, items: { type: 'string' }, description: 'Addresses about to receive funds or permissions' },
+              tokens: { type: 'array', maxItems: 5, items: { type: 'string' }, description: 'Tokens about to be bought (rug-checked, priced per token)' },
+            },
+          },
+          output: {
+            example: {
+              verdict: 'caution',
+              summary: 'Caution: 0xabab…abab is a brand-new address with no history',
+              checksRun: ['simulation', 'addresses'],
+              reasons: ['[simulation] Sends 1 USDC to a brand-new address', '[recipient 0xabab…abab] brand-new address with no history'],
+            },
+          },
+        }),
+      },
+    },
     'POST /v1/tx-simulate': {
       accepts: [{
         scheme: 'exact' as const,
@@ -896,7 +936,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Transaction simulation before signing (pre-sign safety check and drainer detection): simulate an EVM transaction or an approve-then-swap sequence of up to 5 — revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of every counterparty, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon. Category: security.',
+      description: 'Transaction simulation before signing (pre-sign safety check and drainer detection): simulate an EVM transaction or an approve-then-swap sequence of up to 5 — revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of every counterparty, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic. Category: security.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -910,7 +950,7 @@ export function createPaymentMiddleware() {
             type: 'object',
             required: ['from', 'transactions'],
             properties: {
-              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'base' },
+              chain: { type: 'string', enum: [...SIMULATE_CHAINS], default: 'base' },
               from: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$', description: 'Wallet that will sign' },
               transactions: {
                 type: 'array', minItems: 1, maxItems: 5,
@@ -969,7 +1009,7 @@ export function createPaymentMiddleware() {
               typedData: { type: 'object', description: 'EIP-712 typed data { domain, types, primaryType, message } (or its JSON string)' },
               paymentRequired: { type: 'object', description: 'x402 PaymentRequired with accepts[] that the agent is about to pay' },
               signer: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' },
-              chain: { type: 'string', enum: ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] },
+              chain: { type: 'string', enum: [...EVM_CHAINS] },
               expectedMaxUsd: { type: 'number', description: 'x402 only: refuse options above this price' },
             },
           },
@@ -1004,7 +1044,7 @@ export function createPaymentMiddleware() {
         network: networkId,
         payTo: config.PAY_TO_ADDRESS,
       }],
-      description: 'Aave health factor and liquidation risk: how close a wallet is to liquidation on Aave v3, across Ethereum, Base, Arbitrum, Optimism, and Polygon in one call: collateral, debt, health factor, status (safe/watch/danger/critical/liquidatable), and how far collateral can fall before liquidation. Category: data.',
+      description: 'Aave health factor and liquidation risk: how close a wallet is to liquidation on Aave v3, across Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, and Sonic in one call: collateral, debt, health factor, status (safe/watch/danger/critical/liquidatable), and how far collateral can fall before liquidation. Category: data.',
       mimeType: 'application/json',
       extensions: {
         ...declareDiscoveryExtension({
@@ -1014,7 +1054,7 @@ export function createPaymentMiddleware() {
             required: ['address'],
             properties: {
               address: { type: 'string', pattern: '^0x[a-fA-F0-9]{40}$' },
-              chain: { type: 'string', enum: ['all', 'ethereum', 'base', 'arbitrum', 'optimism', 'polygon'], default: 'all' },
+              chain: { type: 'string', enum: ['all', ...LENDING_CHAINS], default: 'all' },
             },
           },
           output: {

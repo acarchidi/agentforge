@@ -1,9 +1,11 @@
 import { z } from 'zod';
 import { relatedServicesField } from './shared.js';
 
-export const SIGNATURE_CHAINS = ['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'] as const;
+import { EVM_CHAINS } from '../utils/chains.js';
 
-const typedData = z.object({
+export const SIGNATURE_CHAINS = EVM_CHAINS;
+
+export const typedDataSchema = z.object({
   domain: z.record(z.string(), z.unknown()).default({}),
   types: z.record(z.string(), z.array(z.object({ name: z.string(), type: z.string() }))).default({}),
   primaryType: z.string(),
@@ -23,14 +25,16 @@ const paymentOption = z
   })
   .passthrough();
 
+export const paymentRequiredSchema = z.object({ accepts: z.array(paymentOption).min(1) }).passthrough();
+
 // ── Input ──────────────────────────────────────────────────────────
 
 export const signatureCheckInput = z
   .object({
     /** EIP-712 typed data the agent is about to sign (object, or its JSON string). */
-    typedData: z.union([typedData, z.string()]).optional(),
+    typedData: z.union([typedDataSchema, z.string()]).optional(),
     /** An x402 PaymentRequired (402 body or decoded PAYMENT-REQUIRED header) the agent is about to pay. */
-    paymentRequired: z.object({ accepts: z.array(paymentOption).min(1) }).passthrough().optional(),
+    paymentRequired: paymentRequiredSchema.optional(),
     /** Wallet that would sign. Enables owner/payer mismatch checks. */
     signer: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional(),
     /** Chain the signer is on, for screening and token lookups. Defaults to the typed data's chainId, else base. */

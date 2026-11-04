@@ -11,6 +11,7 @@
 
 import { decodeAbiParameters, decodeFunctionData, erc20Abi, encodeFunctionData, decodeFunctionResult, formatUnits, toHex } from 'viem';
 import { rpcUrl, rpcBatch, type EvmChain } from '../utils/evmRpc.js';
+import { CHAIN_INFO } from '../utils/chains.js';
 import { screenAddresses } from './addressCheck.js';
 import { getRegistry } from '../registry/lookup.js';
 import { txSimulateInput, txSimulateOutput, type TxSimulateOutput } from '../schemas/txSimulate.js';
@@ -204,7 +205,7 @@ export async function simulateEvmTxWithCost(
     .filter(([, d]) => d.delta !== 0n)
     .map(([key, d]) => {
       const token = key.split(':')[0];
-      const m = d.standard === 'native' ? { symbol: 'ETH', decimals: 18 } : meta.get(token) ?? {};
+      const m = d.standard === 'native' ? { symbol: CHAIN_INFO[chain].nativeSymbol, decimals: 18 } : meta.get(token) ?? {};
       const decimals = d.standard === 'erc20' || d.standard === 'native' ? m.decimals : undefined;
       return {
         token: d.standard === 'native' ? 'native' : token,
@@ -227,7 +228,7 @@ export async function simulateEvmTxWithCost(
   const nativeBalance = typeof balHex === 'string' ? BigInt(balHex) : null;
   const insufficientValue = nativeBalance !== null && valueSent > nativeBalance;
   if (insufficientValue) {
-    reasons.push(`Sender holds ${formatUnits(nativeBalance as bigint, 18)} ETH but the transactions send ${formatUnits(valueSent, 18)} ETH, so this will fail on-chain`);
+    reasons.push(`Sender holds ${formatUnits(nativeBalance as bigint, 18)} ${CHAIN_INFO[chain].nativeSymbol} but the transactions send ${formatUnits(valueSent, 18)} ${CHAIN_INFO[chain].nativeSymbol}, so this will fail on-chain`);
   }
   const noGas = nativeBalance === 0n && !insufficientValue;
 

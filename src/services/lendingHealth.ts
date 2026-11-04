@@ -24,6 +24,10 @@ export const AAVE_V3_POOL: Record<(typeof LENDING_CHAINS)[number], string> = {
   arbitrum: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
   optimism: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
   polygon: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+  bsc: '0x6807dc923806fE8Fd134338EABCA509979a7e0cB',
+  avalanche: '0x794a61358D6845594F94dc1DB02A252b5b4814aD',
+  linea: '0xc47b8C00b0f69a36fa203Ffeac0334874574a8Ac',
+  sonic: '0x5362dBb1e601abF3a4c14c22ffEdA64042E5eAA3',
 };
 
 const poolAbi = parseAbi([

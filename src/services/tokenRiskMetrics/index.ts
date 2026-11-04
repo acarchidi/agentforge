@@ -48,17 +48,12 @@ import {
 } from './liquidity.js';
 import { computeCompositeScore } from './composite.js';
 import { etherscanSlot, isEtherscanRateLimit } from '../../utils/etherscanPacer.js';
+import { CHAIN_IDS as CHAIN_ID_MAP } from '../../utils/chains.js';
 import { fetchDexScreenerEvmTokens, type DexScreenerEvmMarket } from '../dataSources/dexscreener.js';
 
 // ── Etherscan API helper ───────────────────────────────────────────────
 
-const CHAIN_IDS: Record<string, number> = {
-  ethereum: 1,
-  base: 8453,
-  arbitrum: 42161,
-  optimism: 10,
-  polygon: 137,
-};
+const CHAIN_IDS: Record<string, number> = CHAIN_ID_MAP;
 
 async function etherscanFetch(
   chainId: number,

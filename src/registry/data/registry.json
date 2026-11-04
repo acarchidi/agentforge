@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "generatedAt": "2026-03-17T17:32:46.996Z",
+  "generatedAt": "2026-11-04T00:00:00.000Z",
   "entries": [
     {
       "address": "0x5e4e65926ba27467555eb562121fac00d24e9dd2",
@@ -5692,6 +5692,468 @@
       ],
       "source": "curated",
       "lastVerified": "2026-11-03"
+    },
+    {
+      "address": "0x6807dc923806fe8fd134338eabca509979a7e0cb",
+      "name": "Aave V3: Pool",
+      "chain": "bsc",
+      "protocol": "Aave",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lending",
+        "pool"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0xc47b8c00b0f69a36fa203ffeac0334874574a8ac",
+      "name": "Aave V3: Pool",
+      "chain": "linea",
+      "protocol": "Aave",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lending",
+        "pool"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x5362dbb1e601abf3a4c14c22ffeda64042e5eaa3",
+      "name": "Aave V3: Pool",
+      "chain": "sonic",
+      "protocol": "Aave",
+      "category": "lending",
+      "riskLevel": "safe",
+      "tags": [
+        "lending",
+        "pool"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x176211869ca2b568f2a7d4ee941e073a821ee1ff",
+      "name": "USDC: Token",
+      "chain": "linea",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "usdc",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x078d782b760474a361dda0af3839290b0ef57ad6",
+      "name": "USDC: Token",
+      "chain": "unichain",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "usdc",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x29219dd400f2bf60e5a23d13be72b486d4038894",
+      "name": "USDC.e (Sonic): Token",
+      "chain": "sonic",
+      "protocol": "Circle",
+      "category": "stablecoin",
+      "riskLevel": "safe",
+      "tags": [
+        "stablecoin",
+        "usdc",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0xe5d7c2a44ffddf6b295a15c148167daaaf5cf34f",
+      "name": "WETH: Token",
+      "chain": "linea",
+      "protocol": "WETH",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "wrapped-native",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x4200000000000000000000000000000000000006",
+      "name": "WETH: Token",
+      "chain": "unichain",
+      "protocol": "WETH",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "wrapped-native",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x039e2fb66102314ce7b64ce5ce3e5183bc94ad38",
+      "name": "Wrapped Sonic (wS): Token",
+      "chain": "sonic",
+      "protocol": "Wrapped",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "wrapped-native",
+        "erc20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "name": "Uniswap: Permit2",
+      "chain": "bsc",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "permit2",
+        "approvals",
+        "signature"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x111111125421ca6dc452d289314280a0f8842a65",
+      "name": "1inch: Aggregation Router V6",
+      "chain": "bsc",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "router",
+        "swap"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "name": "Uniswap: Permit2",
+      "chain": "avalanche",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "permit2",
+        "approvals",
+        "signature"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x111111125421ca6dc452d289314280a0f8842a65",
+      "name": "1inch: Aggregation Router V6",
+      "chain": "avalanche",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "router",
+        "swap"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "name": "Uniswap: Permit2",
+      "chain": "linea",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "permit2",
+        "approvals",
+        "signature"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x111111125421ca6dc452d289314280a0f8842a65",
+      "name": "1inch: Aggregation Router V6",
+      "chain": "linea",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "router",
+        "swap"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "name": "Uniswap: Permit2",
+      "chain": "unichain",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "permit2",
+        "approvals",
+        "signature"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x111111125421ca6dc452d289314280a0f8842a65",
+      "name": "1inch: Aggregation Router V6",
+      "chain": "unichain",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "router",
+        "swap"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x000000000022d473030f116ddee9f6b43ac78ba3",
+      "name": "Uniswap: Permit2",
+      "chain": "sonic",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "permit2",
+        "approvals",
+        "signature"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x111111125421ca6dc452d289314280a0f8842a65",
+      "name": "1inch: Aggregation Router V6",
+      "chain": "sonic",
+      "protocol": "1inch",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "aggregator",
+        "router",
+        "swap"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x0000000000000068f116a894984e2db1123eb395",
+      "name": "OpenSea: Seaport 1.6",
+      "chain": "bsc",
+      "protocol": "OpenSea",
+      "category": "nft-marketplace",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "marketplace",
+        "seaport",
+        "orders"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x0000000000000068f116a894984e2db1123eb395",
+      "name": "OpenSea: Seaport 1.6",
+      "chain": "avalanche",
+      "protocol": "OpenSea",
+      "category": "nft-marketplace",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "marketplace",
+        "seaport",
+        "orders"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x0000000000000068f116a894984e2db1123eb395",
+      "name": "OpenSea: Seaport 1.6",
+      "chain": "linea",
+      "protocol": "OpenSea",
+      "category": "nft-marketplace",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "marketplace",
+        "seaport",
+        "orders"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x0000000000000068f116a894984e2db1123eb395",
+      "name": "OpenSea: Seaport 1.6",
+      "chain": "unichain",
+      "protocol": "OpenSea",
+      "category": "nft-marketplace",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "marketplace",
+        "seaport",
+        "orders"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x0000000000000068f116a894984e2db1123eb395",
+      "name": "OpenSea: Seaport 1.6",
+      "chain": "sonic",
+      "protocol": "OpenSea",
+      "category": "nft-marketplace",
+      "riskLevel": "safe",
+      "tags": [
+        "nft",
+        "marketplace",
+        "seaport",
+        "orders"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x1906c1d672b88cd1b9ac7593301ca990f94eae07",
+      "name": "Uniswap: Universal Router (v4)",
+      "chain": "bsc",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "router",
+        "swap",
+        "universal-router"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x94b75331ae8d42c1b61065089b7d48fe14aa73b7",
+      "name": "Uniswap: Universal Router (v4)",
+      "chain": "avalanche",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "router",
+        "swap",
+        "universal-router"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0xef740bf23acae26f6492b10de645d6b98dc8eaf3",
+      "name": "Uniswap: Universal Router (v4)",
+      "chain": "unichain",
+      "protocol": "Uniswap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "router",
+        "swap",
+        "universal-router"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0xd9c500dff816a1da21a48a732d3498bf09dc9aeb",
+      "name": "PancakeSwap: Universal Router",
+      "chain": "bsc",
+      "protocol": "PancakeSwap",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "router",
+        "swap",
+        "universal-router"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x18556da13313f3532c54711497a8fedac273220e",
+      "name": "LFJ (Trader Joe): LB Router v2.2",
+      "chain": "avalanche",
+      "protocol": "LFJ",
+      "category": "dex",
+      "riskLevel": "safe",
+      "tags": [
+        "router",
+        "swap",
+        "liquidity-book"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x2170ed0880ac9a755fd29b2688956bd959f933f8",
+      "name": "Binance-Peg ETH: Token",
+      "chain": "bsc",
+      "protocol": "Binance",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "erc20",
+        "bep20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
+    },
+    {
+      "address": "0x7130d2a12b9bcbfae4f2634d864a1ee1ce3ead9c",
+      "name": "Binance-Peg BTCB: Token",
+      "chain": "bsc",
+      "protocol": "Binance",
+      "category": "token",
+      "riskLevel": "safe",
+      "tags": [
+        "erc20",
+        "bep20"
+      ],
+      "source": "curated",
+      "lastVerified": "2026-11-04"
     }
   ]
 }

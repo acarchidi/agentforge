@@ -41,16 +41,19 @@ import { getLaunchesWithCost } from '../services/launches.js';
 import { simulateEvmTxWithCost } from '../services/txSimulate.js';
 import { getLendingHealthWithCost } from '../services/lendingHealth.js';
 import { signatureCheckWithCost } from '../services/signatureCheck.js';
+import { preflightWithCost } from '../services/preflight.js';
 import { explainSolanaTxWithCost } from '../services/solana/txExplain.js';
 import { simulateSolanaTxWithCost } from '../services/solana/txSimulate.js';
 import { scanSolanaTokenRiskWithCost } from '../services/solana/tokenRiskScan.js';
 import { getRegistry } from '../registry/lookup.js';
 import { getSolanaProgramRegistry } from '../registry/solanaPrograms.js';
 import { logEvent } from '../analytics/logger.js';
+import { EVM_CHAINS, SIMULATE_CHAINS } from '../utils/chains.js';
+import { LENDING_CHAINS } from '../schemas/lendingHealth.js';
 import { getStore } from '../analytics/store.js';
 import { ENDPOINT_PRICES, PRICING_RULES, TOOL_TO_ENDPOINT, PUBLIC_BASE_URL, formatUsd } from '../pricing.js';
 
-export const MCP_SERVER_VERSION = '1.9.0';
+export const MCP_SERVER_VERSION = '1.10.0';
 
 /** Tools that stay unlimited over MCP: free lookups and cheap, LLM-free data reads. */
 export const UNCAPPED_TOOLS = new Set(['registry_lookup', 'solana_program_lookup', 'gas_oracle', 'pool_snapshot']);
@@ -200,7 +203,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     .describe('Blockchain network');
 
   const intelChain = z
-    .enum(['ethereum', 'base', 'solana', 'polygon', 'arbitrum'])
+    .enum([...EVM_CHAINS, 'solana'])
     .optional()
     .default('ethereum')
     .describe('Blockchain network');
@@ -461,7 +464,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     {
       address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Token contract address (0x-prefixed)'),
       chain: z
-        .enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon'])
+        .enum(EVM_CHAINS)
         .optional()
         .default('ethereum')
         .describe('Blockchain network'),
@@ -475,7 +478,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     {
       address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Token contract address (0x-prefixed)'),
       chain: z
-        .enum(['ethereum', 'base', 'polygon', 'arbitrum'])
+        .enum(EVM_CHAINS)
         .optional()
         .default('ethereum')
         .describe('Blockchain network'),
@@ -490,12 +493,12 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
       tokens: z
         .array(z.object({
           address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Token contract address'),
-          chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().describe('Chain for this token (defaults to `chain`)'),
+          chain: z.enum(EVM_CHAINS).optional().describe('Chain for this token (defaults to `chain`)'),
         }))
         .min(2)
         .max(25)
         .describe('Tokens to score'),
-      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().default('ethereum').describe('Default chain'),
+      chain: z.enum(EVM_CHAINS).optional().default('ethereum').describe('Default chain'),
     },
     async (input) => call('risk_batch', riskBatchWithCost, input),
   );
@@ -507,12 +510,12 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
       addresses: z
         .array(z.object({
           address: z.string().describe('EVM (0x…) or Solana address'),
-          chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana']).optional(),
+          chain: z.enum([...EVM_CHAINS, 'solana']).optional(),
         }))
         .min(1)
         .max(100)
         .describe('Addresses to screen'),
-      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon', 'solana']).optional().default('ethereum').describe('Default chain'),
+      chain: z.enum([...EVM_CHAINS, 'solana']).optional().default('ethereum').describe('Default chain'),
     },
     async (input) => call('address_check', addressCheckWithCost, input),
   );
@@ -521,7 +524,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
     'launch_feed',
     'Newly launched tokens on Base, Ethereum, or Arbitrum, each already risk-scored (verification, owner powers, proxy, supply held off-pool, thin liquidity, honeypot trading pattern). Poll it: pass the previous nextSince as since to get only new launches.',
     {
-      chain: z.enum(['base', 'ethereum', 'arbitrum']).optional().default('base'),
+      chain: z.enum(['base', 'ethereum', 'arbitrum', 'bsc']).optional().default('base'),
       since: z.string().optional().describe('ISO timestamp; only pools created after it'),
       minLiquidityUsd: z.number().min(0).optional().default(1000),
       maxRiskScore: z.number().int().min(0).max(100).optional().describe('Only launches scoring at or below this'),
@@ -531,10 +534,26 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
   );
 
   register(
-    'tx_simulate',
-    'Simulate an EVM transaction (or a sequence of up to 5, e.g. approve then swap) before signing: revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of counterparties, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon.',
+    'preflight',
+    'Is this action safe? Call once before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Returns one proceed / caution / avoid verdict with reasons. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.',
     {
-      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().default('base'),
+      chain: z.enum(EVM_CHAINS).optional().describe('Chain of the action (defaults to the typed data chainId, else base)'),
+      from: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe('Wallet taking the action; required with transactions'),
+      transactions: z.array(z.object({ to: z.string(), data: z.string().optional(), value: z.string().optional() })).max(5).optional().describe('Transactions about to be signed, in order'),
+      typedData: z.union([z.record(z.string(), z.unknown()), z.string()]).optional().describe('EIP-712 typed data about to be signed'),
+      paymentRequired: z.record(z.string(), z.unknown()).optional().describe('x402 PaymentRequired about to be paid'),
+      expectedMaxUsd: z.number().positive().optional(),
+      recipients: z.array(z.string()).max(20).optional().describe('Addresses about to receive funds or permissions'),
+      tokens: z.array(z.string()).max(5).optional().describe('Tokens about to be bought; each is rug-checked'),
+    },
+    async (input) => call('preflight', preflightWithCost, input),
+  );
+
+  register(
+    'tx_simulate',
+    'Simulate an EVM transaction (or a sequence of up to 5, e.g. approve then swap) before signing: revert check with reason, every asset leaving or entering the wallet, approvals granted, sanctions/scam screening of counterparties, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic.',
+    {
+      chain: z.enum(SIMULATE_CHAINS).optional().default('base'),
       from: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Wallet that will sign'),
       transactions: z
         .array(z.object({
@@ -555,7 +574,7 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
       typedData: z.union([z.record(z.string(), z.unknown()), z.string()]).optional().describe('EIP-712 typed data { domain, types, primaryType, message }, or its JSON string'),
       paymentRequired: z.record(z.string(), z.unknown()).optional().describe('x402 PaymentRequired object with accepts[] the agent is about to pay'),
       signer: z.string().regex(/^0x[a-fA-F0-9]{40}$/).optional().describe('Wallet that would sign'),
-      chain: z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional(),
+      chain: z.enum(EVM_CHAINS).optional(),
       expectedMaxUsd: z.number().positive().optional().describe('x402 only: refuse payment options above this many USD'),
     },
     async (input) => call('signature_check', signatureCheckWithCost, input),
@@ -563,10 +582,10 @@ export function createMcpServer(ctx: McpRequestContext = { clientHash: 'anonymou
 
   register(
     'lending_health',
-    'How close a wallet is to liquidation on Aave v3 (Ethereum, Base, Arbitrum, Optimism, Polygon in one call): collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
+    'How close a wallet is to liquidation on Aave v3 (Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, and Sonic in one call): collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
     {
       address: z.string().regex(/^0x[a-fA-F0-9]{40}$/).describe('Wallet address'),
-      chain: z.enum(['all', 'ethereum', 'base', 'arbitrum', 'optimism', 'polygon']).optional().default('all'),
+      chain: z.enum(['all', ...LENDING_CHAINS]).optional().default('all'),
     },
     async (input) => call('lending_health', getLendingHealthWithCost, input),
   );

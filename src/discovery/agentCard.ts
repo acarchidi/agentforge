@@ -39,7 +39,7 @@ export const SKILLS: Skill[] = [
   {
     id: 'launches',
     name: 'New Launch Feed',
-    description: 'Newly launched tokens on Base, Ethereum, and Arbitrum, each already risk-scored: verification, owner mint/blacklist/tax powers, upgradeable proxy, supply held off-pool, thin liquidity, honeypot trading pattern. Poll it with nextSince to get only new launches.',
+    description: 'Newly launched tokens on Base, Ethereum, Arbitrum, and BNB Chain, each already risk-scored: verification, owner mint/blacklist/tax powers, upgradeable proxy, supply held off-pool, thin liquidity, honeypot trading pattern. Poll it with nextSince to get only new launches.',
     tags: ['crypto', 'new-tokens', 'launches', 'sniper', 'rug-check', 'memecoin', 'feed'],
     examples: [
       'What tokens launched on Base in the last 10 minutes?',
@@ -79,9 +79,23 @@ export const SKILLS: Skill[] = [
     method: 'POST',
   },
   {
+    id: 'preflight',
+    name: 'Preflight Safety Check',
+    description: 'Is this action safe? One call before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving.',
+    tags: ['security', 'preflight', 'simulation', 'signature', 'sanctions', 'rug-check', 'agent-safety'],
+    examples: [
+      'Is it safe to send this transaction?',
+      'Check this swap, the signature it needs, and the token I am buying',
+      'Before I pay this x402 request, is the payee legit?',
+    ],
+    price: config.PRICE_PREFLIGHT,
+    endpoint: '/v1/preflight',
+    method: 'POST',
+  },
+  {
     id: 'tx-simulate',
     name: 'EVM Transaction Simulation',
-    description: 'Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, every asset leaving or entering the wallet, approvals granted, counterparty sanctions/scam screening, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon.',
+    description: 'Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, every asset leaving or entering the wallet, approvals granted, counterparty sanctions/scam screening, and a proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic.',
     tags: ['security', 'simulation', 'pre-sign', 'transaction-firewall', 'approvals', 'evm'],
     examples: [
       'What will this transaction do to my wallet if I sign it?',
@@ -109,7 +123,7 @@ export const SKILLS: Skill[] = [
   {
     id: 'lending-health',
     name: 'Lending Position Health',
-    description: 'How close a wallet is to liquidation on Aave v3 across five chains in one call: collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
+    description: 'How close a wallet is to liquidation on Aave v3 across nine chains in one call: collateral, debt, health factor, status, and how far collateral can fall before liquidation.',
     tags: ['defi', 'aave', 'lending', 'liquidation', 'health-factor', 'risk'],
     examples: [
       'How close is this wallet to liquidation on Aave?',
@@ -387,7 +401,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     description:
       'Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check any signature request for phishing, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input.',
     url: baseUrl,
-    version: '1.9.0',
+    version: '1.10.0',
 
     provider: {
       organization: 'AgentForge',

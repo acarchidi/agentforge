@@ -20,6 +20,7 @@ const V4_POOL_MANAGER: Partial<Record<EvmChain, string>> = {
   ethereum: '0x000000000004444c5dc75cb358380d2e3de08a90',
   base: '0x498581ff718922c3f8e6a244956af099b2652b2b',
   arbitrum: '0x360e68faccca8ca495c1b759fd9eee466db9fb32',
+  bsc: '0x28e2ea090877bf75740558f6bfb36a5ffee9e9df',
 };
 const DEAD = new Set(['0x0000000000000000000000000000000000000000', '0x000000000000000000000000000000000000dead']);
 

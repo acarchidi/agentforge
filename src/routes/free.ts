@@ -22,6 +22,7 @@ import { addressCheckInput, addressCheckOutput } from '../schemas/addressCheck.j
 import { launchesInput, launchesOutput } from '../schemas/launches.js';
 import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
+import { preflightInput, preflightOutput } from '../schemas/preflight.js';
 import { lendingHealthInput, lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { PRICING_RULES } from '../pricing.js';
 import { solanaTxExplainInput, solanaTxExplainOutput } from '../schemas/solanaTxExplain.js';
@@ -56,7 +57,7 @@ const ALL_PRICES = [
   config.PRICE_SENTIMENT, config.PRICE_SUMMARIZE, config.PRICE_TRANSLATE,
   config.PRICE_WALLET_SAFETY, config.PRICE_POOL_SNAPSHOT, config.PRICE_TOKEN_RISK_METRICS,
   config.PRICE_TRADE_CHECK, config.PRICE_ADDRESS_CHECK, config.PRICE_LAUNCHES,
-  config.PRICE_TX_SIMULATE, config.PRICE_LENDING_HEALTH, config.PRICE_SIGNATURE_CHECK,
+  config.PRICE_TX_SIMULATE, config.PRICE_LENDING_HEALTH, config.PRICE_SIGNATURE_CHECK, config.PRICE_PREFLIGHT,
   '$0.001',
 ].map((p) => Number(p.replace(/^\$/, '')));
 const minPayment = `$${Math.min(...ALL_PRICES)}`;
@@ -114,9 +115,9 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.9.0',
+    version: '1.10.0',
     description:
-      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
+      'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
     payment: {
       protocol: 'x402',
@@ -263,6 +264,15 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
         outputSchema: schemaOf(tradeCheckOutput),
       },
       {
+        endpoint: 'POST /v1/preflight',
+        operationId: 'preflight',
+        description: 'Is this action safe? One call: transactions simulated, signatures checked for phishing, recipients screened, tokens rug-checked, one proceed/caution/avoid verdict. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.',
+        price: PRICING_RULES['/v1/preflight'],
+        tags: ['security', 'preflight', 'agent-safety', 'simulation', 'signature', 'sanctions', 'rug-check'],
+        inputSchema: schemaOf(preflightInput),
+        outputSchema: schemaOf(preflightOutput),
+      },
+      {
         endpoint: 'POST /v1/tx-simulate',
         operationId: 'simulateEvmTx',
         description: 'Simulate an EVM transaction (or approve-then-swap sequence) before signing: revert reason, asset changes, approvals, counterparty screening, proceed/caution/avoid verdict.',
@@ -283,7 +293,7 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
       {
         endpoint: 'GET /v1/lending/health',
         operationId: 'getLendingHealth',
-        description: 'Aave v3 liquidation risk for a wallet across five chains: collateral, debt, health factor, status, collateral drop to liquidation.',
+        description: 'Aave v3 liquidation risk for a wallet across nine chains: collateral, debt, health factor, status, collateral drop to liquidation.',
         price: config.PRICE_LENDING_HEALTH,
         tags: ['defi', 'aave', 'lending', 'liquidation', 'health-factor'],
         inputSchema: schemaOf(lendingHealthInput),
@@ -292,7 +302,7 @@ freeRouter.get('/catalog', (_req: Request, res: Response) => {
       {
         endpoint: 'GET /v1/launches',
         operationId: 'getLaunches',
-        description: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum), each already risk-scored. Poll with since=<previous nextSince> to get only new launches.',
+        description: 'Feed of newly launched tokens (Base, Ethereum, Arbitrum, BNB Chain), each already risk-scored. Poll with since=<previous nextSince> to get only new launches.',
         price: config.PRICE_LAUNCHES,
         tags: ['crypto', 'new-tokens', 'launches', 'rug-check', 'feed'],
         inputSchema: schemaOf(launchesInput),
@@ -539,6 +549,7 @@ freeRouter.get('/.well-known/x402', (_req: Request, res: Response) => {
       'POST /v1/risk-batch',
       'POST /v1/address-check',
       'GET /v1/launches',
+      'POST /v1/preflight',
       'POST /v1/tx-simulate',
       'POST /v1/signature-check',
       'GET /v1/lending/health',
@@ -664,7 +675,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.9.0',
+    version: '1.10.0',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
@@ -812,11 +823,19 @@ freeRouter.get('/about', (req: Request, res: Response) => {
         best_for: 'Pre-trade screening in trading bots, "should I buy this?" checks, one-call token due diligence',
         input_example: { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', chain: 'ethereum' },
       },
+      preflight: {
+        endpoint: 'POST /v1/preflight',
+        price: PRICING_RULES['/v1/preflight'],
+        description:
+          'Is this action safe? The one call to make before any on-chain action: send the transactions, signature request, x402 payment request, recipients, and/or tokens the agent is about to act on, and get back one proceed/caution/avoid verdict. Transactions are simulated (reverts, assets out, approvals, counterparty screening), signatures decoded and checked for permit phishing, recipients screened against sanctions and scam lists, and tokens rug-checked, including tokens the simulation shows the wallet receiving. Checks run in parallel; no LLM. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain and Sonic.',
+        best_for: 'Any agent that moves funds: call it before every send, swap, approval, signature, or x402 payment',
+        input_example: { chain: 'base', from: '0x8ec901f7e2710163387d70950f680f1ea2269d15', transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb000000000000000000000000abababababababababababababababababababab00000000000000000000000000000000000000000000000000000000000f4240' }], recipients: ['0xabababababababababababababababababababab'] },
+      },
       tx_simulate: {
         endpoint: 'POST /v1/tx-simulate',
         price: config.PRICE_TX_SIMULATE,
         description:
-          'Runs 1-5 EVM transactions through eth_simulateV1 (state carries over, so approve-then-swap works) and reports: success or decoded revert reason per call, net asset changes for the sender (native, ERC-20, ERC-721, ERC-1155), approvals and operator approvals granted, and sanctions/scam/fresh-address screening of every recipient, spender, and target. Verdict: proceed / caution / avoid. Ethereum, Base, Arbitrum, Optimism, Polygon.',
+          'Runs 1-5 EVM transactions through eth_simulateV1 (state carries over, so approve-then-swap works) and reports: success or decoded revert reason per call, net asset changes for the sender (native, ERC-20, ERC-721, ERC-1155), approvals and operator approvals granted, and sanctions/scam/fresh-address screening of every recipient, spender, and target. Verdict: proceed / caution / avoid. Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Linea, Unichain, Sonic.',
         best_for: 'Pre-sign checks in every agent wallet, drainer detection, verifying a swap does what it claims',
         input_example: { chain: 'base', from: '0x…wallet', transactions: [{ to: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913', data: '0xa9059cbb…' }] },
       },
@@ -832,7 +851,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
         endpoint: 'GET /v1/lending/health?address=0x…&chain=all',
         price: config.PRICE_LENDING_HEALTH,
         description:
-          'Reads Aave v3 getUserAccountData on Ethereum, Base, Arbitrum, Optimism, and Polygon in one call and returns collateral, debt, available borrows, liquidation threshold, health factor, a status band (safe ≥1.5, watch, danger <1.2, critical <1.05, liquidatable <1), and the approximate collateral drop that would trigger liquidation.',
+          'Reads Aave v3 getUserAccountData on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, and Sonic in one call and returns collateral, debt, available borrows, liquidation threshold, health factor, a status band (safe ≥1.5, watch, danger <1.2, critical <1.05, liquidatable <1), and the approximate collateral drop that would trigger liquidation.',
         best_for: 'Leveraged-position bots, liquidation-risk monitoring, deciding when to repay or add collateral',
         input_example: { address: '0x71927529167fde40ebd4d2acdabfc88afd340f35', chain: 'all' },
       },
@@ -840,7 +859,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
         endpoint: 'GET /v1/launches?chain=base',
         price: config.PRICE_LAUNCHES,
         description:
-          'Feed of newly launched tokens on Base, Ethereum, and Arbitrum. Each launch is scored once at discovery from on-chain checks (source verification, owner mint/blacklist/tax/pause powers via bytecode scan, upgradeable proxy, share of supply held off-pool) and re-scored every few minutes for 24h as trading activity accrues (thin liquidity, buys-without-sells honeypot pattern). Poll it: pass the previous nextSince as since to get only new launches.',
+          'Feed of newly launched tokens on Base, Ethereum, Arbitrum, and BNB Chain. Each launch is scored once at discovery from on-chain checks (source verification, owner mint/blacklist/tax/pause powers via bytecode scan, upgradeable proxy, share of supply held off-pool) and re-scored every few minutes for 24h as trading activity accrues (thin liquidity, buys-without-sells honeypot pattern). Poll it: pass the previous nextSince as since to get only new launches.',
         best_for: 'Sniper and launch-trading bots, new-listing alerts, filtering out rugs before they reach a buy decision',
         input_example: { chain: 'base', minLiquidityUsd: 1000, maxRiskScore: 50 },
       },
@@ -939,7 +958,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
       transport: 'streamable-http',
       description:
         'MCP server exposing all AgentForge tools. Connect from Claude Desktop, Cursor, or any MCP-compatible environment. No payment required — tools call services directly.',
-      tools: ['tx_simulate', 'signature_check', 'address_check', 'launch_feed', 'risk_batch', 'trade_check', 'lending_health', 'token_intel', 'token_research', 'contract_docs', 'contract_monitor', 'token_compare', 'tx_decode', 'approval_scan', 'wallet_safety', 'token_risk_metrics', 'pool_snapshot', 'gas_oracle', 'sentiment', 'summarize', 'translate'],
+      tools: ['preflight', 'tx_simulate', 'signature_check', 'address_check', 'launch_feed', 'risk_batch', 'trade_check', 'lending_health', 'token_intel', 'token_research', 'contract_docs', 'contract_monitor', 'token_compare', 'tx_decode', 'approval_scan', 'wallet_safety', 'token_risk_metrics', 'pool_snapshot', 'gas_oracle', 'sentiment', 'summarize', 'translate'],
       configuration_example: {
         mcpServers: {
           agentforge: {

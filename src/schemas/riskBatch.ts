@@ -1,9 +1,10 @@
 import { z } from 'zod';
+import { EVM_CHAINS } from '../utils/chains.js';
 import { relatedServicesField } from './shared.js';
 import { RISK_BATCH_LIMITS } from '../pricing.js';
 
 const evmAddress = z.string().regex(/^0x[a-fA-F0-9]{40}$/, 'Must be a valid 0x-prefixed EVM address');
-const riskChain = z.enum(['ethereum', 'base', 'arbitrum', 'optimism', 'polygon']);
+const riskChain = z.enum(EVM_CHAINS);
 
 // ── Input ──────────────────────────────────────────────────────────
 

@@ -16,6 +16,7 @@
 import { getTokenRiskMetricsWithCost } from './tokenRiskMetrics/index.js';
 import { getTokenIntelWithCost } from './tokenIntel.js';
 import { getGasPriceWithCost } from './gasOracle.js';
+import { gasOracleInput, type GasOracleInput } from '../schemas/gasOracle.js';
 import {
   tradeCheckInput,
   tradeCheckOutput,
@@ -68,7 +69,10 @@ export async function tradeCheckWithCost(
   const [metricsSettled, intelSettled, gasSettled] = await Promise.allSettled([
     getTokenRiskMetricsWithCost({ address: validated.address, chain: validated.chain }),
     getTokenIntelWithCost({ address: validated.address, chain: validated.chain }),
-    getGasPriceWithCost({ chain: validated.chain }),
+    // The gas oracle covers fewer chains than the rug check; elsewhere gas is just omitted.
+    (gasOracleInput.shape.chain.unwrap().options as readonly string[]).includes(validated.chain)
+      ? getGasPriceWithCost({ chain: validated.chain as GasOracleInput['chain'] })
+      : Promise.reject(new Error('gas oracle does not cover this chain')),
   ]);
 
   // Without the rug check there is no verdict to sell; propagate the error so

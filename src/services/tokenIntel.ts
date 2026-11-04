@@ -1,4 +1,5 @@
 import { callClaude, type ClaudeResponse } from '../llm/anthropic.js';
+import { CHAIN_INFO, EVM_CHAINS } from '../utils/chains.js';
 import { cleanLlmJson } from '../utils/cleanJson.js';
 import { SimpleCache } from '../utils/cache.js';
 import {
@@ -51,10 +52,7 @@ async function fetchCoinGeckoData(
   chain: string,
 ): Promise<Record<string, unknown> | null> {
   const platformMap: Record<string, string> = {
-    ethereum: 'ethereum',
-    base: 'base',
-    polygon: 'polygon-pos',
-    arbitrum: 'arbitrum-one',
+    ...Object.fromEntries(EVM_CHAINS.map((c) => [c, CHAIN_INFO[c].coingecko])),
     solana: 'solana',
   };
 

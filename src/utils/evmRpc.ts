@@ -7,18 +7,12 @@
  * provider is available.
  */
 
-export type EvmChain = 'ethereum' | 'base' | 'arbitrum' | 'optimism' | 'polygon';
+import { CHAIN_INFO, type EvmChain } from './chains.js';
 
-const PUBLIC_RPC: Record<EvmChain, string> = {
-  ethereum: 'https://ethereum-rpc.publicnode.com',
-  base: 'https://mainnet.base.org',
-  arbitrum: 'https://arb1.arbitrum.io/rpc',
-  optimism: 'https://mainnet.optimism.io',
-  polygon: 'https://polygon-bor-rpc.publicnode.com',
-};
+export type { EvmChain };
 
 export function rpcUrl(chain: EvmChain): string {
-  return process.env[`EVM_RPC_URL_${chain.toUpperCase()}`] || PUBLIC_RPC[chain];
+  return process.env[`EVM_RPC_URL_${chain.toUpperCase()}`] || CHAIN_INFO[chain].rpc;
 }
 
 export interface RpcCall {
