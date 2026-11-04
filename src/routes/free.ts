@@ -88,6 +88,14 @@ freeRouter.get('/docs/ai-sdk', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../dashboard/docs-ai-sdk.html'), { dotfiles: 'allow' });
 });
 
+freeRouter.get('/privacy', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../../dashboard/privacy.html'), { dotfiles: 'allow' });
+});
+
+freeRouter.get('/terms', (_req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, '../../dashboard/terms.html'), { dotfiles: 'allow' });
+});
+
 freeRouter.get('/SKILL.md', (_req: Request, res: Response) => {
   res.type('text/markdown');
   res.sendFile(path.join(__dirname, '../../dashboard/agent-skill.md'), { dotfiles: 'allow' });
@@ -607,7 +615,7 @@ freeRouter.get('/.well-known/ai-plugin.json', (req: Request, res: Response) => {
     },
     logo_url: `${baseUrl}/logo.png`,
     contact_email: config.CONTACT_EMAIL,
-    legal_info_url: '',
+    legal_info_url: `${baseUrl}/terms`,
   });
 });
 
