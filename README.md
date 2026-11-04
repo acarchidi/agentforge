@@ -68,6 +68,10 @@ if (sim.verdict === 'avoid') throw new Error('refusing to sign');
 
 `GET /v1/ping` ($0.001) verifies your x402 setup and returns the service catalog. Free: `GET /registry/lookup` (contract labels), `GET /v1/solana/program-lookup`.
 
+## Roadmap
+
+The 90-day plan is [docs/growth-plan.md](docs/growth-plan.md); the executor log is [docs/growth-log.md](docs/growth-log.md).
+
 ## Development
 
 ```bash
