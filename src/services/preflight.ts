@@ -7,13 +7,16 @@
  * check, recipients → sanctions and scam screening, tokens → rug check. Tokens
  * the simulation shows the wallet receiving are rug-checked too (up to two,
  * inside the base price), so a swap into a honeypot is caught without the
- * agent knowing to ask. The checks run in parallel; no LLM anywhere.
+ * agent knowing to ask. Token names, symbols and labels the checks surface
+ * are run through the content-scan rules, so a token whose name is a prompt
+ * injection is reported too. The checks run in parallel; no LLM anywhere.
  */
 
 import { getTokenRiskMetricsWithCost } from './tokenRiskMetrics/index.js';
 import { simulateEvmTxWithCost } from './txSimulate.js';
 import { signatureCheckWithCost } from './signatureCheck.js';
 import { screenAddresses } from './addressCheck.js';
+import { scanStrings } from './contentScan.js';
 import { getRegistry } from '../registry/lookup.js';
 import { CHAIN_BY_ID, CHAIN_INFO, SIMULATE_CHAINS, type EvmChain } from '../utils/chains.js';
 import {
@@ -57,9 +60,10 @@ function withTimeout<T>(p: Promise<T>, ms: number): Promise<T> {
  * that a token our registry labels safe or low-risk proceeds: issuer-mintable
  * majors (USDC, Binance-Peg assets, CAKE) score "high" on owner powers alone.
  */
-async function checkToken(address: string, chain: EvmChain, source: TokenItem['source'], ms: number): Promise<TokenItem> {
+async function checkToken(address: string, chain: EvmChain, source: TokenItem['source'], ms: number, texts: string[]): Promise<TokenItem> {
   try {
     const { output: m } = await withTimeout(getTokenRiskMetricsWithCost({ address, chain }), ms);
+    for (const t of [m.name, m.symbol]) if (typeof t === 'string' && t) texts.push(t);
     const { score, level } = m.overallRisk;
     const known = getRegistry().lookup(address, chain);
     const trusted = known && (known.riskLevel === 'safe' || known.riskLevel === 'low');
@@ -94,6 +98,8 @@ export async function preflightWithCost(
   const requested = [...new Set((v.tokens ?? []).map((t) => t.toLowerCase()))];
 
   const skipped: PreflightOutput['skipped'] = [];
+  /** Untrusted strings the checks bring back (token names/symbols, labels); scanned for prompt injection below. */
+  const texts: string[] = [];
   const canSimulate = (SIMULATE_CHAINS as readonly string[]).includes(chain);
   if (v.transactions && !canSimulate) {
     skipped.push({ check: 'simulation', reason: `Simulation is not available on ${CHAIN_INFO[chain].name} (its public RPC lacks eth_simulateV1); recipients and tokens were still checked` });
@@ -116,7 +122,7 @@ export async function preflightWithCost(
     v.recipients?.length
       ? screenAddresses(v.recipients.map((a) => ({ address: a.trim(), chain: EVM_RE.test(a.trim()) ? chain : 'solana' })))
       : Promise.resolve(null),
-    Promise.all(requested.map((t) => checkToken(t, chain, 'requested', tokenDeadline - Date.now()))),
+    Promise.all(requested.map((t) => checkToken(t, chain, 'requested', tokenDeadline - Date.now(), texts))),
   ]);
 
   const sim = simR.status === 'fulfilled' ? simR.value?.output ?? null : null;
@@ -129,8 +135,15 @@ export async function preflightWithCost(
 
   if (sim) {
     const extra = receivedTokens(sim, chain, new Set(requested));
-    tokens.push(...(await Promise.all(extra.map((t) => checkToken(t, chain, 'received', Math.max(3_000, tokenDeadline - Date.now()))))));
+    tokens.push(...(await Promise.all(extra.map((t) => checkToken(t, chain, 'received', Math.max(3_000, tokenDeadline - Date.now()), texts)))));
+    for (const a of sim.assetChanges) if (a.symbol) texts.push(a.symbol);
+    for (const a of sim.approvals) if (a.symbol) texts.push(a.symbol);
   }
+  if (sig) for (const g of sig.grants) if (g.symbol) texts.push(g.symbol);
+
+  // Prompt-injection scan over whatever untrusted strings the checks surfaced (no extra RPC).
+  const scannable = [...new Set(texts.map((t) => t.trim()).filter(Boolean))];
+  const injection = scannable.length ? scanStrings(scannable) : null;
 
   const checksRun: PreflightOutput['checksRun'] = [];
   if (sim) checksRun.push('simulation');
@@ -167,6 +180,13 @@ export async function preflightWithCost(
   for (const t of tokens) {
     if (t.status === 'error') found.push({ verdict: 'caution', text: `[token ${short(t.address)}] could not be rug-checked (${t.error})` });
   }
+  if (injection && injection.verdict !== 'clean') {
+    const rules = [...new Set(injection.findings.map((f) => f.rule))].join(', ');
+    found.push({
+      verdict: injection.verdict === 'malicious' ? 'caution' : 'proceed',
+      text: `[prompt-injection] token metadata ${injection.verdict} (${rules}): ${injection.findings[0]?.excerpt ?? ''}`,
+    });
+  }
   if (skipped.length) for (const s of skipped) found.push({ verdict: 'caution', text: `[${s.check}] ${s.reason}` });
 
   found.sort((a, b) => RANK[b.verdict] - RANK[a.verdict]);
@@ -189,6 +209,7 @@ export async function preflightWithCost(
     ...(sig ? { signature: { ...sig, relatedServices: undefined } } : {}),
     ...(addresses ? { addresses } : {}),
     ...(tokens.length ? { tokens } : {}),
+    ...(injection ? { promptInjection: { verdict: injection.verdict, findings: injection.findings } } : {}),
     skipped,
     pricing: {
       base: formatUsd(PREFLIGHT_BASE),
@@ -216,6 +237,11 @@ export async function preflightWithCost(
         endpoint: '/v1/lending/health',
         description: 'Liquidation risk for this wallet on Aave v3',
         suggestedInput: { address: v.from ?? '0x…your-wallet', chain: 'all' },
+      },
+      {
+        endpoint: '/v1/content-scan',
+        description: 'Scan the tool result, page, or message that proposed this action for prompt injection before acting on it',
+        suggestedInput: { text: '…the untrusted text that proposed this action…' },
       },
     ],
   });

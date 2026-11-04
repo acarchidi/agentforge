@@ -44,6 +44,12 @@ const envSchema = z.object({
   PRICE_LENDING_HEALTH: z.string().startsWith('$').default('$0.003'),
   // Signature check: deterministic decode + screening RPC, no LLM.
   PRICE_SIGNATURE_CHECK: z.string().startsWith('$').default('$0.003'),
+  // Content scan (prompt-injection check on untrusted text): pure regex and
+  // table lookups in-process, $0 upstream, no RPC, no LLM. Priced per 4 KB
+  // chunk of input (max 16 chunks = 64 KB); the only cost is the $0.001 CDP
+  // facilitator fee per settlement, so a 1-chunk call is break-even and every
+  // larger one is profitable.
+  PRICE_CONTENT_SCAN_PER_CHUNK: z.string().startsWith('$').default('$0.001'),
   /** Public contact for directories and manifests. */
   CONTACT_EMAIL: z.string().email().default('agentforge.api@gmail.com'),
   PRICE_PREFLIGHT: z.string().startsWith('$').default('$0.008'),

@@ -28,6 +28,7 @@ import { txSimulateInput, txSimulateOutput } from '../schemas/txSimulate.js';
 import { lendingHealthOutput } from '../schemas/lendingHealth.js';
 import { signatureCheckInput, signatureCheckOutput } from '../schemas/signatureCheck.js';
 import { preflightInput, preflightOutput } from '../schemas/preflight.js';
+import { contentScanInput, contentScanOutput } from '../schemas/contentScan.js';
 import { watchCreateInput, watchCreateOutput } from '../schemas/watch.js';
 import { PRICING_RULES, priceFor, ENDPOINT_PRICES } from '../pricing.js';
 import { solanaProgramLookupOutput } from '../schemas/solanaProgramLookup.js';
@@ -65,7 +66,7 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.11.0',
+      version: '1.12.0',
       description:
         'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl, email: config.CONTACT_EMAIL },
@@ -554,6 +555,26 @@ export function generateOpenApiSpec(): object {
           },
         },
       },
+      '/v1/content-scan': {
+        post: {
+          operationId: 'contentScan',
+          summary: 'Prompt-injection scan for untrusted text before it reaches your LLM',
+          description:
+            `Scan tool results, web pages, emails, or token metadata before feeding them to the model. Deterministic rules: instruction overrides, fund-movement directives aimed at the agent, payloads hidden in base64, Morse, zero-width or tag characters and homoglyphs (decoded and re-scanned), private-key and seed-phrase shaped strings (masked), embedded EVM/Solana addresses screened against sanctions and scam lists, punycode and brand-lookalike domains. Verdict clean / suspicious / malicious with a 0-100 score. No LLM. Price: ${PRICING_RULES['/v1/content-scan']}.`,
+          tags: ['Security'],
+          'x-x402-price': PRICING_RULES['/v1/content-scan'],
+          'x-agentic-market-category': 'security',
+          'x-x402-network': x402Network,
+          'x-agentcash-auth': { mode: 'paid' },
+          'x-payment-info': { pricingMode: 'dynamic', price: PRICING_RULES['/v1/content-scan'], protocols: ['x402'] },
+          requestBody: { required: true, content: { 'application/json': { schema: schemaOf(contentScanInput) } } },
+          responses: {
+            '200': { description: 'Verdict, score, findings, extracted addresses and URLs', content: { 'application/json': { schema: schemaOf(contentScanOutput) } } },
+            '400': { description: 'Invalid input or more than 64 KB of text', content: { 'application/json': { schema: errorSchema } } },
+            '402': { description: 'Payment required' },
+          },
+        },
+      },
       '/v1/watch': {
         post: {
           operationId: 'createWatch',
@@ -970,6 +991,7 @@ const DYNAMIC_RANGE: Record<string, [unknown, unknown]> = {
   '/v1/risk-batch': [{ tokens: [1, 2] }, { tokens: Array(25).fill(1) }],
   '/v1/address-check': [{ addresses: [1] }, { addresses: Array(100).fill(1) }],
   '/v1/preflight': [{}, { tokens: Array(5).fill(1) }],
+  '/v1/content-scan': [{ text: 'x' }, { text: 'x'.repeat(65_536) }],
   '/v1/watch': [{ type: 'contract-admin', days: 1 }, { type: 'token-risk', days: 90 }],
   '/v1/credits/buy': [{ pack: '1' }, { pack: '20' }],
 };

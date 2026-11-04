@@ -43,6 +43,15 @@ function listReasons(hits: Hit[]): { sanctioned: boolean; scam: boolean; reasons
   return { sanctioned, scam, reasons };
 }
 
+/**
+ * Pure list lookup (no RPC): is this address on the OFAC SDN or scam lists?
+ * Shared with /v1/content-scan, which screens every address it extracts.
+ */
+export function reputationHits(address: string, kind: 'evm' | 'solana'): { sanctioned: boolean; scam: boolean; reasons: string[] } {
+  const hits = (kind === 'solana' ? SOLANA_LISTS[address] : EVM_LISTS[address.toLowerCase()]) ?? [];
+  return listReasons(hits);
+}
+
 /** Exported for tests: the verdict logic over already-gathered signals. */
 export function decideVerdict(item: Omit<AddressCheckItem, 'verdict'>): AddressCheckItem['verdict'] {
   if (!item.valid) return 'caution';
@@ -167,6 +176,11 @@ export async function addressCheckWithCost(
             },
           ]
         : []),
+      {
+        endpoint: '/v1/content-scan',
+        description: 'Scan the text these addresses came from (tool result, web page, email) for prompt injection before acting on it',
+        suggestedInput: { text: '…the untrusted text that contained these addresses…' },
+      },
     ],
   });
 
