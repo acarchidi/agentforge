@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "agentforge": {
+      "type": "http",
+      "url": "https://agentforge-taupe.vercel.app/mcp"
+    }
+  }
+}

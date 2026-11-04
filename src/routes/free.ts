@@ -38,6 +38,7 @@ import { getPaidHealth } from '../health/paidHealthCheck.js';
 import { getCacheStore } from '../cache/store.js';
 import { getPrecomputedDocs } from '../cache/precomputedDocs.js';
 import { getPoolSnapshotsCache } from '../cache/poolSnapshotsCache.js';
+import { mcpServerCard, agentRegistration } from '../discovery/manifests.js';
 import { getTokenRiskMetricsCache } from '../cache/tokenRiskMetricsCache.js';
 import { getSolanaTokenRiskScanCache } from '../cache/solanaTokenRiskScanCache.js';
 import { generateAgentCard, SKILLS } from '../discovery/agentCard.js';
@@ -575,6 +576,15 @@ freeRouter.get('/.well-known/agent.json', (req: Request, res: Response) => {
   res.json(cachedAgentCard);
 });
 
+// MCP server card (static fallback for MCP directories) and ERC-8004
+// registration file (agentURI of our Base Identity Registry entry).
+freeRouter.get('/.well-known/mcp/server-card.json', (req: Request, res: Response) => {
+  res.json(mcpServerCard(getBaseUrl(req)));
+});
+freeRouter.get('/.well-known/agent-registration.json', (req: Request, res: Response) => {
+  res.json(agentRegistration(getBaseUrl(req)));
+});
+
 // ────────────────────────────────────────────────────────────────────
 // AI Plugin Manifest
 // ────────────────────────────────────────────────────────────────────
@@ -612,7 +622,7 @@ freeRouter.get('/llms.txt', (req: Request, res: Response) => {
   const lines = [
     '# AgentForge',
     '',
-    '> Pay-per-call DeFi safety tools for AI agents: simulate a transaction before signing, screen counterparties against sanctions and scam lists, catch new token launches already risk-scored, rug-check tokens, check liquidation risk, decode transactions. x402 payments in USDC on Base or Solana; no API keys or accounts. Every paid endpoint answers an unpaid request with HTTP 402 and its exact price.',
+    '> Pay-per-call DeFi safety tools for AI agents: one-call preflight before any on-chain action (`POST /v1/preflight`), simulate a transaction before signing, check a signature request for phishing, screen counterparties against sanctions and scam lists, catch new token launches already risk-scored, rug-check tokens, check liquidation risk, decode transactions. x402 payments in USDC on Base or Solana; no API keys or accounts. Every paid endpoint answers an unpaid request with HTTP 402 and its exact price.',
     '',
     '## Connect',
     '',
