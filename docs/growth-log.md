@@ -2,6 +2,9 @@
 
 One entry per executor run (newest first). Format: date · item · PR · metrics line · blocked/notes.
 
+## 2026-11-04 · WP-1d Guard acceptance passed on production
+- Transfer to an OFAC SDN address: preflight `avoid`, Guard refused to sign. WETH deposit: `proceed`, signed (not broadcast). Remaining for Bet 1 distribution: npm trusted publisher + `v0.5.0` tag (owner).
+
 ## 2026-11-04 · advertising audit + acceptance fix
 - Guard live acceptance (owner run) signed a transfer to the Tornado Cash router: preflight said caution. Cause: OFAC delisted Tornado Cash in March 2025, so the address is correctly absent from the current SDN list. The Guard behaved correctly; the test address was wrong. Fixed in acarchidi/agentforge-tools#2 (now uses a listed SDN address). Owner reruns the acceptance.
 - Audit found the Guard and credits on no server-side surface, no MCP instructions, and empty unpaid 402 bodies. PR #44 (v1.13.0, live): one pitch module on every unpaid 402, security responses' relatedServices, ping, MCP instructions and daily-cap message, llms.txt, agent card, MCP server card, MCP Registry (1.13.0 published), landing page, both skill files.
