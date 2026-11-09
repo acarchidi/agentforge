@@ -3,7 +3,7 @@ name: agentforge
 description: Safety checks for agents that act on-chain. Call `preflight` once before any send, swap, approval, signature or x402 payment and get one proceed/caution/avoid verdict (transaction simulated, EIP-712 signature checked for permit phishing, recipients screened against OFAC sanctions and scam lists, tokens rug-checked). Also signature checks, transaction simulation, address screening, pre-trade token checks, batch rug checks, risk-scored new launches, Aave liquidation risk, and Solana simulation, on Ethereum, Base, Arbitrum, Optimism, Polygon, BNB Chain, Avalanche, Linea, Unichain, Sonic, HyperEVM and Solana. Also `content_scan` for prompt injection in untrusted text. Free over MCP up to a daily cap (no wallet); otherwise pay per call in USDC over x402, with the exact price quoted before any charge. To make the check automatic, the `agentforge-tools` SDK wraps the wallet so every signature is preflighted and `avoid` is refused.
 metadata:
   author: agentforge
-  version: "1.13.0"
+  version: "1.13.1"
 ---
 
 # AgentForge

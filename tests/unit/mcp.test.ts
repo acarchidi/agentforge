@@ -1,11 +1,13 @@
 import { describe, it, expect } from 'vitest';
+import { z } from 'zod';
+import { classifyError, errorMessage, TOOL_EXAMPLES } from '../../src/mcp/server.js';
 import { mcpServer, CAPPED_TOOLS } from '../../src/mcp/server.js';
 
 describe('MCP Server', () => {
   it('has correct server name and version', () => {
     const info = (mcpServer as any).server._serverInfo;
     expect(info.name).toBe('agentforge');
-    expect(info.version).toBe('1.13.0');
+    expect(info.version).toBe('1.13.1');
   });
 
   it('registers all 29 tools (24 EVM + 4 Solana + feedback)', () => {
@@ -55,5 +57,14 @@ describe('MCP Server', () => {
     expect(CAPPED_TOOLS.has('pool_snapshot')).toBe(false);
     expect(CAPPED_TOOLS.size).toBe(24);
     expect(CAPPED_TOOLS.has('content_scan')).toBe(true);
+  });
+
+  it('reports Zod validation failures as validation errors with a readable message and an example', () => {
+    const err = z.object({ text: z.string() }).safeParse({}).error;
+    expect(classifyError(err)).toBe('validation');
+    expect(errorMessage(err)).toMatch(/^text: /);
+    expect(errorMessage(err)).not.toContain('[');
+    expect(TOOL_EXAMPLES.preflight).toBeDefined();
+    expect(TOOL_EXAMPLES.content_scan).toBeDefined();
   });
 });

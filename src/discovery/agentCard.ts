@@ -439,7 +439,7 @@ export function generateAgentCard(baseUrl: string): Record<string, unknown> {
     description:
       'One preflight call before any on-chain action (send, swap, approval, signature, x402 payment) with a proceed/caution/avoid verdict, and a prompt-injection scan for untrusted text before you act on it. Check a token before you buy it, catch new launches the minute they list (already risk-scored), screen every counterparty against sanctions and scam lists before you send, simulate a transaction before you sign it, check any signature request for phishing, check how close a loan is to liquidation, rug-check a whole watchlist in one call, document a contract before calling it, decode a transaction. Pay-per-call tools for autonomous agents trading or operating on EVM chains and Solana, plus NLP utilities (sentiment, summarize, translate). x402 protocol, USDC on Base or Solana — no API keys, no accounts, no subscriptions; batch endpoints are priced per item, and every response suggests the logical next call with a ready-to-send input. To make the preflight automatic, the agentforge-tools SDK (Guard) wraps the wallet so every signature is checked and avoid is refused; prepaid credits with auto top-up and a 10% referral share for integrators.',
     url: baseUrl,
-    version: '1.13.0',
+    version: '1.13.1',
 
     provider: {
       organization: 'AgentForge',

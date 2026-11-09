@@ -358,6 +358,11 @@ Waiting on owner (executor appends here):
 
 ## 8. Checklist (the executor ticks these; keep order)
 
+Items marked **ON HOLD** belong to Bets 2 and 3, which the owner paused on 2026-11-04. Skip them until
+the owner lifts the hold in chat; then remove the marker.
+
+- [ ] WP-10d `scripts/growthMetrics.ts`: report MCP calls and clients excluding `gas_oracle`-only pollers (health-check bots) on a separate line, so real usage is visible
+
 - [x] WP-2a `agentforge-tools`: `publish.yml` with OIDC trusted publishing (no secrets)
 - [x] WP-1a `agentforge-tools` 0.5.0: `guardAccount`, `guardWalletClient`, `GuardBlockedError`, tests, README "Guard"
 - [x] WP-1b `agentforge-tools` 0.5.0: `createCreditFetch` with auto top-up + `referrer`; guard uses it
@@ -366,20 +371,20 @@ Waiting on owner (executor appends here):
 - [x] WP-1e agentforge-tools 0.5.0 published to npm 2026-11-04 via trusted publishing (provenance signed)
 - [x] WP-10a `scripts/growthMetrics.ts` + `User-Agent` tagging in the SDK + log format
 - [x] WP-3a main: `/v1/content-scan` endpoint (deterministic rules, per-chunk price) + preflight `promptInjection` block
-- [ ] WP-6a main: page renderer + `/t/<chain>/<address>` + `/c/<chain>/<address>` + sitemap + llms.txt entries
-- [ ] WP-4a main: `scripts/crawlVendors.ts` + Neon tables + Memory twin + `crawl-vendors.yml` (needs §7-B)
-- [ ] WP-4b main: `/v1/vendor-check` (single + batch) + `/x402/vendors` JSON + preflight `vendor` block
-- [ ] WP-6b main: `/x402/vendors/<host>` and `/launches/<chain>/<date>` pages
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-6a main: page renderer + `/t/<chain>/<address>` + `/c/<chain>/<address>` + sitemap + llms.txt entries
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-4a main: `scripts/crawlVendors.ts` + Neon tables + Memory twin + `crawl-vendors.yml` (needs §7-B)
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-4b main: `/v1/vendor-check` (single + batch) + `/x402/vendors` JSON + preflight `vendor` block
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-6b main: `/x402/vendors/<host>` and `/launches/<chain>/<date>` pages
 - [x] WP-2b `x402-sanctions-guard`: `publish.yml` + tag `v0.1.0`
-- [ ] WP-5a `x402-sanctions-guard` 0.2.0 reporting + main `/v1/badge/report` + `/badge/<host>.svg`
-- [ ] WP-8a `scripts/weeklyReport.ts` + `/report/<yyyy-ww>` page + `weekly-report.yml` (dev.to optional, §7-E)
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-5a `x402-sanctions-guard` 0.2.0 reporting + main `/v1/badge/report` + `/badge/<host>.svg`
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-8a `scripts/weeklyReport.ts` + `/report/<yyyy-ww>` page + `weekly-report.yml` (dev.to optional, §7-E)
 - [ ] WP-3b `agentforge-tools/openclaw` plugin (`before_tool_call`) + `scanToolResult`
 - [x] WP-9a `guardWalletProvider` for AgentKit (shipped in 0.5.0; coinbase/agentkit#1619 still to be updated once 0.5.0 is on npm)
 - [x] WP-9b Claude Code / Cursor `PreToolUse` hook generator + `llms-install.md` section
 - [ ] WP-7a url-check lists (eth-phishing-detect) in preflight/content-scan + monthly refresh
 - [ ] WP-7b signed verdicts + `/.well-known/agentforge-signer.json`
 - [ ] WP-7c address-poisoning check in preflight (Ethereum first)
-- [ ] WP-5b `scripts/badgeOutreach.ts` + first 5 seller PRs (log each)
+- [ ] **ON HOLD (owner, 2026-11-04; skip)** WP-5b `scripts/badgeOutreach.ts` + first 5 seller PRs (log each)
 - [ ] WP-7d `scripts/postValidation.ts` ERC-8004 validations (no-op until §7-D)
 - [ ] WP-9c ElizaOS guard evaluator
 - [ ] WP-9d Python `agentforge-guard` + PyPI trusted publishing

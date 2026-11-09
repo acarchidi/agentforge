@@ -195,7 +195,7 @@ function schemaOf(zodSchema: z.ZodType): Record<string, unknown> {
 freeRouter.get('/catalog', (_req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
-    version: '1.13.0',
+    version: '1.13.1',
     description:
       'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for agents on EVM chains and Solana, plus NLP utilities. x402 protocol, USDC on Base or Solana; batch endpoints are priced per item. All service responses include relatedServices suggestions with ready-to-send inputs for chaining calls. Includes a free Known Contract Label Registry for contract identification.',
     documentationUrl: '/openapi.json',
@@ -773,6 +773,18 @@ freeRouter.get('/favicon.ico', (_req: Request, res: Response) => {
   res.sendFile(path.join(__dirname, '../../public/brand/agentforge-icon-512.png'), { dotfiles: 'allow' });
 });
 
+/** Public human-readable pages. Keep in sync when a page is added. */
+export const SITEMAP_PATHS = ['/', '/docs/ai-sdk', '/contact', '/privacy', '/terms', '/llms.txt', '/catalog', '/openapi.json'];
+
+freeRouter.get('/sitemap.xml', (_req: Request, res: Response) => {
+  const base = 'https://agentforge-taupe.vercel.app';
+  const urls = SITEMAP_PATHS.map((p) => `  <url><loc>${base}${p}</loc></url>`).join('\n');
+  res
+    .type('application/xml')
+    .set('Cache-Control', 'public, s-maxage=86400')
+    .send(`<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+});
+
 freeRouter.get('/robots.txt', (_req: Request, res: Response) => {
   res.type('text/plain').send(`# AgentForge — AI Agent Services
 # We welcome AI agent crawlers and indexers.
@@ -784,6 +796,8 @@ Allow: /llms.txt
 Allow: /openapi.json
 Allow: /.well-known/
 Disallow: /admin
+
+Sitemap: https://agentforge-taupe.vercel.app/sitemap.xml
 
 # Service catalog (machine-readable)
 # GET /catalog — JSON service list with pricing and schemas
@@ -806,7 +820,7 @@ freeRouter.get('/about', (req: Request, res: Response) => {
   res.json({
     name: 'AgentForge',
     tagline: 'Production-grade AI services for autonomous agents',
-    version: '1.13.0',
+    version: '1.13.1',
     skill_file: `${baseUrl}/SKILL.md`,
 
     what_is_this:
