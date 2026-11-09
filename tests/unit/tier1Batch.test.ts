@@ -75,6 +75,15 @@ describe('address-check', () => {
     await expect(addressCheckWithCost({ address: USDC, addresses: [{ address: USDC }] })).rejects.toThrow();
   });
 
+  it('labels a burn address as a burn address, not a fresh scam wallet', async () => {
+    vi.mocked(rpcBatch).mockImplementation(async (_chain, calls) => calls.map((c) => (c.method === 'eth_getCode' ? '0x' : '0x0')));
+    const { output } = await addressCheckWithCost({ address: '0x000000000000000000000000000000000000dEaD', chain: 'base' });
+    const r = output.results[0];
+    expect(r.verdict).toBe('caution');
+    expect(r.reasons.some((x) => /burn address/i.test(x))).toBe(true);
+    expect(r.reasons.some((x) => /scam/i.test(x))).toBe(false);
+  });
+
   it('degrades to list-only results when the RPC fails', async () => {
     vi.mocked(rpcBatch).mockRejectedValue(new Error('down'));
     const { output } = await addressCheckWithCost({ address: OFAC });

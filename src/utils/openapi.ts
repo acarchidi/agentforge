@@ -66,7 +66,7 @@ export function generateOpenApiSpec(): object {
     openapi: '3.1.0',
     info: {
       title: 'AgentForge API',
-      version: '1.13.0',
+      version: '1.13.1',
       description:
         'Check a token before you buy it, catch new launches already risk-scored, screen counterparties against sanctions and scam lists, check a signature request for phishing, simulate a transaction before signing, or check all of it in one preflight call, check liquidation risk, rug-check a watchlist in one call, document a contract before calling it, decode a transaction — pay-per-call tools for autonomous agents, plus NLP utilities. All paid endpoints use the x402 payment protocol — send a request without payment to receive pricing and payment instructions. Include signed USDC payment in the X-PAYMENT header to access the service. No API keys. No accounts. No subscriptions.',
       contact: { name: 'AgentForge', url: baseUrl, email: config.CONTACT_EMAIL },

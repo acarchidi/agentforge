@@ -21,6 +21,13 @@ import {
 } from '../schemas/addressCheck.js';
 import { formatUsd, priceFor } from '../pricing.js';
 
+/** Well-known burn addresses: never a scam wallet, but sending to one destroys funds. */
+const BURN_ADDRESSES = new Set([
+  '0x0000000000000000000000000000000000000000',
+  '0x000000000000000000000000000000000000dead',
+  '0xdead000000000000000042069420694206942069',
+]);
+
 interface Hit {
   source: string;
   note?: string;
@@ -121,7 +128,9 @@ export async function screenAddresses(items: Array<{ address: string; chain: str
         reasons.push(`Registry risk level: ${knownEntity.riskLevel}`);
       }
     }
-    if (chainInfo?.isContract === false && chainInfo.txCount === 0 && !knownEntity) {
+    const burn = valid && !isSolana && BURN_ADDRESSES.has(it.address.toLowerCase());
+    if (burn) reasons.push('Burn address: funds sent here are destroyed permanently');
+    if (chainInfo?.isContract === false && chainInfo.txCount === 0 && !knownEntity && !burn) {
       reasons.push('Brand-new address with no outgoing transactions — common for freshly generated scam or address-poisoning wallets');
     }
 

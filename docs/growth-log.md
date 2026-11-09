@@ -2,6 +2,12 @@
 
 One entry per executor run (newest first). Format: date · item · PR · metrics line · blocked/notes.
 
+## 2026-11-09 · review + autopilot on
+- Full distribution review (private notes in `_launch/REVIEW-2026-11-09.md`): the x402 catalog is about $33K/month of paid API calls over ~1,160 sellers, listings don't create buyers, all 13 outbound list PRs are unanswered. The executor task had never been created, so nothing ran after 11-04.
+- v1.13.1: MCP validation errors now return a readable message plus a worked example and are classified `validation` (content_scan with empty args was logged as `internal` daily); burn addresses are labelled as burn addresses, not fresh scam wallets; landing page meta description, Open Graph tags, canonical, correct version; `/sitemap.xml` + robots `Sitemap:` line.
+- Bets 2/3 items marked ON HOLD in §8 so the executor skips them. Executor task `agentforge-growth` created (Mon/Wed/Fri 07:15).
+- METRICS 30d payers=19 repeat=5 payments=43 usd=0.069 credit_packs=0 credit_calls=0 guard_calls=0 mcp_calls=128 npm_tools=977 npm_guard=n/a
+
 ## 2026-11-04 · WP-1e agentforge-tools 0.5.0 on npm
 - Trusted publishing failed twice with E403 "OIDC permission denied for this action": the npm trusted publisher defaults to stage-only under *Allowed actions*. Owner enabled direct publishing; the workflow (fixed in agentforge-tools#3: no setup-node registry-url, manual dispatch from main, skip published versions) published 0.5.0 with provenance. Fresh install verified: Guard exports and `npx agentforge-tools hook` present.
 - Next: update coinbase/agentkit#1619 to mention `guardWalletProvider`; x402-sanctions-guard trusted publisher (owner).

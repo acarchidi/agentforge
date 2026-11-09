@@ -15,7 +15,7 @@ export const contentScanInput = z
     items: z.array(z.string()).min(1).max(CONTENT_SCAN_LIMITS.items).optional(),
   })
   .refine((v) => (v.items ? v.text === undefined : typeof v.text === 'string'), {
-    message: 'Provide either `text` (string) or `items` (array of strings), not both',
+    message: 'Provide exactly one of `text` (a string) or `items` (an array of strings)',
   })
   .refine((v) => contentScanBytes(v) <= CONTENT_SCAN_LIMITS.maxBytes, {
     message: `Total text must be at most ${CONTENT_SCAN_LIMITS.maxBytes} bytes (64 KB)`,
