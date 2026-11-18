@@ -14,6 +14,7 @@ config({ quiet: true });
 
 import { createHash } from 'node:crypto';
 import { neon } from '@neondatabase/serverless';
+import { splitMcpUsage, POLLER_TOOLS, type McpUsageRow } from '../src/analytics/mcpUsage.js';
 
 const url = process.env.DATABASE_URL || process.env.POSTGRES_URL;
 if (!url) {
@@ -75,9 +76,12 @@ const byEndpoint = await sql`
     AND (client_hash IS NULL OR client_hash <> ALL(${ownHashes}))
   GROUP BY name ORDER BY calls DESC LIMIT 8`;
 
-const [mcp] = await sql`
-  SELECT COUNT(*)::int AS calls, COUNT(DISTINCT client_hash)::int AS clients
-  FROM events WHERE kind = 'mcp' AND ts > now() - ${since}::interval`;
+const mcpRows = (await sql`
+  SELECT client_hash, name, COUNT(*)::int AS calls
+  FROM events WHERE kind = 'mcp' AND ts > now() - ${since}::interval
+  GROUP BY client_hash, name`) as McpUsageRow[];
+const mcpSplit = splitMcpUsage(mcpRows);
+const mcp = mcpSplit.total;
 
 async function npmWeekly(pkg: string): Promise<number | 'n/a'> {
   try {
@@ -98,6 +102,8 @@ console.table({
   'credit-paid calls': { value: creditSpend.calls, detail: `${creditSpend.wallets} wallets` },
   'guard-origin calls': { value: guardCalls.calls, detail: guardCalls.note || `${guardCalls.wallets} wallets` },
   'MCP tool calls': { value: mcp.calls, detail: `${mcp.clients} clients` },
+  'MCP real usage (excl. pollers)': { value: mcpSplit.real.calls, detail: `${mcpSplit.real.clients} clients` },
+  [`MCP ${POLLER_TOOLS.join('/')}-only pollers`]: { value: mcpSplit.pollers.calls, detail: `${mcpSplit.pollers.clients} clients` },
   'npm downloads/week agentforge-tools': { value: dlTools, detail: '' },
   'npm downloads/week x402-sanctions-guard': { value: dlGuard, detail: '' },
 });
@@ -106,5 +112,6 @@ console.table(byEndpoint);
 console.log(
   `METRICS ${days}d payers=${settled.payers} repeat=${repeat.repeat_payers} payments=${settled.payments} usd=${settled.usd} ` +
     `credit_packs=${credits.packs} credit_calls=${creditSpend.calls} guard_calls=${guardCalls.calls} mcp_calls=${mcp.calls} ` +
+    `mcp_real=${mcpSplit.real.calls}/${mcpSplit.real.clients}c mcp_pollers=${mcpSplit.pollers.calls}/${mcpSplit.pollers.clients}c ` +
     `npm_tools=${dlTools} npm_guard=${dlGuard}`,
 );
