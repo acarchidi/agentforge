@@ -2,6 +2,12 @@
 
 One entry per executor run (newest first). Format: date · item · PR · metrics line · blocked/notes.
 
+## 2026-11-18 · WP-10d MCP real usage vs pollers
+- PR https://github.com/acarchidi/agentforge/pull/46 (merged): `splitMcpUsage` in `src/analytics/mcpUsage.ts`; growthMetrics prints real MCP usage and `gas_oracle`-only pollers separately and adds `mcp_real`/`mcp_pollers` to the METRICS line. Of 242 MCP calls in 30d, 97 come from 17 gas_oracle-only pollers; real usage is 145 calls from 16 clients. Prod: 29/29 healthy, v1.13.1 (scripts-only change, no bump).
+- 72h: 7 outside payments, $0.011, all ping/gas from 4 repeat wallets (uptime bots); 0 new payers. Listings ok (soonest lapse 15.7d).
+- METRICS 30d payers=22 repeat=7 payments=62 usd=0.101 credit_packs=0 credit_calls=0 guard_calls=0 mcp_calls=242 mcp_real=145/16c mcp_pollers=97/17c npm_tools=142 npm_guard=n/a
+- Still waiting on owner: x402-sanctions-guard npm trusted publisher (§7). Next: WP-3b OpenClaw plugin + `scanToolResult` (agentforge-tools).
+
 ## 2026-11-09 · review + autopilot on
 - Full distribution review (private notes in `_launch/REVIEW-2026-11-09.md`): the x402 catalog is about $33K/month of paid API calls over ~1,160 sellers, listings don't create buyers, all 13 outbound list PRs are unanswered. The executor task had never been created, so nothing ran after 11-04.
 - v1.13.1: MCP validation errors now return a readable message plus a worked example and are classified `validation` (content_scan with empty args was logged as `internal` daily); burn addresses are labelled as burn addresses, not fresh scam wallets; landing page meta description, Open Graph tags, canonical, correct version; `/sitemap.xml` + robots `Sitemap:` line.

@@ -361,7 +361,7 @@ Waiting on owner (executor appends here):
 Items marked **ON HOLD** belong to Bets 2 and 3, which the owner paused on 2026-11-04. Skip them until
 the owner lifts the hold in chat; then remove the marker.
 
-- [ ] WP-10d `scripts/growthMetrics.ts`: report MCP calls and clients excluding `gas_oracle`-only pollers (health-check bots) on a separate line, so real usage is visible
+- [x] WP-10d `scripts/growthMetrics.ts`: report MCP calls and clients excluding `gas_oracle`-only pollers (health-check bots) on a separate line, so real usage is visible
 
 - [x] WP-2a `agentforge-tools`: `publish.yml` with OIDC trusted publishing (no secrets)
 - [x] WP-1a `agentforge-tools` 0.5.0: `guardAccount`, `guardWalletClient`, `GuardBlockedError`, tests, README "Guard"
